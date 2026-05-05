@@ -35,18 +35,18 @@ export const ghostShield = {
 };
 
 export const buddyFeatures = [
-  { id: 1, title: "Debt Risk Radar", desc: "30-day risk prediction", icon: "🔮", color: "destructive" },
-  { id: 2, title: "Smart Auto-Save", desc: "Automated savings plan", icon: "💰", color: "success" },
-  { id: 3, title: "Pre-Spending Warnings", desc: "Real-time purchase alerts", icon: "⚠️", color: "warning" },
-  { id: 4, title: "Ghost Shield Vault", desc: "Protected emergency fund", icon: "🛡️", color: "primary" },
-  { id: 5, title: "Ghost Prevention", desc: "Bill protection 48h before", icon: "👻", color: "secondary" },
-  { id: 6, title: "Weekly AI Report", desc: "Personalized insights", icon: "📊", color: "primary" },
-  { id: 7, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success" },
-  { id: 8, title: "Safe-to-Spend Limit", desc: "Daily spending guide", icon: "💳", color: "warning" },
-  { id: 9, title: "Salary Triggered", desc: "Auto-actions on payday", icon: "💸", color: "primary" },
-  { id: 10, title: "Predictive Prevention", desc: "Prevent overspending risks", icon: "🎯", color: "warning" },
-  { id: 11, title: "Goal Tracking", desc: "Monitor your targets", icon: "🎪", color: "primary" },
-  { id: 12, title: "Buddy Room", desc: "Hamster companion space", icon: "🏠", color: "secondary" },
+  { id: 1, title: "Debt Risk Radar", desc: "30-day risk prediction", icon: "🔮", color: "destructive", route: "/debt-radar" },
+  { id: 2, title: "Smart Auto-Save", desc: "Automated savings plan", icon: "💰", color: "success", route: "/auto-save" },
+  { id: 3, title: "Pre-Spending Warnings", desc: "Real-time purchase alerts", icon: "⚠️", color: "warning", route: "/spending-warnings" },
+  { id: 4, title: "Ghost Shield Vault", desc: "Protected emergency fund", icon: "🛡️", color: "primary", route: "/emergency" },
+  { id: 5, title: "Ghost Prevention", desc: "Bill protection 48h before", icon: "👻", color: "secondary", route: "/bnpl" },
+  { id: 6, title: "Weekly AI Report", desc: "Personalized insights", icon: "📊", color: "primary", route: "/weekly-report" },
+  { id: 7, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
+  { id: 8, title: "Safe-to-Spend Limit", desc: "Daily spending guide", icon: "💳", color: "warning", route: "/spending-warnings" },
+  { id: 9, title: "Salary Triggered", desc: "Auto-actions on payday", icon: "💸", color: "primary", route: "/auto-save" },
+  { id: 10, title: "Predictive Prevention", desc: "Prevent overspending risks", icon: "🎯", color: "warning", route: "/debt-radar" },
+  { id: 11, title: "Goal Tracking", desc: "Monitor your targets", icon: "🎪", color: "primary", route: "/missions" },
+  { id: 12, title: "Buddy Room", desc: "Hamster companion space", icon: "🏠", color: "secondary", route: "/mascot-room" },
 ];
 
 export const spendingByCategory = [

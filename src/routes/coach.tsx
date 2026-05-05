@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppShell, PageHeader } from "@/components/AppShell";
@@ -154,7 +154,7 @@ function Coach() {
         {/* Buddy Features Grid */}
         <div className="grid grid-cols-2 gap-3">
           {buddyFeatures.map(feature => (
-            <button key={feature.id} className="group text-left">
+            <Link key={feature.id} to={feature.route as any} className="group text-left">
               <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col gap-3 transition-all hover:shadow-glow group-active:scale-95">
                 <div className="text-3xl">{feature.icon}</div>
                 <div className="flex-1">
@@ -162,7 +162,7 @@ function Coach() {
                   <p className="text-[10px] text-muted-foreground mt-1">{feature.desc}</p>
                 </div>
               </Card>
-            </button>
+            </Link>
           ))}
         </div>
       </section>

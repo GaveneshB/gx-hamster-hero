@@ -9,8 +9,92 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WeeklyReportRouteImport } from './routes/weekly-report'
+import { Route as SpendingWarningsRouteImport } from './routes/spending-warnings'
+import { Route as PersonalityRouteImport } from './routes/personality'
+import { Route as MissionsRouteImport } from './routes/missions'
+import { Route as MeRouteImport } from './routes/me'
+import { Route as MascotRoomRouteImport } from './routes/mascot-room'
+import { Route as GroupChallengesRouteImport } from './routes/group-challenges'
+import { Route as FutureYouRouteImport } from './routes/future-you'
+import { Route as EmergencyRouteImport } from './routes/emergency'
+import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as DebtRadarRouteImport } from './routes/debt-radar'
+import { Route as CoachRouteImport } from './routes/coach'
+import { Route as BnplRouteImport } from './routes/bnpl'
+import { Route as AutoSaveRouteImport } from './routes/auto-save'
 import { Route as IndexRouteImport } from './routes/index'
 
+const WeeklyReportRoute = WeeklyReportRouteImport.update({
+  id: '/weekly-report',
+  path: '/weekly-report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpendingWarningsRoute = SpendingWarningsRouteImport.update({
+  id: '/spending-warnings',
+  path: '/spending-warnings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PersonalityRoute = PersonalityRouteImport.update({
+  id: '/personality',
+  path: '/personality',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MissionsRoute = MissionsRouteImport.update({
+  id: '/missions',
+  path: '/missions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MascotRoomRoute = MascotRoomRouteImport.update({
+  id: '/mascot-room',
+  path: '/mascot-room',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupChallengesRoute = GroupChallengesRouteImport.update({
+  id: '/group-challenges',
+  path: '/group-challenges',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FutureYouRoute = FutureYouRouteImport.update({
+  id: '/future-you',
+  path: '/future-you',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmergencyRoute = EmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebtRadarRoute = DebtRadarRouteImport.update({
+  id: '/debt-radar',
+  path: '/debt-radar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoachRoute = CoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BnplRoute = BnplRouteImport.update({
+  id: '/bnpl',
+  path: '/bnpl',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutoSaveRoute = AutoSaveRouteImport.update({
+  id: '/auto-save',
+  path: '/auto-save',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +103,228 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auto-save': typeof AutoSaveRoute
+  '/bnpl': typeof BnplRoute
+  '/coach': typeof CoachRoute
+  '/debt-radar': typeof DebtRadarRoute
+  '/discover': typeof DiscoverRoute
+  '/emergency': typeof EmergencyRoute
+  '/future-you': typeof FutureYouRoute
+  '/group-challenges': typeof GroupChallengesRoute
+  '/mascot-room': typeof MascotRoomRoute
+  '/me': typeof MeRoute
+  '/missions': typeof MissionsRoute
+  '/personality': typeof PersonalityRoute
+  '/spending-warnings': typeof SpendingWarningsRoute
+  '/weekly-report': typeof WeeklyReportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auto-save': typeof AutoSaveRoute
+  '/bnpl': typeof BnplRoute
+  '/coach': typeof CoachRoute
+  '/debt-radar': typeof DebtRadarRoute
+  '/discover': typeof DiscoverRoute
+  '/emergency': typeof EmergencyRoute
+  '/future-you': typeof FutureYouRoute
+  '/group-challenges': typeof GroupChallengesRoute
+  '/mascot-room': typeof MascotRoomRoute
+  '/me': typeof MeRoute
+  '/missions': typeof MissionsRoute
+  '/personality': typeof PersonalityRoute
+  '/spending-warnings': typeof SpendingWarningsRoute
+  '/weekly-report': typeof WeeklyReportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auto-save': typeof AutoSaveRoute
+  '/bnpl': typeof BnplRoute
+  '/coach': typeof CoachRoute
+  '/debt-radar': typeof DebtRadarRoute
+  '/discover': typeof DiscoverRoute
+  '/emergency': typeof EmergencyRoute
+  '/future-you': typeof FutureYouRoute
+  '/group-challenges': typeof GroupChallengesRoute
+  '/mascot-room': typeof MascotRoomRoute
+  '/me': typeof MeRoute
+  '/missions': typeof MissionsRoute
+  '/personality': typeof PersonalityRoute
+  '/spending-warnings': typeof SpendingWarningsRoute
+  '/weekly-report': typeof WeeklyReportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auto-save'
+    | '/bnpl'
+    | '/coach'
+    | '/debt-radar'
+    | '/discover'
+    | '/emergency'
+    | '/future-you'
+    | '/group-challenges'
+    | '/mascot-room'
+    | '/me'
+    | '/missions'
+    | '/personality'
+    | '/spending-warnings'
+    | '/weekly-report'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auto-save'
+    | '/bnpl'
+    | '/coach'
+    | '/debt-radar'
+    | '/discover'
+    | '/emergency'
+    | '/future-you'
+    | '/group-challenges'
+    | '/mascot-room'
+    | '/me'
+    | '/missions'
+    | '/personality'
+    | '/spending-warnings'
+    | '/weekly-report'
+  id:
+    | '__root__'
+    | '/'
+    | '/auto-save'
+    | '/bnpl'
+    | '/coach'
+    | '/debt-radar'
+    | '/discover'
+    | '/emergency'
+    | '/future-you'
+    | '/group-challenges'
+    | '/mascot-room'
+    | '/me'
+    | '/missions'
+    | '/personality'
+    | '/spending-warnings'
+    | '/weekly-report'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AutoSaveRoute: typeof AutoSaveRoute
+  BnplRoute: typeof BnplRoute
+  CoachRoute: typeof CoachRoute
+  DebtRadarRoute: typeof DebtRadarRoute
+  DiscoverRoute: typeof DiscoverRoute
+  EmergencyRoute: typeof EmergencyRoute
+  FutureYouRoute: typeof FutureYouRoute
+  GroupChallengesRoute: typeof GroupChallengesRoute
+  MascotRoomRoute: typeof MascotRoomRoute
+  MeRoute: typeof MeRoute
+  MissionsRoute: typeof MissionsRoute
+  PersonalityRoute: typeof PersonalityRoute
+  SpendingWarningsRoute: typeof SpendingWarningsRoute
+  WeeklyReportRoute: typeof WeeklyReportRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/weekly-report': {
+      id: '/weekly-report'
+      path: '/weekly-report'
+      fullPath: '/weekly-report'
+      preLoaderRoute: typeof WeeklyReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spending-warnings': {
+      id: '/spending-warnings'
+      path: '/spending-warnings'
+      fullPath: '/spending-warnings'
+      preLoaderRoute: typeof SpendingWarningsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/personality': {
+      id: '/personality'
+      path: '/personality'
+      fullPath: '/personality'
+      preLoaderRoute: typeof PersonalityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/missions': {
+      id: '/missions'
+      path: '/missions'
+      fullPath: '/missions'
+      preLoaderRoute: typeof MissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mascot-room': {
+      id: '/mascot-room'
+      path: '/mascot-room'
+      fullPath: '/mascot-room'
+      preLoaderRoute: typeof MascotRoomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/group-challenges': {
+      id: '/group-challenges'
+      path: '/group-challenges'
+      fullPath: '/group-challenges'
+      preLoaderRoute: typeof GroupChallengesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/future-you': {
+      id: '/future-you'
+      path: '/future-you'
+      fullPath: '/future-you'
+      preLoaderRoute: typeof FutureYouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emergency': {
+      id: '/emergency'
+      path: '/emergency'
+      fullPath: '/emergency'
+      preLoaderRoute: typeof EmergencyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debt-radar': {
+      id: '/debt-radar'
+      path: '/debt-radar'
+      fullPath: '/debt-radar'
+      preLoaderRoute: typeof DebtRadarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coach': {
+      id: '/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof CoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bnpl': {
+      id: '/bnpl'
+      path: '/bnpl'
+      fullPath: '/bnpl'
+      preLoaderRoute: typeof BnplRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auto-save': {
+      id: '/auto-save'
+      path: '/auto-save'
+      fullPath: '/auto-save'
+      preLoaderRoute: typeof AutoSaveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +337,20 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AutoSaveRoute: AutoSaveRoute,
+  BnplRoute: BnplRoute,
+  CoachRoute: CoachRoute,
+  DebtRadarRoute: DebtRadarRoute,
+  DiscoverRoute: DiscoverRoute,
+  EmergencyRoute: EmergencyRoute,
+  FutureYouRoute: FutureYouRoute,
+  GroupChallengesRoute: GroupChallengesRoute,
+  MascotRoomRoute: MascotRoomRoute,
+  MeRoute: MeRoute,
+  MissionsRoute: MissionsRoute,
+  PersonalityRoute: PersonalityRoute,
+  SpendingWarningsRoute: SpendingWarningsRoute,
+  WeeklyReportRoute: WeeklyReportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link key={to} to={to} className="-mt-8 relative">
                     <motion.div
                       whileTap={{ scale: 0.9 }}
-                      className="h-16 w-16 rounded-full bg-primary-gradient grid place-items-center shadow-glow ring-4 ring-background"
+                      className="h-16 w-16 rounded-full bg-primary-gradient grid place-items-center shadow-glow ring-4 ring-[oklch(0.16_0.05_295)]"
                     >
                       <Icon className="h-7 w-7 text-primary-foreground" />
                     </motion.div>

@@ -9,8 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MissionsRouteImport } from './routes/missions'
+import { Route as MeRouteImport } from './routes/me'
+import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as CoachRouteImport } from './routes/coach'
 import { Route as IndexRouteImport } from './routes/index'
 
+const MissionsRoute = MissionsRouteImport.update({
+  id: '/missions',
+  path: '/missions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoachRoute = CoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +43,72 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/coach': typeof CoachRoute
+  '/discover': typeof DiscoverRoute
+  '/me': typeof MeRoute
+  '/missions': typeof MissionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/coach': typeof CoachRoute
+  '/discover': typeof DiscoverRoute
+  '/me': typeof MeRoute
+  '/missions': typeof MissionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/coach': typeof CoachRoute
+  '/discover': typeof DiscoverRoute
+  '/me': typeof MeRoute
+  '/missions': typeof MissionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/coach' | '/discover' | '/me' | '/missions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/coach' | '/discover' | '/me' | '/missions'
+  id: '__root__' | '/' | '/coach' | '/discover' | '/me' | '/missions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CoachRoute: typeof CoachRoute
+  DiscoverRoute: typeof DiscoverRoute
+  MeRoute: typeof MeRoute
+  MissionsRoute: typeof MissionsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/missions': {
+      id: '/missions'
+      path: '/missions'
+      fullPath: '/missions'
+      preLoaderRoute: typeof MissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coach': {
+      id: '/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof CoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +121,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CoachRoute: CoachRoute,
+  DiscoverRoute: DiscoverRoute,
+  MeRoute: MeRoute,
+  MissionsRoute: MissionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -14,7 +14,40 @@ export const user = {
   streak: 12,
   bnplActive: 2,
   bnplTotal: 340,
+  ghostShield: { level: 1, protected: 185, shieldPercentage: 10 },
+  safeToSpend: 42,
 };
+
+export const ghostShield = {
+  vault: 185,
+  target: 300,
+  levels: [
+    { level: 1, percentage: 10, name: "Basic Protection", description: "10% of salary auto-protected" },
+    { level: 2, percentage: 20, name: "Warded", description: "20% of salary auto-protected" },
+    { level: 3, percentage: 30, name: "Fully Sealed", description: "30%+ of salary auto-protected" },
+  ],
+  nextBillDate: "May 28, 2026",
+  protectedBills: [
+    { name: "Internet Bill", amount: 89, dueDate: "May 25", protected: true },
+    { name: "Netflix Sub", amount: 23, dueDate: "May 20", protected: true },
+    { name: "Phone Bill", amount: 45, dueDate: "May 28", protected: true },
+  ],
+};
+
+export const buddyFeatures = [
+  { id: 1, title: "Debt Risk Radar", desc: "30-day risk prediction", icon: "🔮", color: "destructive" },
+  { id: 2, title: "Smart Auto-Save", desc: "Automated savings plan", icon: "💰", color: "success" },
+  { id: 3, title: "Pre-Spending Warnings", desc: "Real-time purchase alerts", icon: "⚠️", color: "warning" },
+  { id: 4, title: "Ghost Shield Vault", desc: "Protected emergency fund", icon: "🛡️", color: "primary" },
+  { id: 5, title: "Ghost Prevention", desc: "Bill protection 48h before", icon: "👻", color: "secondary" },
+  { id: 6, title: "Weekly AI Report", desc: "Personalized insights", icon: "📊", color: "primary" },
+  { id: 7, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success" },
+  { id: 8, title: "Safe-to-Spend Limit", desc: "Daily spending guide", icon: "💳", color: "warning" },
+  { id: 9, title: "Salary Triggered", desc: "Auto-actions on payday", icon: "💸", color: "primary" },
+  { id: 10, title: "Predictive Prevention", desc: "Prevent overspending risks", icon: "🎯", color: "warning" },
+  { id: 11, title: "Goal Tracking", desc: "Monitor your targets", icon: "🎪", color: "primary" },
+  { id: 12, title: "Buddy Room", desc: "Hamster companion space", icon: "🏠", color: "secondary" },
+];
 
 export const spendingByCategory = [
   { name: "Food", value: 480, color: "oklch(0.7 0.18 320)" },

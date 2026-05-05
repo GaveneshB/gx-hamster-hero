@@ -1,14 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Compass, Target, User, Sparkles } from "lucide-react";
+import { Home, User, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 type NavItem = { to: string; label: string; Icon: typeof Home; center?: boolean };
 const items: NavItem[] = [
   { to: "/", label: "Home", Icon: Home },
-  { to: "/discover", label: "Discover", Icon: Compass },
   { to: "/coach", label: "Buddy", Icon: Sparkles, center: true },
-  { to: "/missions", label: "Missions", Icon: Target },
-  { to: "/me", label: "Me", Icon: User },
+  { to: "/me", label: "Profile", Icon: User },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {

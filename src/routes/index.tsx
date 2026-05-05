@@ -4,6 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { user, missions, transactions } from "@/lib/data";
 import { Card } from "@/components/ui/card";
+import { calculateSpendingRisk, getHamsterMood } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import {
   Shield, TrendingUp, AlertTriangle, PiggyBank, Sparkles, Mic,
@@ -39,7 +40,9 @@ const quickActions = [
 
 function Home() {
   const buf = user.emergencyBuffer;
-  const safeToSpend = 42;
+  const safeToSpend = user.safeToSpend;
+  const riskScore = calculateSpendingRisk(user);
+  const hamsterMood = getHamsterMood(riskScore);
   return (
     <AppShell>
       {/* HERO — GXBank style */}
@@ -77,7 +80,7 @@ function Home() {
           <div className="grid grid-cols-3 gap-2">
             {[
               { Icon: Plus, label: "Add Money", to: "/auto-save" },
-              { Icon: ScanLine, label: "Scan QR", to: "/discover" },
+              { Icon: ScanLine, label: "Scan QR", to: "/" },
               { Icon: Send, label: "Send Money", to: "/coach" },
             ].map(({ Icon, label, to }) => (
               <Link key={label} to={to} className="flex flex-col items-center gap-2">
@@ -97,7 +100,7 @@ function Home() {
           <motion.div whileTap={{ scale: 0.98 }} className="rounded-3xl glass-strong p-3 flex items-center gap-3 shadow-card">
             <div className="relative">
               <span aria-hidden className="absolute inset-0 rounded-full bg-primary/40 animate-pulse-ring" />
-              <Hamster mood="happy" size={56} float={false} />
+              <Hamster mood={hamsterMood} size={56} float={false} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Buddy whispers</p>

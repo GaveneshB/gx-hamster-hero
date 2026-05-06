@@ -1,3 +1,18 @@
+export const transactions = [
+  { id: 1, name: "Shopee BNPL", amount: -89, category: "Shopping", risk: "high", time: "2h ago" },
+  { id: 2, name: "GrabFood", amount: -24.5, category: "Food", risk: "med", time: "5h ago" },
+  { id: 3, name: "Touch n Go", amount: -50, category: "Transport", risk: "low", time: "1d ago" },
+  { id: 4, name: "Auto-Save", amount: 3, category: "Save", risk: "save", time: "1d ago" },
+  { id: 5, name: "Spotify", amount: -16.9, category: "Subs", risk: "med", time: "2d ago" },
+  { id: 6, name: "Salary", amount: 3200, category: "Income", risk: "save", time: "5d ago" },
+  { id: 7, name: "Auto-Save", amount: 1.5, category: "Save", risk: "save", time: "3d ago" },
+  { id: 8, name: "Auto-Save", amount: 0.8, category: "Save", risk: "save", time: "4d ago" },
+];
+
+const totalRoundUps = transactions
+  .filter(t => t.category === "Save")
+  .reduce((acc, t) => acc + t.amount, 0);
+
 export const user = {
   name: "Ahmad Rizqi",
   firstName: "Ahmad",
@@ -9,7 +24,7 @@ export const user = {
   level: 3,
   memberSince: "January 2026",
   totalSavings: 555,
-  emergencyBuffer: { current: 145, target: 300 },
+  emergencyBuffer: { current: 145 + totalRoundUps, target: 300 },
   activeMissions: 3,
   streak: 12,
   bnplActive: 2,
@@ -81,15 +96,6 @@ export const badges = [
   { id: 4, name: "Budget Boss", emoji: "👑", earned: false },
   { id: 5, name: "Emergency Hero", emoji: "🦸", earned: false },
   { id: 6, name: "Money Guardian", emoji: "🧙", earned: false },
-];
-
-export const transactions = [
-  { id: 1, name: "Shopee BNPL", amount: -89, category: "Shopping", risk: "high", time: "2h ago" },
-  { id: 2, name: "GrabFood", amount: -24.5, category: "Food", risk: "med", time: "5h ago" },
-  { id: 3, name: "Touch n Go", amount: -50, category: "Transport", risk: "low", time: "1d ago" },
-  { id: 4, name: "Auto-Save", amount: 3, category: "Save", risk: "save", time: "1d ago" },
-  { id: 5, name: "Spotify", amount: -16.9, category: "Subs", risk: "med", time: "2d ago" },
-  { id: 6, name: "Salary", amount: 3200, category: "Income", risk: "save", time: "5d ago" },
 ];
 
 export const nav = [

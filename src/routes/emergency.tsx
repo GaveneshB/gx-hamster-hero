@@ -20,16 +20,16 @@ function Emergency() {
         <Card className="p-6 rounded-3xl border-0 bg-mint-gradient shadow-card text-center">
           <Hamster mood="happy" size={120} className="mx-auto" />
           <p className="text-xs uppercase tracking-widest opacity-80 mt-2">Buffer</p>
-          <p className="text-4xl font-extrabold">RM {current} / {target}</p>
+          <p className="text-4xl font-extrabold">RM {current.toFixed(2)} / {target}</p>
           <Progress value={pct} className="h-3 mt-4" />
-          <p className="text-xs mt-2 opacity-80">{Math.round(pct)}% of target · ~52 days to go</p>
+          <p className="text-xs mt-2 opacity-80">{Math.round(pct)}% of target · Growing with your spending</p>
         </Card>
       </section>
 
       <section className="px-5 mt-6 space-y-3">
         <Card className="p-4 rounded-2xl border-0 shadow-card">
-          <p className="font-bold text-sm">Daily auto-stash</p>
-          <p className="text-xs text-muted-foreground mt-1">RM3 every morning, paused if balance &lt; RM500.</p>
+          <p className="font-bold text-sm">Smart round-ups</p>
+          <p className="text-xs text-muted-foreground mt-1">Buddy auto-saves your spare cents from every purchase into this buffer.</p>
         </Card>
         <Card className="p-4 rounded-2xl border-0 shadow-card">
           <p className="font-bold text-sm">Boost goal</p>

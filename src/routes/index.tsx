@@ -132,7 +132,7 @@ function Home() {
               <div aria-hidden className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-mint/30 blur-2xl" />
               <div className="relative">
                 <p className="text-sm font-bold">Smart Auto-Save</p>
-                <p className="text-[11px] text-muted-foreground mt-1">Earn 2.50% p.a.<br/>Auto-stash daily</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Earn 2.50% p.a.<br/>Auto-save round-ups</p>
               </div>
               <span className="relative inline-flex items-center justify-center px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold w-fit">Activate</span>
             </Card>
@@ -155,7 +155,7 @@ function Home() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold">Emergency Buffer</p>
-              <p className="text-[11px] text-muted-foreground">RM{buf.current} of RM{buf.target} — Buddy stashing RM3/day</p>
+              <p className="text-[11px] text-muted-foreground">RM{buf.current.toFixed(2)} of RM{buf.target} — Buddy stashing round-ups</p>
               <Progress value={(buf.current / buf.target) * 100} className="h-1.5 mt-2" />
               <Link to="/emergency" className="inline-flex mt-3 px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold">Top up now</Link>
             </div>

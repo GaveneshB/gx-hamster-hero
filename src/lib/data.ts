@@ -38,9 +38,8 @@ export const buddyFeatures = [
   { id: 1, title: "Debt Risk Radar", desc: "30-day risk prediction", icon: "🔮", color: "destructive", route: "/debt-radar" },
   { id: 2, title: "Smart Auto-Save", desc: "Automated savings plan", icon: "💰", color: "success", route: "/auto-save" },
   { id: 3, title: "Salary Shield", desc: "Protection for your salary", icon: "🛡️", color: "primary", route: "/emergency" },
-  { id: 4, title: "Weekly AI Report", desc: "Personalized insights", icon: "📊", color: "primary", route: "/weekly-report" },
-  { id: 5, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
-  { id: 6, title: "Group Challenges", desc: "Leaderboard & competitions", icon: "🏆", color: "primary", route: "/group-challenges" },
+  { id: 4, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
+  { id: 5, title: "Group Challenges", desc: "Leaderboard & competitions", icon: "🏆", color: "primary", route: "/group-challenges" },
 ];
 export const spendingByCategory = [
   { name: "Food", value: 480, color: "oklch(0.7 0.18 320)" },

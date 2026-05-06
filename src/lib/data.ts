@@ -43,7 +43,7 @@ export const buddyFeatures = [
   { id: 6, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
   { id: 7, title: "Safe-to-Spend Limit", desc: "Daily spending guide", icon: "💳", color: "warning", route: "/spending-warnings" },
   { id: 8, title: "Salary Triggered", desc: "Auto-actions on payday", icon: "💸", color: "primary", route: "/auto-save" },
-  { id: 9, title: "RizQ Score", desc: "Prevent overspending risks", icon: "RizQ Score", color: "warning", route: "/debt-radar" },
+  { id: 9, title: "Group Challenges", desc: "Leaderboard & competitions", icon: "🏆", color: "primary", route: "/group-challenges" },
   { id: 10, title: "Buddy Room", desc: "Hamster companion space", icon: "🏠", color: "secondary", route: "/mascot-room" },
 ];
 

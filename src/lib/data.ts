@@ -4,7 +4,7 @@ export const user = {
   balance: 2980.5,
   income: 3200,
   payday: 28,
-  resilienceScore: 81,
+  resilienceScore: 70,
   tier: "Budget Builder",
   level: 3,
   memberSince: "January 2026",
@@ -37,16 +37,11 @@ export const ghostShield = {
 export const buddyFeatures = [
   { id: 1, title: "Debt Risk Radar", desc: "30-day risk prediction", icon: "🔮", color: "destructive", route: "/debt-radar" },
   { id: 2, title: "Smart Auto-Save", desc: "Automated savings plan", icon: "💰", color: "success", route: "/auto-save" },
-  { id: 3, title: "Pre-Spending Warnings", desc: "Real-time purchase alerts", icon: "⚠️", color: "warning", route: "/spending-warnings" },
-  { id: 4, title: "Ghost Shield Vault", desc: "Protected emergency fund", icon: "🛡️", color: "primary", route: "/emergency" },
-  { id: 5, title: "Weekly AI Report", desc: "Personalized insights", icon: "📊", color: "primary", route: "/weekly-report" },
-  { id: 6, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
-  { id: 7, title: "Safe-to-Spend Limit", desc: "Daily spending guide", icon: "💳", color: "warning", route: "/spending-warnings" },
-  { id: 8, title: "Salary Triggered", desc: "Auto-actions on payday", icon: "💸", color: "primary", route: "/auto-save" },
-  { id: 9, title: "Group Challenges", desc: "Leaderboard & competitions", icon: "🏆", color: "primary", route: "/group-challenges" },
-  { id: 10, title: "Buddy Room", desc: "Hamster companion space", icon: "🏠", color: "secondary", route: "/mascot-room" },
+  { id: 3, title: "Salary Shield", desc: "Protection for your salary", icon: "🛡️", color: "primary", route: "/emergency" },
+  { id: 4, title: "Weekly AI Report", desc: "Personalized insights", icon: "📊", color: "primary", route: "/weekly-report" },
+  { id: 5, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
+  { id: 6, title: "Group Challenges", desc: "Leaderboard & competitions", icon: "🏆", color: "primary", route: "/group-challenges" },
 ];
-
 export const spendingByCategory = [
   { name: "Food", value: 480, color: "oklch(0.7 0.18 320)" },
   { name: "Transport", value: 220, color: "oklch(0.55 0.22 295)" },

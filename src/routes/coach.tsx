@@ -51,7 +51,7 @@ function Coach() {
   const [listening, setListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const riskScore = calculateSpendingRisk(user);
-  const hamsterMood = getHamsterMood(riskScore);
+  const hamsterMood = getHamsterMood(user.resilienceScore);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -156,7 +156,9 @@ function Coach() {
           {buddyFeatures.map(feature => (
             <Link key={feature.id} to={feature.route as any} className="group text-left">
               <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col gap-3 transition-all hover:shadow-glow group-active:scale-95">
-                <div className="text-3xl">{feature.icon}</div>
+                <div className={`${feature.icon.length > 2 ? "text-[11px] font-bold text-primary bg-primary/10 w-fit px-2.5 py-1 rounded-full border border-primary/20" : "text-3xl"}`}>
+                  {feature.icon}
+                </div>
                 <div className="flex-1">
                   <p className="text-sm font-bold leading-tight">{feature.title}</p>
                   <p className="text-[10px] text-muted-foreground mt-1">{feature.desc}</p>

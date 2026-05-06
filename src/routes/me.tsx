@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { user, badges } from "@/lib/data";
 import { Settings, Bell, Lock, LogOut, HelpCircle, Shield, TrendingUp, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { getHamsterMood } from "@/lib/utils";
 
 export const Route = createFileRoute("/me")({
   head: () => ({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/me")({
 });
 
 function Me() {
+  const hamsterMood = getHamsterMood(user.resilienceScore);
   return (
     <AppShell>
       <PageHeader title="Profile" back={false} />
@@ -28,13 +30,12 @@ function Me() {
           <div aria-hidden className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_top,white,transparent_60%)]" />
           <div className="relative flex items-end gap-4">
             <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.2, repeat: Infinity }}>
-              <Hamster mood="happy" size={100} float={false} />
+              <Hamster mood={hamsterMood} size={100} float={false} />
             </motion.div>
             <div className="flex-1">
               <h2 className="text-xl font-extrabold">{user.name}</h2>
               <p className="text-xs opacity-80 mt-1">{user.tier} · Level {user.level} · {user.memberSince}</p>
               <div className="mt-2 flex items-center gap-2">
-                <span className="px-2 py-1 rounded-full bg-mint text-accent-foreground text-xs font-bold">🎯 {user.resilienceScore}</span>
                 <span className="px-2 py-1 rounded-full bg-white/20 text-xs font-bold">🔥 {user.streak}d</span>
               </div>
             </div>
@@ -45,7 +46,7 @@ function Me() {
       {/* Resilience Score Section */}
       <section className="px-5 mt-6">
         <h3 className="text-base font-bold mb-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-primary" /> GX Resilience Score
+          <TrendingUp className="h-4 w-4 text-primary" /> GX Score
         </h3>
         <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card">
           <div className="flex items-end justify-between mb-3">

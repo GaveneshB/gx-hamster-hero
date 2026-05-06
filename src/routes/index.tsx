@@ -42,7 +42,7 @@ function Home() {
   const buf = user.emergencyBuffer;
   const safeToSpend = user.safeToSpend;
   const riskScore = calculateSpendingRisk(user);
-  const hamsterMood = getHamsterMood(riskScore);
+  const hamsterMood = getHamsterMood(user.resilienceScore);
   return (
     <AppShell>
       {/* HERO — GXBank style */}

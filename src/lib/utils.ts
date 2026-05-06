@@ -37,9 +37,8 @@ export function calculateSpendingRisk(user: {
   return Math.round(Math.min(100, riskScore));
 }
 
-export function getHamsterMood(riskScore: number): Mood {
-  if (riskScore >= 60) return "worried";
-  if (riskScore <= 25) return "happy";
-  // Medium risk - mix happy and worried
-  return Math.random() > 0.5 ? "happy" : "worried";
+export function getHamsterMood(gxScore: number): Mood {
+  if (gxScore >= 70) return "happy";
+  if (gxScore >= 40) return "sleepy";
+  return "worried";
 }

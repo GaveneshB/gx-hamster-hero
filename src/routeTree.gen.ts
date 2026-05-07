@@ -21,6 +21,7 @@ import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as DebtRadarRouteImport } from './routes/debt-radar'
 import { Route as CoachRouteImport } from './routes/coach'
+import { Route as BuddyShieldVaultRouteImport } from './routes/buddy-shield-vault'
 import { Route as BnplRouteImport } from './routes/bnpl'
 import { Route as AutoSaveRouteImport } from './routes/auto-save'
 import { Route as IndexRouteImport } from './routes/index'
@@ -85,6 +86,11 @@ const CoachRoute = CoachRouteImport.update({
   path: '/coach',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuddyShieldVaultRoute = BuddyShieldVaultRouteImport.update({
+  id: '/buddy-shield-vault',
+  path: '/buddy-shield-vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BnplRoute = BnplRouteImport.update({
   id: '/bnpl',
   path: '/bnpl',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auto-save': typeof AutoSaveRoute
   '/bnpl': typeof BnplRoute
+  '/buddy-shield-vault': typeof BuddyShieldVaultRoute
   '/coach': typeof CoachRoute
   '/debt-radar': typeof DebtRadarRoute
   '/discover': typeof DiscoverRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auto-save': typeof AutoSaveRoute
   '/bnpl': typeof BnplRoute
+  '/buddy-shield-vault': typeof BuddyShieldVaultRoute
   '/coach': typeof CoachRoute
   '/debt-radar': typeof DebtRadarRoute
   '/discover': typeof DiscoverRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auto-save': typeof AutoSaveRoute
   '/bnpl': typeof BnplRoute
+  '/buddy-shield-vault': typeof BuddyShieldVaultRoute
   '/coach': typeof CoachRoute
   '/debt-radar': typeof DebtRadarRoute
   '/discover': typeof DiscoverRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auto-save'
     | '/bnpl'
+    | '/buddy-shield-vault'
     | '/coach'
     | '/debt-radar'
     | '/discover'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auto-save'
     | '/bnpl'
+    | '/buddy-shield-vault'
     | '/coach'
     | '/debt-radar'
     | '/discover'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auto-save'
     | '/bnpl'
+    | '/buddy-shield-vault'
     | '/coach'
     | '/debt-radar'
     | '/discover'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AutoSaveRoute: typeof AutoSaveRoute
   BnplRoute: typeof BnplRoute
+  BuddyShieldVaultRoute: typeof BuddyShieldVaultRoute
   CoachRoute: typeof CoachRoute
   DebtRadarRoute: typeof DebtRadarRoute
   DiscoverRoute: typeof DiscoverRoute
@@ -311,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/buddy-shield-vault': {
+      id: '/buddy-shield-vault'
+      path: '/buddy-shield-vault'
+      fullPath: '/buddy-shield-vault'
+      preLoaderRoute: typeof BuddyShieldVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bnpl': {
       id: '/bnpl'
       path: '/bnpl'
@@ -339,6 +359,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AutoSaveRoute: AutoSaveRoute,
   BnplRoute: BnplRoute,
+  BuddyShieldVaultRoute: BuddyShieldVaultRoute,
   CoachRoute: CoachRoute,
   DebtRadarRoute: DebtRadarRoute,
   DiscoverRoute: DiscoverRoute,

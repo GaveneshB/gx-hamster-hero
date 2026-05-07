@@ -51,6 +51,10 @@ export const Route = createRootRoute({
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
+  if (import.meta.env.VITE_SPA) {
+    return children;
+  }
+
   return (
     <html lang="en">
       <head>

@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { Card } from "@/components/ui/card";
-import { Mic, Send, ChevronRight } from "lucide-react";
+import { Mic, Send, ChevronRight, Sparkles } from "lucide-react";
 import { user, buddyFeatures } from "@/lib/data";
-import { calculateSpendingRisk, getHamsterMood } from "@/lib/utils";
+import { getHamsterMood } from "@/lib/utils";
 import { WeeklyReportContent } from "@/components/WeeklyReportContent";
 
 export const Route = createFileRoute("/coach")({
@@ -52,7 +52,6 @@ function Coach() {
   const [listening, setListening] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const riskScore = calculateSpendingRisk(user);
   const hamsterMood = getHamsterMood(user.resilienceScore);
 
   useEffect(() => {
@@ -66,150 +65,174 @@ function Coach() {
     setTimeout(() => setMsgs(m => [...m, { role: "buddy", text: reply(text) }]), 600);
   };
 
-  const dragX = useMotionValue(0);
-
-  const onDragEnd = (_: any, info: any) => {
-    if (info.offset.x < -100 && activeIndex === 0) {
-      setActiveIndex(1);
-    } else if (info.offset.x > 100 && activeIndex === 1) {
-      setActiveIndex(0);
-    }
-  };
-
   return (
     <AppShell>
-      <div className="flex flex-col">
+      <div className="flex flex-col min-h-screen">
         {/* Header */}
-        <div className="px-5 pt-8 pb-1 shrink-0">
-          <PageHeader title="GX Buddy" subtitle={activeIndex === 0 ? "Your pocket money coach" : "Weekly recap from Buddy"} back={false} />
+        <div className="px-6 pt-10 pb-2 shrink-0">
+          <PageHeader title="GX Buddy" subtitle={activeIndex === 0 ? "AI Money Coach" : "Weekly Recap"} back={false} />
         </div>
 
-        {/* Carousel Area - Fixed height with internal scrolling */}
-        <div className="h-[480px] relative overflow-hidden shrink-0 group">
+        {/* Carousel Area - Pro UI Unified */}
+        <div className="h-[620px] relative shrink-0 overflow-hidden group">
           <motion.div
             drag="x"
+            dragDirectionLock
             dragConstraints={{ left: 0, right: 0 }}
-            style={{ x: dragX }}
-            onDragEnd={onDragEnd}
+            dragElastic={0.05}
+            onDragEnd={(_: any, info: any) => {
+              const threshold = 50;
+              const velocity = info.velocity.x;
+              if (info.offset.x < -threshold || velocity < -400) {
+                if (activeIndex === 0) setActiveIndex(1);
+              } else if (info.offset.x > threshold || velocity > 400) {
+                if (activeIndex === 1) setActiveIndex(0);
+              }
+            }}
             animate={{ x: activeIndex === 0 ? "0%" : "-100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="flex w-full h-full cursor-grab active:cursor-grabbing"
+            transition={{ type: "spring", stiffness: 300, damping: 32, mass: 0.5 }}
+            className="flex w-full h-full will-change-transform"
           >
             {/* SLIDE 1: COACH */}
-            <div className="w-full shrink-0 flex flex-col px-5 overflow-hidden">
-              <div className="flex-1 flex flex-col min-h-0">
-                {/* Hamster Mascot */}
-                <div className="flex flex-col items-center py-2 shrink-0">
-                  <motion.div
-                    animate={listening ? { scale: [1, 1.06, 1] } : {}}
-                    transition={{ duration: 0.8, repeat: Infinity }}
-                  >
-                    <Hamster mood={listening ? "happy" : hamsterMood} size={130} />
-                  </motion.div>
-                  <div className="flex gap-1.5 mt-1">
-                    {[0, 1, 2].map(i => (
-                      <span key={i} className={`h-1.5 w-1.5 rounded-full bg-primary ${listening ? "animate-pulse" : "opacity-30"}`} style={{ animationDelay: `${i * 150}ms` }} />
-                    ))}
+            <div className="w-full h-full shrink-0 flex flex-col px-6 py-2">
+              <div className="flex-1 flex flex-col min-h-0 glass-premium rounded-[3rem] p-6 shadow-premium ring-1 ring-white/10 relative overflow-hidden">
+                <div aria-hidden className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]" />
+                
+                {/* Hamster Area */}
+                <div className="flex flex-col items-center py-6 shrink-0 relative z-10">
+                  <div className="relative">
+                    <motion.div
+                      animate={listening ? { 
+                        scale: [1, 1.1, 1],
+                        y: [0, -5, 0]
+                      } : {
+                        y: [0, -8, 0]
+                      }}
+                      transition={{ duration: listening ? 0.8 : 3, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <Hamster mood={listening ? "happy" : hamsterMood} size={150} />
+                    </motion.div>
+                    <AnimatePresence>
+                      {listening && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1.2 }}
+                          exit={{ opacity: 0, scale: 1.5 }}
+                          className="absolute inset-0 bg-primary/20 blur-[50px] rounded-full -z-10 animate-pulse"
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
 
                 {/* Chat Messages */}
-                <div ref={scrollRef} className="space-y-2 flex-1 overflow-y-auto no-scrollbar py-1">
-                  <AnimatePresence>
+                <div ref={scrollRef} className="space-y-6 flex-1 overflow-y-auto no-scrollbar py-4 scrolling-touch overscroll-contain relative z-10">
+                  <AnimatePresence mode="popLayout">
                     {msgs.map((m, i) => (
                       <motion.div
                         key={i}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
                         className={`flex ${m.role === "me" ? "justify-end" : "justify-start"}`}
                       >
-                        <Card className={`max-w-[80%] p-3 rounded-2xl border-0 shadow-card text-sm ${
-                          m.role === "me" ? "bg-primary-gradient text-primary-foreground rounded-br-sm" : "bg-card rounded-bl-sm"
+                        <div className={`max-w-[88%] px-5 py-4 rounded-[2.2rem] shadow-premium text-[15px] font-bold leading-relaxed tracking-tight relative ${
+                          m.role === "me" 
+                            ? "bg-primary-gradient text-white rounded-br-none" 
+                            : "glass-card text-white/90 rounded-bl-none border-white/5"
                         }`}>
                           {m.text}
-                        </Card>
+                        </div>
                       </motion.div>
                     ))}
                   </AnimatePresence>
                 </div>
 
-                {/* Quick Suggestions */}
-                <div className="mt-2 flex gap-2 overflow-x-auto no-scrollbar pb-1 shrink-0">
+                {/* Suggestions */}
+                <div className="mt-4 flex gap-3 overflow-x-auto no-scrollbar pb-2 shrink-0 relative z-10">
                   {suggestions.map(s => (
-                    <button key={s} onClick={() => send(s)} className="shrink-0 px-3 py-1.5 rounded-full bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors">
+                    <button 
+                      key={s} 
+                      onClick={() => send(s)} 
+                      className="shrink-0 px-5 py-3 rounded-full glass-premium text-[10px] font-black uppercase tracking-widest text-primary border border-primary/20 shadow-glow active-scale"
+                    >
                       {s}
                     </button>
                   ))}
                 </div>
 
-                {/* Chat Input Bar */}
-                <div className="mt-2 mb-6 shrink-0">
-                  <div className="glass rounded-full p-2 flex items-center gap-2 shadow-glow">
-                    <input
-                      value={input}
-                      onChange={e => setInput(e.target.value)}
-                      onKeyDown={e => e.key === "Enter" && send(input)}
-                      placeholder="Ask Buddy…"
-                      className="flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
-                    />
-                    <button
-                      onMouseDown={() => setListening(true)}
-                      onMouseUp={() => setListening(false)}
-                      onTouchStart={() => setListening(true)}
-                      onTouchEnd={() => setListening(false)}
-                      className={`h-9 w-9 rounded-full grid place-items-center transition-colors ${listening ? "bg-destructive text-destructive-foreground" : "bg-mint text-accent-foreground hover:opacity-80"}`}
-                      aria-label="hold to talk"
-                    >
-                      <Mic className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => send(input)} className="h-9 w-9 rounded-full bg-primary-gradient text-primary-foreground grid place-items-center hover:shadow-glow transition-all" aria-label="send">
-                      <Send className="h-4 w-4" />
-                    </button>
+                {/* Message Bar — Apple Intelligence Style */}
+                <div className="mt-6 shrink-0 relative z-10">
+                  <div className="glass-premium rounded-[2.5rem] p-2 flex items-center gap-2 shadow-premium ring-1 ring-white/20 bg-white/5 backdrop-blur-3xl group-focus-within:ring-primary/40 transition-all">
+                    <div className="flex-1 px-4">
+                      <input
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && send(input)}
+                        placeholder="Ask Buddy anything..."
+                        className="w-full bg-transparent py-4 text-[15px] font-bold outline-none placeholder:text-white/20 text-white tracking-tight"
+                      />
+                    </div>
+                    <div className="flex gap-2 pr-1">
+                      <button
+                        onMouseDown={() => setListening(true)}
+                        onMouseUp={() => setListening(false)}
+                        onTouchStart={() => setListening(true)}
+                        onTouchEnd={() => setListening(false)}
+                        className={`h-12 w-12 rounded-[1.5rem] grid place-items-center transition-all active-scale ${listening ? "bg-destructive text-white shadow-glow" : "bg-white/5 text-accent"}`}
+                      >
+                        <Mic className="h-6 w-6" />
+                      </button>
+                      <button onClick={() => send(input)} className="h-12 w-12 rounded-[1.5rem] bg-primary-gradient text-white grid place-items-center shadow-glow active-scale">
+                        <Send className="h-6 w-6" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* SLIDE 2: WEEKLY REPORT */}
-            <div className="w-full shrink-0 px-5 overflow-y-auto no-scrollbar pb-10 pt-2">
-              <WeeklyReportContent />
+            <div className="w-full h-full shrink-0 px-6 py-2 flex flex-col">
+              <div className="flex-1 overflow-y-auto no-scrollbar pb-10 pt-2 scrolling-touch overscroll-contain glass-premium rounded-[3rem] p-6 shadow-premium border-white/5 ring-1 ring-white/10 relative">
+                <WeeklyReportContent />
+              </div>
             </div>
           </motion.div>
 
-          {/* Pagination Dots - Stylized */}
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-30 pointer-events-none">
+          {/* Pagination — Liquid Dots */}
+          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4 z-50">
             {[0, 1].map(i => (
-              <div
-                key={i}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activeIndex === i 
-                    ? "bg-primary w-5 shadow-[0_0_8px_rgba(124,58,237,0.5)]" 
-                    : "bg-primary/20 w-1.5"
-                }`}
-              />
+              <button key={i} onClick={() => setActiveIndex(i)} className="relative h-6 w-12 flex items-center justify-center">
+                <motion.div
+                  animate={{ 
+                    width: activeIndex === i ? 40 : 10,
+                    backgroundColor: activeIndex === i ? "var(--primary)" : "rgba(255,255,255,0.1)",
+                  }}
+                  className="h-2 rounded-full shadow-glow"
+                />
+                {activeIndex === i && <motion.div layoutId="coach-dot-glow" className="absolute inset-0 bg-primary/10 blur-xl rounded-full" />}
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Buddy Tools Section - Part of regular page scroll */}
-        <section className="px-5 py-6 pb-32">
-          <div className="mb-4 pb-2 border-b border-white/10">
-            <h2 className="text-base font-bold flex items-center gap-2">
-              Buddy Tools <ChevronRight className="h-5 w-5 text-primary" />
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">Explore features</p>
+        {/* Tools Area */}
+        <section className="px-6 py-12 pb-32">
+          <div className="flex items-center justify-between px-6 mb-8">
+              <h2 className="text-[13px] font-black tracking-[0.2em] uppercase text-white/50">Buddy Ecosystem</h2>
+              <div className="h-[2px] flex-1 bg-white/5 mx-4" />
+              <Sparkles className="h-4 w-4 text-primary" />
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {buddyFeatures.map(feature => (
-              <Link key={feature.id} to={feature.route as any} className="group text-left">
-                <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col gap-3 transition-all hover:shadow-glow group-active:scale-95">
-                  <div className={`${feature.icon.length > 2 ? "text-[11px] font-bold text-primary bg-primary/10 w-fit px-2.5 py-1 rounded-full border border-primary/20" : "text-3xl"}`}>
+              <Link key={feature.id} to={feature.route as any} className="active-scale">
+                <Card className="p-6 rounded-[2.5rem] glass-premium border-white/5 shadow-premium h-full flex flex-col gap-5 hover:border-primary/20 transition-all">
+                  <div className="h-14 w-14 rounded-2xl bg-white/5 grid place-items-center text-3xl shadow-inner ring-1 ring-white/5">
                     {feature.icon}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-bold leading-tight">{feature.title}</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">{feature.desc}</p>
+                  <div>
+                    <p className="text-[16px] font-black leading-tight tracking-tight text-white">{feature.title}</p>
+                    <p className="text-[11px] font-bold text-white/30 mt-1.5 uppercase tracking-tighter leading-snug">{feature.desc}</p>
                   </div>
                 </Card>
               </Link>

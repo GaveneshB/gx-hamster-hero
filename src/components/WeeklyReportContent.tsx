@@ -1,11 +1,11 @@
-  import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Hamster } from "@/components/Hamster";
 import { spendingByCategory, weeklyTrend, user, transactions } from "@/lib/data";
 import {
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip,
   PieChart, Pie, Cell,
 } from "recharts";
-import { Download, TrendingDown, TrendingUp, Flame } from "lucide-react";
+import { Download, TrendingDown, TrendingUp, Flame, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 const weekLabel = "Apr 28 – May 4, 2026";
@@ -195,107 +195,244 @@ export function downloadReport() {
 }
 
 export function WeeklyReportContent() {
-  return (
-    <div className="space-y-5">
-      {/* Hero summary card */}
-      <section>
-        <Card className="p-5 rounded-3xl border-0 bg-primary-gradient text-primary-foreground shadow-glow flex items-center gap-3">
-          <Hamster mood="happy" size={90} float={false} />
-          <div className="flex-1">
-            <p className="font-extrabold">Solid week, {user.firstName}!</p>
-            <p className="text-xs opacity-90">Spend ↓ 12% · Saved RM{totalSave} · Streak 🔥 {user.streak}</p>
-          </div>
-        </Card>
-      </section>
+  const isMobile = !!import.meta.env.VITE_SPA;
 
-      {/* Quick stats row */}
-      <section className="grid grid-cols-3 gap-2">
-        {[
-          { label: "Spent", value: `RM${totalSpend}`, Icon: TrendingDown, cls: "text-destructive" },
-          { label: "Saved", value: `RM${totalSave}`,  Icon: TrendingUp,   cls: "text-success"     },
-          { label: "Streak", value: `🔥 ${user.streak}d`, Icon: Flame,  cls: "text-primary"      },
-        ].map(({ label, value, Icon, cls }) => (
-          <Card key={label} className="p-3 rounded-2xl border-0 shadow-card text-center">
-            <Icon className={`h-4 w-4 mx-auto mb-1 ${cls}`} />
-            <p className="text-[11px] text-muted-foreground">{label}</p>
-            <p className="text-sm font-extrabold mt-0.5">{value}</p>
+  if (isMobile) {
+    return (
+      <div className="space-y-6 pb-20">
+        {/* Hero summary card — Next-Gen style */}
+        <section>
+          <Card className="p-6 rounded-[2.5rem] border-0 bg-hero text-primary-foreground shadow-premium relative overflow-hidden group">
+            <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,white,transparent_70%)] opacity-20" />
+            <div className="relative flex items-center gap-5">
+              <div className="relative">
+                  <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full scale-150 animate-pulse" />
+                  <Hamster mood="happy" size={100} float={false} />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="h-3.5 w-3.5 text-accent animate-pulse" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Weekly Insights</p>
+                </div>
+                <h2 className="text-xl font-black tracking-tight leading-tight">Solid week, {user.firstName}!</h2>
+                <p className="text-xs font-bold text-white/60 mt-1.5 flex items-center gap-2">
+                  Spend ↓ 12% <span className="h-1 w-1 rounded-full bg-white/30" /> Saved RM{totalSave}
+                </p>
+              </div>
+            </div>
           </Card>
-        ))}
-      </section>
+        </section>
 
-      {/* Daily flow bar chart */}
-      <section>
-        <h3 className="font-bold text-sm mb-2">Daily Flow</h3>
-        <Card className="p-3 rounded-2xl border-0 shadow-card">
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={weeklyTrend}>
-              <XAxis dataKey="day" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip contentStyle={{ borderRadius: 12, border: "none" }} />
-              <Bar dataKey="spend" name="Spent"  fill="oklch(0.55 0.22 295)" radius={[8,8,0,0]} />
-              <Bar dataKey="save"  name="Saved"  fill="oklch(0.7 0.17 155)"  radius={[8,8,0,0]} />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center gap-4 mt-1">
-            {[{ color: "oklch(0.55 0.22 295)", label: "Spent" }, { color: "oklch(0.7 0.17 155)", label: "Saved" }].map(l => (
-              <span key={l.label} className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                <span className="h-2 w-2 rounded-full" style={{ background: l.color }} />
-                {l.label}
-              </span>
-            ))}
+        {/* Quick stats row */}
+        <section className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Spent", value: `RM${totalSpend}`, Icon: TrendingDown, cls: "text-destructive", bg: "bg-destructive/10" },
+            { label: "Saved", value: `RM${totalSave}`,  Icon: TrendingUp,   cls: "text-accent", bg: "bg-accent/10"     },
+            { label: "Streak", value: `${user.streak}d`, Icon: Flame,  cls: "text-primary", bg: "bg-primary/10"      },
+          ].map(({ label, value, Icon, cls, bg }) => (
+            <Card key={label} className="p-4 rounded-3xl border-white/5 glass-premium shadow-premium text-center group active-scale">
+              <div className={`h-10 w-10 ${bg} rounded-xl grid place-items-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
+                <Icon className={`h-5 w-5 ${cls}`} />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/40">{label}</p>
+              <p className="text-[15px] font-black mt-1 text-white tracking-tighter">{value}</p>
+            </Card>
+          ))}
+        </section>
+
+        {/* Daily flow bar chart */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[13px] font-black uppercase tracking-widest text-white/50 px-2">Daily Flow</h3>
           </div>
-        </Card>
-      </section>
+          <Card className="p-5 rounded-[2.5rem] border-white/5 glass-premium shadow-premium">
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={weeklyTrend}>
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "rgba(255,255,255,0.4)", fontWeight: 700 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "rgba(255,255,255,0.4)", fontWeight: 700 }} />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(20,20,25,0.95)', 
+                    borderRadius: '20px', 
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    backdropFilter: 'blur(10px)',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+                  }} 
+                />
+                <Bar dataKey="spend" name="Spent"  fill="var(--primary)" radius={[6,6,0,0]} barSize={24} />
+                <Bar dataKey="save"  name="Saved"  fill="var(--accent)"  radius={[6,6,0,0]} barSize={24} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </section>
 
-      {/* Category breakdown */}
-      <section>
-        <h3 className="font-bold text-sm mb-2">Where It Went</h3>
-        <Card className="p-3 rounded-2xl border-0 shadow-card flex items-center">
-          <ResponsiveContainer width="55%" height={170}>
-            <PieChart>
-              <Pie data={spendingByCategory} dataKey="value" innerRadius={36} outerRadius={70} paddingAngle={3}>
-                {spendingByCategory.map((c, i) => <Cell key={i} fill={c.color} />)}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-          <ul className="flex-1 space-y-1.5 text-xs">
-            {spendingByCategory.map(c => (
-              <li key={c.name} className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: c.color }} />
-                <span className="flex-1">{c.name}</span>
-                <span className="font-bold">RM{c.value}</span>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </section>
+        {/* Category breakdown */}
+        <section>
+          <h3 className="text-[13px] font-black uppercase tracking-widest text-white/50 px-2 mb-4">Where It Went</h3>
+          <Card className="p-6 rounded-[2.5rem] border-white/5 glass-premium shadow-premium flex items-center gap-6">
+            <ResponsiveContainer width="50%" height={160}>
+              <PieChart>
+                <Pie data={spendingByCategory} dataKey="value" innerRadius={45} outerRadius={70} paddingAngle={4} stroke="none">
+                  {spendingByCategory.map((c, i) => <Cell key={i} fill={c.color} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex-1 space-y-3">
+              {spendingByCategory.slice(0, 4).map(c => (
+                <div key={c.name} className="flex items-center justify-between group">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full shadow-glow shrink-0 group-hover:scale-150 transition-transform" style={{ background: c.color }} />
+                    <span className="text-[11px] font-bold text-white/70 tracking-tight">{c.name}</span>
+                  </div>
+                  <span className="text-[11px] font-black text-white">RM{c.value}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </section>
 
-      {/* Buddy takeaway */}
-      <section>
-        <Card className="p-4 rounded-2xl border-0 bg-mint shadow-card">
-          <p className="font-bold text-sm">🐹 Buddy's Takeaway</p>
-          <p className="text-xs mt-1 leading-relaxed">
-            Friday and Saturday were 50% of your spend. Try a "no-spend Saturday" next week — I'll cheer you on. You're on track to save RM500 by April! 🎉
+        {/* Buddy takeaway — Liquid glass style */}
+        <section>
+          <Card className="p-6 rounded-[2.5rem] border-white/5 glass-card shadow-premium relative overflow-hidden group">
+            <div aria-hidden className="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-accent/20 blur-3xl group-hover:bg-accent/30 transition-all" />
+            <div className="relative">
+              <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-accent mb-2">
+                <Sparkles className="h-4 w-4" /> Buddy's Takeaway
+              </p>
+              <p className="text-[14px] font-bold leading-relaxed text-white/90 italic">
+                "Friday and Saturday were 50% of your spend. Try a <span className="text-accent">no-spend Saturday</span> next week — I'll cheer you on. You're on track to save RM500 by April! 🎉"
+              </p>
+            </div>
+          </Card>
+        </section>
+
+        {/* Download E-Statement button */}
+        <section>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={downloadReport}
+            id="download-estatement-btn"
+            className="w-full flex items-center justify-center gap-3 py-5 rounded-[2rem] bg-primary-gradient text-white font-black uppercase tracking-[0.15em] text-xs shadow-glow hover:brightness-110 transition-all active-scale"
+          >
+            <Download className="h-5 w-5" />
+            Download E-Statement
+          </motion.button>
+        </section>
+      </div>
+    );
+  }
+
+  // ORIGINAL WEB UI
+  return (
+    <div className="space-y-6 pb-20">
+      {/* Summary card */}
+      <Card className="p-6 rounded-[2rem] border-0 bg-hero text-primary-foreground shadow-premium relative overflow-hidden group">
+        <div aria-hidden className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,white,transparent_60%)]" />
+        <div className="relative flex items-center gap-4">
+          <Hamster mood="happy" size={80} float={false} />
+          <div>
+            <h2 className="text-xl font-black tracking-tight">Week in Review</h2>
+            <p className="text-xs font-bold text-white/50">{weekLabel}</p>
+            <p className="text-sm font-bold mt-2 text-accent flex items-center gap-2">
+               <Sparkles className="h-4 w-4" /> Saved RM{totalSave} more!
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="p-5 rounded-[2rem] glass-premium border-white/5 shadow-premium active-scale">
+          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Total Spent</p>
+          <p className="text-2xl font-black mt-2 text-white">RM {totalSpend}</p>
+          <p className="text-[10px] font-bold text-destructive mt-2 flex items-center gap-1 uppercase tracking-tight">
+            <TrendingUp className="h-3 w-3" /> {Math.abs(spendChange)}% vs last week
           </p>
         </Card>
-      </section>
+        <Card className="p-5 rounded-[2rem] glass-premium border-white/5 shadow-premium active-scale">
+          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Total Saved</p>
+          <p className="text-2xl font-black mt-2 text-accent">RM {totalSave}</p>
+          <p className="text-[10px] font-bold text-accent mt-2 flex items-center gap-1 uppercase tracking-tight">
+            <TrendingDown className="h-3 w-3" /> Through Auto-Save
+          </p>
+        </Card>
+      </div>
 
-      {/* Download E-Statement button */}
-      <section className="pb-4">
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={downloadReport}
-          id="download-estatement-btn"
-          className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-primary-gradient text-primary-foreground font-bold shadow-glow hover:opacity-90 transition-opacity"
-        >
-          <Download className="h-5 w-5" />
-          Download E-Statement (PDF)
-        </motion.button>
-        <p className="text-center text-[10px] text-muted-foreground mt-2">
-          Professional report · {weekLabel} · Generated by GX Buddy AI
-        </p>
-      </section>
+      {/* Chart */}
+      <Card className="p-5 rounded-[2.5rem] glass-premium border-white/5 shadow-premium">
+        <h3 className="text-[11px] font-black uppercase tracking-widest text-white/40 mb-6">Daily Spending vs Saving</h3>
+        <div className="h-48 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weeklyTrend}>
+              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: "rgba(255,255,255,0.4)", fontWeight: 700}} />
+              <YAxis hide />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(20,20,25,0.95)', 
+                  borderRadius: '16px', 
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+                }}
+                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+              />
+              <Bar dataKey="spend" name="Spent" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="save" name="Saved" fill="var(--accent)" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* Category breakdown */}
+      <Card className="p-6 rounded-[2.5rem] glass-premium border-white/5 shadow-premium">
+        <h3 className="text-[11px] font-black uppercase tracking-widest text-white/40 mb-6">Spending by Category</h3>
+        <div className="flex items-center gap-6">
+          <div className="h-32 w-32 shrink-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={spendingByCategory}
+                  innerRadius={30}
+                  outerRadius={45}
+                  paddingAngle={5}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {spendingByCategory.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex-1 space-y-3">
+            {spendingByCategory.map((cat) => (
+              <div key={cat.name} className="flex items-center justify-between group">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-2 h-2 rounded-full shadow-glow" style={{ backgroundColor: cat.color }} />
+                  <span className="text-[11px] font-bold text-white/70 tracking-tight">{cat.name}</span>
+                </div>
+                <span className="text-[11px] font-black text-white">RM {cat.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Card>
+
+      {/* Action */}
+      <button 
+        onClick={downloadReport}
+        className="w-full py-5 rounded-[2rem] bg-primary-gradient text-white font-black uppercase tracking-widest text-xs shadow-glow flex items-center justify-center gap-2 active-scale"
+      >
+        <Download className="h-4 w-4" /> Download PDF Statement
+      </button>
+
+      <div className="h-8" />
     </div>
   );
 }

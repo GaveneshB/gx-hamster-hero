@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { user, transactions } from "@/lib/data";
@@ -25,11 +25,11 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const [buddySlide, setBuddySlide] = useState(0);
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
-  
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
   const buf = user.emergencyBuffer;
   const safeToSpend = user.safeToSpend;
-  const riskScore = calculateSpendingRisk(user);
   const hamsterMood = getHamsterMood(user.resilienceScore);
 
   const buddyCards = [
@@ -48,30 +48,23 @@ function Home() {
   ];
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart({
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY,
-    });
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart) return;
-
-    const endX = e.changedTouches[0].clientX;
-    const endY = e.changedTouches[0].clientY;
-
-    const deltaX = touchStart.x - endX;
-    const deltaY = Math.abs(touchStart.y - endY);
-
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const deltaX = touchStartX.current - e.changedTouches[0].clientX;
+    const deltaY = Math.abs(touchStartY.current - e.changedTouches[0].clientY);
     if (Math.abs(deltaX) > 30 && Math.abs(deltaX) > deltaY * 2) {
       if (deltaX > 0) {
-        setBuddySlide((prev: number) => (prev + 1) % buddyCards.length);
+        setBuddySlide((p) => (p + 1) % buddyCards.length);
       } else {
-        setBuddySlide((prev: number) => (prev - 1 + buddyCards.length) % buddyCards.length);
+        setBuddySlide((p) => (p - 1 + buddyCards.length) % buddyCards.length);
       }
     }
-
-    setTouchStart(null);
+    touchStartX.current = null;
+    touchStartY.current = null;
   };
 
   return (
@@ -125,21 +118,66 @@ function Home() {
         </Card>
       </section>
 
-      {/* AI WHISPER — Buddy floating card */}
+      {/* AI WHISPER — Buddy carousel with clickable dots + swipe */}
       <section className="px-5 mt-5">
-        <Link to="/coach">
-          <motion.div whileTap={{ scale: 0.98 }} className="rounded-3xl glass-strong p-3 flex items-center gap-3 shadow-card">
-            <div className="relative">
-              <span aria-hidden className="absolute inset-0 rounded-full bg-primary/40 animate-pulse-ring" />
-              <Hamster mood={hamsterMood} size={56} float={false} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Buddy whispers</p>
-              <p className="text-sm font-semibold leading-snug text-foreground">"Spend up to RM{safeToSpend} today and still hit your weekend goal 🐹"</p>
-            </div>
-            <Mic className="h-5 w-5 text-primary" />
-          </motion.div>
-        </Link>
+        {/* Slide track — pure CSS transform, GPU accelerated, no JS animation loop */}
+        <div
+          className="overflow-hidden rounded-3xl glass-strong shadow-card"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div
+            className="flex"
+            style={{
+              transform: `translateX(-${buddySlide * 100}%)`,
+              transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+              willChange: "transform",
+            }}
+          >
+            {buddyCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div key={card.to} className="min-w-full flex-shrink-0 p-1">
+                  <Link to={card.to} className="block">
+                    <div className="rounded-2xl p-3 flex items-center gap-3">
+                      <div className="relative shrink-0">
+                        <span aria-hidden className="absolute inset-0 rounded-full bg-primary/40 animate-pulse-ring" />
+                        <Hamster mood={hamsterMood} size={56} float={false} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{card.label}</p>
+                        <p className="text-sm font-semibold leading-snug text-foreground">{card.message}</p>
+                      </div>
+                      <Icon className="h-5 w-5 text-primary shrink-0" />
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Pagination dots — clickable to switch slides */}
+        <div className="flex items-center justify-center gap-2 mt-3">
+          {buddyCards.map((card, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setBuddySlide(idx)}
+              aria-label={`Go to ${card.label}`}
+              style={{
+                width: idx === buddySlide ? 28 : 10,
+                height: 10,
+                borderRadius: 999,
+                background: idx === buddySlide ? "var(--color-primary)" : "rgba(255,255,255,0.3)",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+                transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease",
+              }}
+            />
+          ))}
+        </div>
       </section>
 
       {/* Everyday account row — GXBank style */}

@@ -21,7 +21,7 @@ const sections = [
   { title: "🚑 Emergency Buffer", desc: "Build a RM300 safety net", to: "/emergency", tone: "bg-secondary" },
   { title: "📈 Weekly AI Report", desc: "Sunday night recap from Buddy", to: "/weekly-report", tone: "bg-primary/15" },
   { title: "💜 Personality Scan", desc: "Discover your money archetype", to: "/personality", tone: "bg-mint" },
-  { title: "👥 Group Challenges", desc: "Save with friends, no balance shown", to: "/group-challenges", tone: "bg-warning/25" },
+  { title: "👥 Squad Savings", desc: "Pool funds, achieve goals faster", to: "/group-challenges", tone: "bg-warning/25" },
   { title: "🏠 Mascot Room", desc: "Visit your hamster's home", to: "/mascot-room", tone: "bg-primary-gradient text-primary-foreground" },
 ];
 

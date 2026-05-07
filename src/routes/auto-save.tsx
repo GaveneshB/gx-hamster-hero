@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { AppShell } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -19,7 +19,6 @@ import {
   Sparkles,
   X,
   ThumbsUp,
-  ThumbsDown,
   Target,
   Brain,
   ShieldAlert,
@@ -30,6 +29,13 @@ import {
   Plus,
   Trash2,
   MoreHorizontal,
+  Settings,
+  ReceiptText,
+  Smartphone,
+  Music,
+  Film,
+  ListChecks,
+  ArrowLeft,
 } from "lucide-react";
 import { transactions, user } from "@/lib/data";
 
@@ -43,11 +49,12 @@ export const Route = createFileRoute("/auto-save")({
   component: AutoSave,
 });
 
-// ── types ─────────────────────────────────────────────────────────────────────
 type CollectFreq = "daily" | "weekly" | "monthly";
 type RoundTo = 0.5 | 1;
 type GoalPriority = "high" | "medium" | "low";
 type GoalIconKey = "shield" | "target" | "sparkles";
+type BillIconKey = "phone" | "music" | "film" | "receipt";
+type ActiveTab = "goals" | "bills" | "activity";
 
 interface RoundUpEntry {
   id: number;
@@ -73,6 +80,16 @@ interface SavingGoal {
   icon: GoalIconKey;
 }
 
+interface BillReserve {
+  id: number;
+  name: string;
+  amount: number;
+  saved: number;
+  dueInDays: number;
+  icon: BillIconKey;
+  enabled: boolean;
+}
+
 interface MoodSignal {
   label: string;
   message: string;
@@ -80,7 +97,6 @@ interface MoodSignal {
   severity: "gentle" | "warning" | "positive";
 }
 
-// ── localStorage helpers ──────────────────────────────────────────────────────
 function getStoredValue<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
 
@@ -102,7 +118,6 @@ function setStoredValue<T>(key: string, value: T) {
   }
 }
 
-// ── helpers ───────────────────────────────────────────────────────────────────
 function calcRoundUp(amount: number, roundTo: RoundTo): number {
   const abs = Math.abs(amount);
   const ceiled = roundTo === 0.5 ? Math.ceil(abs * 2) / 2 : Math.ceil(abs);
@@ -121,7 +136,9 @@ function getBuddySuggestion(balance: number, income: number): BuddySuggestion {
       hamsterMood: "happy",
       tag: "Aggressive Saver",
     };
-  } else if (ratio >= 0.5) {
+  }
+
+  if (ratio >= 0.5) {
     return {
       roundTo: 1,
       freq: "weekly",
@@ -129,7 +146,9 @@ function getBuddySuggestion(balance: number, income: number): BuddySuggestion {
       hamsterMood: "happy",
       tag: "Balanced",
     };
-  } else if (ratio >= 0.3) {
+  }
+
+  if (ratio >= 0.3) {
     return {
       roundTo: 0.5,
       freq: "weekly",
@@ -137,15 +156,15 @@ function getBuddySuggestion(balance: number, income: number): BuddySuggestion {
       hamsterMood: "sleepy",
       tag: "Gentle Save",
     };
-  } else {
-    return {
-      roundTo: 0.5,
-      freq: "monthly",
-      reason: `Balance is on the lower side (RM${balance.toLocaleString()}). Buddy suggests collecting just 50 sen round-ups monthly so your cash flow stays comfortable.`,
-      hamsterMood: "worried",
-      tag: "Conservative",
-    };
   }
+
+  return {
+    roundTo: 0.5,
+    freq: "monthly",
+    reason: `Balance is on the lower side (RM${balance.toLocaleString()}). Buddy suggests collecting just 50 sen round-ups monthly so your cash flow stays comfortable.`,
+    hamsterMood: "worried",
+    tag: "Conservative",
+  };
 }
 
 function getAdaptiveSettings(balance: number, income: number): BuddySuggestion {
@@ -180,7 +199,6 @@ function getMoodSignals(): MoodSignal[] {
   );
 
   const highSpends = transactions.filter((t) => Math.abs(t.amount) >= 50 && t.amount < 0);
-
   const signals: MoodSignal[] = [];
 
   if (foodSpends.length >= 2) {
@@ -223,56 +241,55 @@ const goalIconMap: Record<GoalIconKey, typeof Target> = {
   sparkles: Sparkles,
 };
 
+const billIconMap: Record<BillIconKey, typeof ReceiptText> = {
+  phone: Smartphone,
+  music: Music,
+  film: Film,
+  receipt: ReceiptText,
+};
+
 const initialGoals: SavingGoal[] = [
   { id: 1, name: "Emergency Fund", target: 1000, saved: 420, priority: "high", icon: "shield" },
   { id: 2, name: "New Shoes", target: 400, saved: 315, priority: "medium", icon: "target" },
   { id: 3, name: "Japan Trip", target: 5000, saved: 860, priority: "low", icon: "sparkles" },
 ];
 
-// ── component ─────────────────────────────────────────────────────────────────
+const initialBills: BillReserve[] = [
+  { id: 1, name: "Phone Bill", amount: 60, saved: 35, dueInDays: 5, icon: "phone", enabled: true },
+  { id: 2, name: "Spotify", amount: 15, saved: 10, dueInDays: 2, icon: "music", enabled: true },
+  { id: 3, name: "Netflix", amount: 45, saved: 18, dueInDays: 9, icon: "film", enabled: true },
+];
+
 function AutoSave() {
   const suggestion = getBuddySuggestion(user.balance, user.income);
   const adaptiveSuggestion = getAdaptiveSettings(user.balance, user.income);
   const moodSignals = getMoodSignals();
   const lowBalanceMode = user.balance / user.income < 0.25;
 
-  const [enabled, setEnabled] = useState<boolean>(() =>
-    getStoredValue("gx_enabled", !lowBalanceMode)
-  );
-  const [roundTo, setRoundTo] = useState<RoundTo>(() =>
-    getStoredValue("gx_roundTo", 1)
-  );
-  const [freq, setFreq] = useState<CollectFreq>(() =>
-    getStoredValue("gx_freq", "weekly")
-  );
-  const [collected, setCollected] = useState<boolean>(() =>
-    getStoredValue("gx_collected", false)
-  );
+  const [enabled, setEnabled] = useState<boolean>(() => getStoredValue("gx_enabled", !lowBalanceMode));
+  const [roundTo, setRoundTo] = useState<RoundTo>(() => getStoredValue("gx_roundTo", 1));
+  const [freq, setFreq] = useState<CollectFreq>(() => getStoredValue("gx_freq", "weekly"));
+  const [collected, setCollected] = useState<boolean>(() => getStoredValue("gx_collected", false));
   const [showInfo, setShowInfo] = useState(false);
-  const [showSuggest, setShowSuggest] = useState<boolean>(() =>
-    getStoredValue("gx_showSuggest", true)
-  );
-  const [suggApplied, setSuggApplied] = useState<boolean>(() =>
-    getStoredValue("gx_suggApplied", false)
-  );
-  const [adaptiveMode, setAdaptiveMode] = useState<boolean>(() =>
-    getStoredValue("gx_adaptiveMode", true)
-  );
-  const [animKey, setAnimKey] = useState(0);
-  const [goals, setGoals] = useState<SavingGoal[]>(() =>
-    getStoredValue("gx_goals", initialGoals)
-  );
-  const [selectedGoalId, setSelectedGoalId] = useState<number>(() =>
-    getStoredValue("gx_selectedGoalId", 1)
-  );
+  const [showSuggest, setShowSuggest] = useState<boolean>(() => getStoredValue("gx_showSuggest", true));
+  const [suggApplied, setSuggApplied] = useState<boolean>(() => getStoredValue("gx_suggApplied", false));
+  const [adaptiveMode, setAdaptiveMode] = useState<boolean>(() => getStoredValue("gx_adaptiveMode", true));
+  const [goals, setGoals] = useState<SavingGoal[]>(() => getStoredValue("gx_goals", initialGoals));
+  const [selectedGoalId, setSelectedGoalId] = useState<number>(() => getStoredValue("gx_selectedGoalId", 1));
+  const [bills, setBills] = useState<BillReserve[]>(() => getStoredValue("gx_bills", initialBills));
+  const [selectedBillId, setSelectedBillId] = useState<number>(() => getStoredValue("gx_selectedBillId", 1));
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => getStoredValue("gx_activeTab", "goals"));
+  const [showSettings, setShowSettings] = useState(false);
   const [showGoalMenu, setShowGoalMenu] = useState(false);
+  const [showBillMenu, setShowBillMenu] = useState(false);
   const [newGoalName, setNewGoalName] = useState("");
   const [newGoalTarget, setNewGoalTarget] = useState("");
+  const [newBillName, setNewBillName] = useState("");
+  const [newBillAmount, setNewBillAmount] = useState("");
+  const [newBillDue, setNewBillDue] = useState("");
   const [showMoodSection, setShowMoodSection] = useState(false);
   const [showInsightsSection, setShowInsightsSection] = useState(false);
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
-  // Save persistent settings
   useEffect(() => setStoredValue("gx_enabled", enabled), [enabled]);
   useEffect(() => setStoredValue("gx_roundTo", roundTo), [roundTo]);
   useEffect(() => setStoredValue("gx_freq", freq), [freq]);
@@ -282,6 +299,9 @@ function AutoSave() {
   useEffect(() => setStoredValue("gx_adaptiveMode", adaptiveMode), [adaptiveMode]);
   useEffect(() => setStoredValue("gx_goals", goals), [goals]);
   useEffect(() => setStoredValue("gx_selectedGoalId", selectedGoalId), [selectedGoalId]);
+  useEffect(() => setStoredValue("gx_bills", bills), [bills]);
+  useEffect(() => setStoredValue("gx_selectedBillId", selectedBillId), [selectedBillId]);
+  useEffect(() => setStoredValue("gx_activeTab", activeTab), [activeTab]);
 
   useEffect(() => {
     if (adaptiveMode) {
@@ -291,22 +311,24 @@ function AutoSave() {
   }, [adaptiveMode, adaptiveSuggestion.roundTo, adaptiveSuggestion.freq]);
 
   useEffect(() => {
-    setAnimKey((k) => k + 1);
     setCollected(false);
   }, [roundTo]);
 
   useEffect(() => {
-    if (lowBalanceMode) {
-      setEnabled(false);
-    }
+    if (lowBalanceMode) setEnabled(false);
   }, [lowBalanceMode]);
 
   useEffect(() => {
-    const selectedExists = goals.some((goal) => goal.id === selectedGoalId);
-    if (!selectedExists && goals.length > 0) {
+    if (!goals.some((goal) => goal.id === selectedGoalId) && goals.length > 0) {
       setSelectedGoalId(goals[0].id);
     }
   }, [goals, selectedGoalId]);
+
+  useEffect(() => {
+    if (!bills.some((bill) => bill.id === selectedBillId) && bills.length > 0) {
+      setSelectedBillId(bills[0].id);
+    }
+  }, [bills, selectedBillId]);
 
   const spends = transactions.filter((t) => t.amount < 0);
   const entries: RoundUpEntry[] = spends.map((t) => ({
@@ -317,8 +339,11 @@ function AutoSave() {
   }));
 
   const pendingTotal = parseFloat(entries.reduce((s, e) => s + e.roundUp, 0).toFixed(2));
-  const alreadySaved = goals.reduce((s, g) => s + g.saved, 0);
+  const goalSavedTotal = goals.reduce((s, g) => s + g.saved, 0);
+  const billSavedTotal = bills.reduce((s, b) => s + b.saved, 0);
+  const alreadySaved = goalSavedTotal + billSavedTotal;
   const totalInPocket = parseFloat((alreadySaved + (collected ? pendingTotal : 0)).toFixed(2));
+  const safeToSpend = parseFloat((user.balance - pendingTotal).toFixed(2));
 
   const suggEntries = spends.map((t) => calcRoundUp(t.amount, suggestion.roundTo));
   const suggTotal = parseFloat(suggEntries.reduce((s, v) => s + v, 0).toFixed(2));
@@ -326,10 +351,17 @@ function AutoSave() {
   const selectedGoal = goals.find((g) => g.id === selectedGoalId) || goals[0];
   const SelectedGoalIcon = selectedGoal ? goalIconMap[selectedGoal.icon] : Target;
   const closestGoal = [...goals].sort((a, b) => a.target - a.saved - (b.target - b.saved))[0];
+
+  const selectedBill = bills.find((b) => b.id === selectedBillId) || bills[0];
+  const SelectedBillIcon = selectedBill ? billIconMap[selectedBill.icon] : ReceiptText;
+  const nearestBill = [...bills].filter((b) => b.enabled).sort((a, b) => a.dueInDays - b.dueInDays)[0];
+
   const totalYearEstimate = parseFloat((pendingTotal * 52).toFixed(2));
   const foodRoundUps = entries
     .filter((e) => /food|grab|cafe|coffee|tea|restaurant|mamak/i.test(e.name))
     .reduce((s, e) => s + e.roundUp, 0);
+
+  const collectDestination = activeTab === "bills" && selectedBill ? selectedBill.name : selectedGoal?.name;
 
   function applyBuddySuggestion() {
     setAdaptiveMode(false);
@@ -344,22 +376,33 @@ function AutoSave() {
   }
 
   function collectNow() {
-    if (!selectedGoal) return;
-
     setCollected(true);
-    setGoals((prev) =>
-      prev.map((goal) =>
-        goal.id === selectedGoalId
-          ? { ...goal, saved: parseFloat((goal.saved + pendingTotal).toFixed(2)) }
-          : goal
-      )
-    );
+
+    if (activeTab === "bills" && selectedBill) {
+      setBills((prev) =>
+        prev.map((bill) =>
+          bill.id === selectedBillId
+            ? { ...bill, saved: parseFloat((bill.saved + pendingTotal).toFixed(2)) }
+            : bill
+        )
+      );
+      return;
+    }
+
+    if (selectedGoal) {
+      setGoals((prev) =>
+        prev.map((goal) =>
+          goal.id === selectedGoalId
+            ? { ...goal, saved: parseFloat((goal.saved + pendingTotal).toFixed(2)) }
+            : goal
+        )
+      );
+    }
   }
 
   function addGoal() {
     const cleanName = newGoalName.trim();
     const target = parseFloat(newGoalTarget);
-
     if (!cleanName || Number.isNaN(target) || target <= 0) return;
 
     const newGoal: SavingGoal = {
@@ -380,118 +423,390 @@ function AutoSave() {
 
   function deleteGoal(goalId: number) {
     if (goals.length === 1) return;
-
     const remainingGoals = goals.filter((goal) => goal.id !== goalId);
     setGoals(remainingGoals);
+    if (selectedGoalId === goalId && remainingGoals.length > 0) setSelectedGoalId(remainingGoals[0].id);
+  }
 
-    if (selectedGoalId === goalId && remainingGoals.length > 0) {
-      setSelectedGoalId(remainingGoals[0].id);
-    }
+  function addBill() {
+    const cleanName = newBillName.trim();
+    const amount = parseFloat(newBillAmount);
+    const dueInDays = parseInt(newBillDue, 10);
+    if (!cleanName || Number.isNaN(amount) || amount <= 0 || Number.isNaN(dueInDays) || dueInDays < 0) return;
+
+    const lowerName = cleanName.toLowerCase();
+    const icon: BillIconKey = lowerName.includes("phone")
+      ? "phone"
+      : lowerName.includes("spotify") || lowerName.includes("music")
+        ? "music"
+        : lowerName.includes("netflix") || lowerName.includes("movie")
+          ? "film"
+          : "receipt";
+
+    const newBill: BillReserve = {
+      id: Date.now(),
+      name: cleanName,
+      amount,
+      saved: 0,
+      dueInDays,
+      icon,
+      enabled: true,
+    };
+
+    setBills((prev) => [...prev, newBill]);
+    setSelectedBillId(newBill.id);
+    setNewBillName("");
+    setNewBillAmount("");
+    setNewBillDue("");
+    setShowBillMenu(false);
+  }
+
+  function deleteBill(billId: number) {
+    if (bills.length === 1) return;
+    const remainingBills = bills.filter((bill) => bill.id !== billId);
+    setBills(remainingBills);
+    if (selectedBillId === billId && remainingBills.length > 0) setSelectedBillId(remainingBills[0].id);
+  }
+
+  function toggleBill(billId: number) {
+    setBills((prev) => prev.map((bill) => (bill.id === billId ? { ...bill, enabled: !bill.enabled } : bill)));
+  }
+
+  if (showSettings) {
+    return (
+      <AppShell>
+        <main className="px-5 pt-1 pb-10 space-y-4">
+          <div className="flex items-center justify-between gap-3 pb-2">
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowSettings(false)}
+                className="h-11 w-11 rounded-2xl bg-secondary grid place-items-center shadow-card shrink-0"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </motion.button>
+              <div>
+                <h1 className="text-2xl font-extrabold tracking-tight">Settings</h1>
+                <p className="text-sm text-muted-foreground">Smart Auto-Save controls</p>
+              </div>
+            </div>
+          </div>
+
+          <Card className="p-4 rounded-3xl border-0 shadow-card space-y-4">
+            <div className="flex items-center justify-between rounded-2xl bg-secondary/40 p-3">
+              <div className="flex items-center gap-3">
+                <div className={`h-10 w-10 rounded-xl grid place-items-center ${enabled ? "bg-primary/20" : "bg-muted"}`}>
+                  <Coins className={`h-5 w-5 ${enabled ? "text-primary" : "text-muted-foreground"}`} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Round-Up Savings</p>
+                  <p className="text-xs text-muted-foreground">Automatically collect spare cents</p>
+                </div>
+              </div>
+              <Switch
+                checked={enabled}
+                disabled={lowBalanceMode}
+                onCheckedChange={(v) => {
+                  setEnabled(v);
+                  setCollected(false);
+                }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between rounded-2xl bg-secondary/40 p-3">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/15 grid place-items-center">
+                  <Brain className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Adaptive AI Mode</p>
+                  <p className="text-xs text-muted-foreground">Buddy adjusts based on cash flow</p>
+                </div>
+              </div>
+              <Switch checked={adaptiveMode} onCheckedChange={setAdaptiveMode} disabled={lowBalanceMode || !enabled} />
+            </div>
+
+            {!enabled && (
+              <div className="rounded-2xl bg-muted/50 p-3 text-center">
+                <p className="text-xs text-muted-foreground">
+                  Turn on Round-Up Savings to edit round-up amount and collection frequency.
+                </p>
+              </div>
+            )}
+
+            {enabled && (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Round Up To</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([0.5, 1] as RoundTo[]).map((val) => (
+                      <button
+                        key={val}
+                        disabled={adaptiveMode}
+                        onClick={() => setRoundTo(val)}
+                        className={`rounded-2xl py-3 text-sm font-bold transition-all ${
+                          roundTo === val
+                            ? "bg-primary text-primary-foreground shadow-card"
+                            : "bg-secondary text-secondary-foreground"
+                        } ${adaptiveMode ? "opacity-40 cursor-not-allowed" : ""}`}
+                      >
+                        {val === 0.5 ? "Nearest 50 sen" : "Nearest RM 1"}
+                      </button>
+                    ))}
+                  </div>
+                  {adaptiveMode && (
+                    <p className="text-[11px] text-muted-foreground mt-2">
+                      Adaptive AI is on, so Buddy controls this setting automatically.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Collect My Cents</p>
+                  <div className="space-y-2">
+                    {(
+                      [
+                        { key: "daily", Icon: Clock, label: "End of Day", desc: "Cents swept into your vault every night" },
+                        { key: "weekly", Icon: Calendar, label: "End of Week", desc: "Collected every Sunday at midnight" },
+                        { key: "monthly", Icon: CalendarDays, label: "End of Month", desc: "Swept on the last day of each month" },
+                      ] as { key: CollectFreq; Icon: typeof Clock; label: string; desc: string }[]
+                    ).map(({ key, Icon, label, desc }) => {
+                      const active = freq === key;
+                      return (
+                        <button
+                          key={key}
+                          disabled={adaptiveMode}
+                          onClick={() => setFreq(key)}
+                          className={`w-full flex items-center gap-3 rounded-2xl px-3 py-3 text-left transition-all ${
+                            active ? "bg-primary/15 border border-primary/30" : "bg-secondary/50"
+                          } ${adaptiveMode ? "opacity-40 cursor-not-allowed" : ""}`}
+                        >
+                          <div className={`h-9 w-9 rounded-xl grid place-items-center shrink-0 ${active ? "bg-primary/20" : "bg-muted"}`}>
+                            <Icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold">{label}</p>
+                            <p className="text-xs text-muted-foreground">{desc}</p>
+                          </div>
+                          {active && <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl bg-primary/10 border border-primary/20 p-3">
+                  <button
+                    onClick={() => setShowInfo((v) => !v)}
+                    className="w-full flex items-center justify-between text-left"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Info className="h-4 w-4 text-primary" />
+                      <p className="text-sm font-bold">How round-up works</p>
+                    </div>
+                    <ChevronRight className={`h-4 w-4 transition-transform ${showInfo ? "rotate-90" : ""}`} />
+                  </button>
+
+                  <AnimatePresence>
+                    {showInfo && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-3 text-xs text-muted-foreground space-y-2">
+                          <p><span className="font-bold text-foreground">Nearest 50 sen:</span> Spend RM4.30 → saves 20 sen.</p>
+                          <p><span className="font-bold text-foreground">Nearest RM1:</span> Spend RM4.20 → saves 80 sen.</p>
+                          <p className="text-[10px] opacity-70">Max saved per transaction is capped at RM1.00.</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-4 rounded-3xl border-0 shadow-card space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-accent/15 grid place-items-center">
+                <ReceiptText className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-sm font-bold">Buddy Bill Guard</p>
+                <p className="text-xs text-muted-foreground">Use round-ups to prepare for recurring bills</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowSettings(false);
+                setActiveTab("bills");
+              }}
+              className="w-full rounded-2xl bg-secondary py-3 text-sm font-bold flex items-center justify-center gap-2"
+            >
+              Manage Bill Reserves
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </Card>
+
+          <Card className="p-4 rounded-3xl border-0 shadow-card space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-primary/15 grid place-items-center">
+                <Target className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-bold">Saving Goals</p>
+                <p className="text-xs text-muted-foreground">Create and track personal saving goals</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowSettings(false);
+                setActiveTab("goals");
+              }}
+              className="w-full rounded-2xl bg-secondary py-3 text-sm font-bold flex items-center justify-center gap-2"
+            >
+              Manage Goals
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </Card>
+        </main>
+      </AppShell>
+    );
   }
 
   return (
     <AppShell>
-      <PageHeader title="Smart Auto-Save" subtitle="Every cent counts." />
+      <div className="px-5 pt-1 pb-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight">Smart Auto-Save</h1>
+            <p className="text-sm text-muted-foreground">Every cent counts.</p>
+          </div>
 
-      {/* ── Emergency Auto-Pause ── */}
-      <AnimatePresence>
-        {lowBalanceMode && (
-          <motion.section
-            className="px-5 pb-4"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowSettings(true)}
+            className="h-11 w-11 rounded-2xl bg-secondary grid place-items-center shadow-card shrink-0"
+            aria-label="Open auto-save settings"
           >
-            <Card className="p-4 rounded-2xl border border-destructive/25 shadow-card bg-destructive/10 flex gap-3 items-start">
-              <ShieldAlert className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+            <Settings className="h-5 w-5" />
+          </motion.button>
+        </div>
+      </div>
+
+      {lowBalanceMode && (
+        <section className="px-5 pb-4">
+          <Card className="p-4 rounded-2xl border border-destructive/25 shadow-card bg-destructive/10 flex gap-3 items-start">
+            <ShieldAlert className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-bold text-destructive">Emergency Auto-Pause is on</p>
+              <p className="text-xs text-muted-foreground mt-1">Buddy paused auto-save because your balance is in the safety zone.</p>
+            </div>
+          </Card>
+        </section>
+      )}
+
+      <section className="px-5 pb-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+          <Card className="p-5 rounded-3xl border-0 shadow-card bg-gradient-to-br from-[oklch(0.35_0.12_295)] to-[oklch(0.22_0.07_295)] relative overflow-hidden">
+            <div aria-hidden className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-primary/25 blur-2xl" />
+            <div aria-hidden className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-accent/20 blur-2xl" />
+
+            <div className="relative flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-bold text-destructive">Emergency Auto-Pause is on</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Buddy paused auto-save because your balance is in the safety zone. This protects your cash flow.
-                </p>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest">Total Protected</p>
+                <motion.p key={totalInPocket} initial={{ scale: 0.88 }} animate={{ scale: 1 }} className="text-4xl font-extrabold mt-1 tracking-tight">
+                  RM {totalInPocket.toFixed(2)}
+                </motion.p>
+                <p className="text-xs text-muted-foreground mt-1">Goals + bill reserve + spare cents</p>
+              </div>
+              <div className="h-14 w-14 rounded-2xl bg-primary/20 grid place-items-center shrink-0">
+                <Vault className="h-7 w-7 text-primary" />
+              </div>
+            </div>
+
+            <div className="relative mt-4 grid grid-cols-3 gap-2">
+              <div className="rounded-2xl bg-background/10 p-3">
+                <p className="text-[10px] text-muted-foreground">Pending</p>
+                <p className="text-sm font-extrabold text-accent">RM {pendingTotal.toFixed(2)}</p>
+              </div>
+              <div className="rounded-2xl bg-background/10 p-3">
+                <p className="text-[10px] text-muted-foreground">Safe Spend</p>
+                <p className="text-sm font-extrabold">RM {safeToSpend.toFixed(2)}</p>
+              </div>
+              <div className="rounded-2xl bg-background/10 p-3">
+                <p className="text-[10px] text-muted-foreground">Mode</p>
+                <p className="text-sm font-extrabold">{enabled ? "On" : "Off"}</p>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      </section>
+
+      <AnimatePresence>
+        {showSuggest && !lowBalanceMode && (
+          <motion.section className="px-5 pb-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <Card className="rounded-2xl border-0 shadow-card overflow-hidden border border-primary/25 p-3">
+              <div className="flex gap-3 items-center">
+                <Hamster mood={suggestion.hamsterMood} size={52} float={false} className="shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-sm font-bold text-primary">Buddy Suggests</p>
+                    <Badge className="text-[10px] bg-primary/20 text-primary border-0 px-1.5">{suggestion.tag}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{suggestion.reason}</p>
+                  <p className="text-[11px] text-accent font-bold mt-1">~RM {suggTotal.toFixed(2)}/cycle • {freqLabel[suggestion.freq]}</p>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <button onClick={applyBuddySuggestion} className="h-8 w-8 rounded-xl bg-primary text-primary-foreground grid place-items-center">
+                    <ThumbsUp className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={dismissSuggestion} className="h-8 w-8 rounded-xl bg-secondary grid place-items-center">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
             </Card>
           </motion.section>
         )}
       </AnimatePresence>
 
-      {/* ── Savings Jar ── */}
       <section className="px-5 pb-4">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-        >
-          <Card className="p-6 rounded-3xl border-0 shadow-card bg-gradient-to-br from-[oklch(0.35_0.12_295)] to-[oklch(0.22_0.07_295)] relative overflow-hidden text-center">
-            <div aria-hidden className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-primary/25 blur-2xl" />
-            <div aria-hidden className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-accent/20 blur-2xl" />
-            <div className="relative">
-              <div className="h-16 w-16 rounded-2xl bg-primary/20 grid place-items-center mx-auto mb-3">
-                <Vault className="h-8 w-8 text-primary" />
-              </div>
-              <p className="text-xs text-muted-foreground uppercase tracking-widest">Total in pocket</p>
-              <motion.p
-                key={totalInPocket}
-                initial={{ scale: 0.88 }}
-                animate={{ scale: 1 }}
-                className="text-5xl font-extrabold mt-1 tracking-tight"
-              >
-                RM {totalInPocket.toFixed(2)}
-              </motion.p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Collected from spare cents — no effort needed
-              </p>
-
-              <AnimatePresence>
-                {!collected && pendingTotal > 0 && enabled && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="mt-3 inline-flex items-center gap-1.5 bg-accent/20 rounded-xl px-3 py-1.5"
-                  >
-                    <Coins className="h-3.5 w-3.5 text-accent" />
-                    <span className="text-xs font-semibold text-accent">
-                      RM {pendingTotal.toFixed(2)} pending
-                    </span>
-                  </motion.div>
-                )}
-
-                {collected && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-3 inline-flex items-center gap-1.5 bg-success/20 rounded-xl px-3 py-1.5"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-success" />
-                    <span className="text-xs font-semibold text-success">Cents collected!</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </Card>
-        </motion.div>
+        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-secondary/50 p-1">
+          {(
+            [
+              { key: "goals", label: "Goals", Icon: Target },
+              { key: "bills", label: "Bills", Icon: ReceiptText },
+              { key: "activity", label: "Activity", Icon: ListChecks },
+            ] as { key: ActiveTab; label: string; Icon: typeof Target }[]
+          ).map(({ key, label, Icon }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 ${
+                activeTab === key ? "bg-primary text-primary-foreground shadow-card" : "text-muted-foreground"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
       </section>
 
-      {/* ── Goal-Based Saving ── */}
-      {selectedGoal && (
+      {activeTab === "goals" && selectedGoal && (
         <section className="px-5 pb-4">
           <div className="flex items-center justify-between mb-2 px-1">
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Saving Goals</p>
-            <button
-              onClick={() => setShowGoalMenu((v) => !v)}
-              className="h-8 rounded-xl bg-secondary px-3 text-xs font-bold flex items-center gap-1.5"
-            >
-              <MoreHorizontal className="h-3.5 w-3.5" />
-              Manage
+            <button onClick={() => setShowGoalMenu((v) => !v)} className="h-8 rounded-xl bg-secondary px-3 text-xs font-bold flex items-center gap-1.5">
+              <MoreHorizontal className="h-3.5 w-3.5" /> Manage
             </button>
           </div>
 
           <Card className="p-4 rounded-2xl border-0 shadow-card space-y-3">
-            <button
-              onClick={() => setShowGoalMenu((v) => !v)}
-              className="w-full rounded-2xl p-3 text-left bg-primary/10 border border-primary/30"
-            >
+            <button onClick={() => setShowGoalMenu((v) => !v)} className="w-full rounded-2xl p-3 text-left bg-primary/10 border border-primary/30">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl grid place-items-center bg-primary/20 shrink-0">
                   <SelectedGoalIcon className="h-5 w-5 text-primary" />
@@ -499,56 +814,27 @@ function AutoSave() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-bold truncate">{selectedGoal.name}</p>
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      RM {selectedGoal.saved.toFixed(2)} / RM {selectedGoal.target.toFixed(2)}
-                    </span>
+                    <span className="text-xs font-semibold text-muted-foreground">RM {selectedGoal.saved.toFixed(2)} / RM {selectedGoal.target.toFixed(2)}</span>
                   </div>
                   <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min((selectedGoal.saved / selectedGoal.target) * 100, 100)}%` }}
-                      className="h-full rounded-full bg-primary"
-                    />
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min((selectedGoal.saved / selectedGoal.target) * 100, 100)}%` }} className="h-full rounded-full bg-primary" />
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    RM {Math.max(selectedGoal.target - selectedGoal.saved, 0).toFixed(2)} left • Tap Manage to change goal
-                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-1">RM {Math.max(selectedGoal.target - selectedGoal.saved, 0).toFixed(2)} left</p>
                 </div>
               </div>
             </button>
 
             <AnimatePresence>
               {showGoalMenu && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden space-y-3"
-                >
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden space-y-3">
                   <div className="rounded-2xl bg-secondary/50 p-3 space-y-2">
                     <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Create Goal</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <input
-                        value={newGoalName}
-                        onChange={(e) => setNewGoalName(e.target.value)}
-                        placeholder="Goal name"
-                        className="rounded-xl bg-background px-3 py-2 text-xs outline-none border border-border/40"
-                      />
-                      <input
-                        value={newGoalTarget}
-                        onChange={(e) => setNewGoalTarget(e.target.value)}
-                        placeholder="Target RM"
-                        type="number"
-                        min="1"
-                        className="rounded-xl bg-background px-3 py-2 text-xs outline-none border border-border/40"
-                      />
+                      <input value={newGoalName} onChange={(e) => setNewGoalName(e.target.value)} placeholder="Goal name" className="rounded-xl bg-background px-3 py-2 text-xs outline-none border border-border/40" />
+                      <input value={newGoalTarget} onChange={(e) => setNewGoalTarget(e.target.value)} placeholder="Target RM" type="number" min="1" className="rounded-xl bg-background px-3 py-2 text-xs outline-none border border-border/40" />
                     </div>
-                    <button
-                      onClick={addGoal}
-                      className="w-full rounded-xl bg-primary text-primary-foreground py-2 text-xs font-bold flex items-center justify-center gap-1.5"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      Add Goal
+                    <button onClick={addGoal} className="w-full rounded-xl bg-primary text-primary-foreground py-2 text-xs font-bold flex items-center justify-center gap-1.5">
+                      <Plus className="h-3.5 w-3.5" /> Add Goal
                     </button>
                   </div>
 
@@ -559,35 +845,15 @@ function AutoSave() {
                       const selected = selectedGoalId === goal.id;
 
                       return (
-                        <div
-                          key={goal.id}
-                          className={`rounded-xl px-3 py-2 flex items-center gap-2 border ${
-                            selected ? "bg-primary/10 border-primary/30" : "bg-secondary/40 border-transparent"
-                          }`}
-                        >
-                          <button
-                            onClick={() => {
-                              setSelectedGoalId(goal.id);
-                              setShowGoalMenu(false);
-                            }}
-                            className="flex-1 text-left flex items-center gap-2 min-w-0"
-                          >
-                            <div className="h-8 w-8 rounded-lg grid place-items-center bg-muted shrink-0">
-                              <Icon className="h-4 w-4 text-primary" />
-                            </div>
+                        <div key={goal.id} className={`rounded-xl px-3 py-2 flex items-center gap-2 border ${selected ? "bg-primary/10 border-primary/30" : "bg-secondary/40 border-transparent"}`}>
+                          <button onClick={() => { setSelectedGoalId(goal.id); setShowGoalMenu(false); }} className="flex-1 text-left flex items-center gap-2 min-w-0">
+                            <div className="h-8 w-8 rounded-lg grid place-items-center bg-muted shrink-0"><Icon className="h-4 w-4 text-primary" /></div>
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-bold truncate">{goal.name}</p>
-                              <div className="mt-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                                <div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} />
-                              </div>
+                              <div className="mt-1 h-1.5 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} /></div>
                             </div>
                           </button>
-
-                          <button
-                            onClick={() => deleteGoal(goal.id)}
-                            disabled={goals.length === 1}
-                            className="h-8 w-8 rounded-lg grid place-items-center bg-destructive/10 text-destructive disabled:opacity-30"
-                          >
+                          <button onClick={() => deleteGoal(goal.id)} disabled={goals.length === 1} className="h-8 w-8 rounded-lg grid place-items-center bg-destructive/10 text-destructive disabled:opacity-30">
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -601,482 +867,193 @@ function AutoSave() {
             {closestGoal && (
               <div className="rounded-xl bg-accent/10 border border-accent/20 p-3 flex gap-2 items-start">
                 <Lightbulb className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground">
-                  Buddy suggests focusing on <span className="font-bold text-foreground">{closestGoal.name}</span> because you are only RM{(closestGoal.target - closestGoal.saved).toFixed(2)} away.
-                </p>
+                <p className="text-xs text-muted-foreground">Buddy suggests focusing on <span className="font-bold text-foreground">{closestGoal.name}</span> because it is closest to completion.</p>
               </div>
             )}
           </Card>
         </section>
       )}
 
-      {/* ── Buddy Suggestion Card ── */}
-      <AnimatePresence>
-        {showSuggest && !lowBalanceMode && (
-          <motion.section
-            className="px-5 pb-4"
-            initial={{ opacity: 0, y: 14, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.96 }}
-            transition={{ duration: 0.35 }}
-          >
-            <Card className="rounded-3xl border-0 shadow-card overflow-hidden border border-primary/25">
-              <div className="bg-gradient-to-r from-primary/20 to-primary/5 px-4 pt-4 pb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-bold text-primary">Buddy's Suggestion</p>
-                  <Badge className="text-[10px] bg-primary/20 text-primary border-0 px-1.5">
-                    {suggestion.tag}
-                  </Badge>
-                </div>
-                <button onClick={dismissSuggestion} className="opacity-50 hover:opacity-100">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="px-4 pb-4 pt-3 flex gap-3 items-start">
-                <Hamster mood={suggestion.hamsterMood} size={72} float={false} className="shrink-0 -mt-1" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground leading-relaxed">{suggestion.reason}</p>
-
-                  <div className="mt-3 flex gap-2 flex-wrap">
-                    <div className="flex items-center gap-1.5 bg-secondary rounded-xl px-2.5 py-1.5">
-                      <Coins className="h-3 w-3 text-primary" />
-                      <span className="text-[11px] font-bold">
-                        {suggestion.roundTo === 0.5 ? "Nearest 50 sen" : "Nearest RM1"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-secondary rounded-xl px-2.5 py-1.5">
-                      <Clock className="h-3 w-3 text-primary" />
-                      <span className="text-[11px] font-bold">{freqLabel[suggestion.freq]}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-accent/15 rounded-xl px-2.5 py-1.5">
-                      <TrendingUp className="h-3 w-3 text-accent" />
-                      <span className="text-[11px] font-bold text-accent">~RM {suggTotal.toFixed(2)}/cycle</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={applyBuddySuggestion}
-                      className="flex-1 rounded-xl bg-primary-gradient text-primary-foreground text-xs font-bold py-2 flex items-center justify-center gap-1.5"
-                    >
-                      <ThumbsUp className="h-3.5 w-3.5" />
-                      Apply this
-                    </button>
-                    <button
-                      onClick={dismissSuggestion}
-                      className="flex-1 rounded-xl bg-secondary text-secondary-foreground text-xs font-bold py-2 flex items-center justify-center gap-1.5"
-                    >
-                      <ThumbsDown className="h-3.5 w-3.5" />
-                      I'll set myself
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.section>
-        )}
-      </AnimatePresence>
-
-      {/* Applied confirmation */}
-      <AnimatePresence>
-        {suggApplied && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mx-5 mb-4 rounded-2xl bg-success/10 border border-success/25 px-4 py-3 flex items-center gap-2"
-          >
-            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
-            <p className="text-xs font-semibold text-success">
-              Buddy's settings applied! You can still adjust below anytime.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Mood / Spending Detection Dropdown ── */}
-      <section className="px-5 pb-4">
-        <Card className="rounded-2xl border-0 shadow-card overflow-hidden">
-          <button
-            onClick={() => setShowMoodSection((v) => !v)}
-            className="w-full p-4 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-primary/15 grid place-items-center">
-                <Brain className="h-5 w-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <p className="text-sm font-bold">Mood & Spending Detection</p>
-                <p className="text-xs text-muted-foreground">AI detects spending behavior patterns</p>
-              </div>
-            </div>
-            <ChevronRight className={`h-4 w-4 transition-transform ${showMoodSection ? "rotate-90" : ""}`} />
-          </button>
-
-          <AnimatePresence>
-            {showMoodSection && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden px-4 pb-4"
-              >
-                <div className="space-y-3">
-                  {moodSignals.map((signal) => {
-                    const Icon = signal.icon;
-                    return (
-                      <div key={signal.label} className="flex gap-3 items-start rounded-xl bg-secondary/40 p-3">
-                        <div className="h-8 w-8 rounded-lg bg-primary/15 grid place-items-center shrink-0">
-                          <Icon className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold">{signal.label}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{signal.message}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Card>
-      </section>
-
-      {/* ── Adaptive AI Dropdown ── */}
-      <section className="px-5 pb-4">
-        <Card className="rounded-2xl border-0 shadow-card overflow-hidden">
-          <button
-            onClick={() => setShowAdvancedSettings((v) => !v)}
-            className="w-full p-4 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-primary/15 grid place-items-center">
-                <Brain className="h-5 w-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <p className="text-sm font-bold">Adaptive AI Round-Up</p>
-                <p className="text-xs text-muted-foreground">Smart saving automation settings</p>
-              </div>
-            </div>
-            <ChevronRight className={`h-4 w-4 transition-transform ${showAdvancedSettings ? "rotate-90" : ""}`} />
-          </button>
-
-          <AnimatePresence>
-            {showAdvancedSettings && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden px-4 pb-4"
-              >
-                <div className="rounded-2xl bg-secondary/40 p-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-bold">Adaptive AI Mode</p>
-                    <p className="text-xs text-muted-foreground">
-                      Buddy adjusts saving based on balance and cash flow
-                    </p>
-                  </div>
-                  <Switch checked={adaptiveMode} onCheckedChange={setAdaptiveMode} disabled={lowBalanceMode} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Card>
-      </section>
-
-      {/* ── Enable toggle ── */}
-      <section className="px-5 pb-4">
-        <Card className="p-4 rounded-2xl border-0 shadow-card flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`h-9 w-9 rounded-xl grid place-items-center ${enabled ? "bg-primary/20" : "bg-muted"}`}>
-              <Coins className={`h-4 w-4 ${enabled ? "text-primary" : "text-muted-foreground"}`} />
-            </div>
-            <div>
-              <p className="text-sm font-bold">Round-Up Savings</p>
-              <p className="text-xs text-muted-foreground">Automatically collect spare cents</p>
-            </div>
-          </div>
-          <Switch
-            checked={enabled}
-            disabled={lowBalanceMode}
-            onCheckedChange={(v) => {
-              setEnabled(v);
-              setCollected(false);
-            }}
-          />
-        </Card>
-      </section>
-
-      {/* ── Round-up setting + Collect frequency only show when enabled ── */}
-      <AnimatePresence>
-        {enabled && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden"
-          >
-            {/* ── Round-up setting ── */}
-            <section className="px-5 pb-4">
-              <div className="flex items-center justify-between mb-2 px-1">
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Round Up To</p>
-                {!showSuggest && !suggApplied && !lowBalanceMode && (
-                  <button
-                    onClick={() => {
-                      setShowSuggest(true);
-                      setSuggApplied(false);
-                    }}
-                    className="flex items-center gap-1 text-[10px] text-primary font-semibold"
-                  >
-                    <Sparkles className="h-3 w-3" /> Ask Buddy
-                  </button>
-                )}
-              </div>
-              <Card className="p-4 rounded-2xl border-0 shadow-card">
-                <div className="flex gap-3">
-                  {([0.5, 1] as RoundTo[]).map((val) => (
-                    <button
-                      key={val}
-                      disabled={adaptiveMode}
-                      onClick={() => setRoundTo(val)}
-                      className={`flex-1 rounded-xl py-3 text-sm font-bold transition-all ${
-                        roundTo === val
-                          ? "bg-primary text-primary-foreground shadow-glow"
-                          : "bg-secondary text-secondary-foreground"
-                      } ${adaptiveMode ? "opacity-30 cursor-not-allowed" : ""}`}
-                    >
-                      {val === 0.5 ? "Nearest 50 sen" : "Nearest RM 1"}
-                    </button>
-                  ))}
-                </div>
-
-                {adaptiveMode && (
-                  <p className="text-[11px] text-muted-foreground mt-2">
-                    Adaptive AI is on, so Buddy controls this setting automatically.
-                  </p>
-                )}
-
-                <button
-                  onClick={() => setShowInfo((v) => !v)}
-                  className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground"
-                >
-                  <Info className="h-3.5 w-3.5" />
-                  How does this work?
-                  <ChevronRight className={`h-3 w-3 transition-transform ${showInfo ? "rotate-90" : ""}`} />
-                </button>
-
-                <AnimatePresence>
-                  {showInfo && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-3 rounded-xl bg-primary/10 border border-primary/20 p-3 text-xs text-muted-foreground space-y-2">
-                        <p>
-                          <span className="font-bold text-foreground">Nearest 50 sen: </span>
-                          Spend RM4.30 → saves <span className="text-accent font-bold">20 sen</span>.
-                          Spend RM4.60 → saves <span className="text-accent font-bold">40 sen</span>.
-                        </p>
-                        <p>
-                          <span className="font-bold text-foreground">Nearest RM1: </span>
-                          Spend RM4.80 → saves <span className="text-accent font-bold">20 sen</span>.
-                          Spend RM4.20 → saves <span className="text-accent font-bold">80 sen</span>.
-                        </p>
-                        <p className="text-[10px] opacity-70">Max saved per transaction is capped at RM1.00.</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </Card>
-            </section>
-
-            {/* ── Collect frequency ── */}
-            <section className="px-5 pb-4">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">
-                Collect My Cents
-              </p>
-              <Card className="p-4 rounded-2xl border-0 shadow-card">
-                <div className="flex flex-col gap-2">
-                  {(
-                    [
-                      { key: "daily", Icon: Clock, label: "End of Day", desc: "Cents swept into your jar every night" },
-                      { key: "weekly", Icon: Calendar, label: "End of Week", desc: "Collected every Sunday at midnight" },
-                      { key: "monthly", Icon: CalendarDays, label: "End of Month", desc: "Swept on the last day of each month" },
-                    ] as { key: CollectFreq; Icon: typeof Clock; label: string; desc: string }[]
-                  ).map(({ key, Icon, label, desc }) => {
-                    const active = freq === key;
-                    return (
-                      <button
-                        key={key}
-                        disabled={adaptiveMode}
-                        onClick={() => setFreq(key)}
-                        className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left transition-all ${
-                          active ? "bg-primary/15 border border-primary/30" : "bg-secondary/50"
-                        } ${adaptiveMode ? "opacity-30 cursor-not-allowed" : ""}`}
-                      >
-                        <div className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 ${active ? "bg-primary/20" : "bg-muted"}`}>
-                          <Icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-bold ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</p>
-                          <p className="text-xs text-muted-foreground">{desc}</p>
-                        </div>
-                        {active && <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </Card>
-            </section>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {!enabled && (
+      {activeTab === "bills" && selectedBill && (
         <section className="px-5 pb-4">
-          <Card className="p-4 rounded-2xl border-0 shadow-card text-center opacity-70">
-            <p className="text-sm font-semibold text-muted-foreground">
-              Turn on Round-Up Savings to customize round-up and collection settings.
-            </p>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Buddy Bill Guard</p>
+            <button onClick={() => setShowBillMenu((v) => !v)} className="h-8 rounded-xl bg-secondary px-3 text-xs font-bold flex items-center gap-1.5">
+              <MoreHorizontal className="h-3.5 w-3.5" /> Manage
+            </button>
+          </div>
+
+          <Card className="p-4 rounded-2xl border-0 shadow-card space-y-3">
+            <button onClick={() => setShowBillMenu((v) => !v)} className="w-full rounded-2xl p-3 text-left bg-accent/10 border border-accent/20">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl grid place-items-center bg-accent/20 shrink-0">
+                  <SelectedBillIcon className="h-5 w-5 text-accent" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-bold truncate">{selectedBill.name}</p>
+                    <span className="text-xs font-semibold text-muted-foreground">RM {selectedBill.saved.toFixed(2)} / RM {selectedBill.amount.toFixed(2)}</span>
+                  </div>
+                  <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min((selectedBill.saved / selectedBill.amount) * 100, 100)}%` }} className="h-full rounded-full bg-accent" />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1">Due in {selectedBill.dueInDays} days • RM {Math.max(selectedBill.amount - selectedBill.saved, 0).toFixed(2)} left</p>
+                </div>
+              </div>
+            </button>
+
+            <div className="rounded-xl bg-primary/10 border border-primary/20 p-3 flex gap-2 items-start">
+              <ShieldAlert className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground">
+                Buddy Bill Guard reserves round-up savings for recurring bills before they arrive, so bills do not disturb your spending balance.
+              </p>
+            </div>
+
+            {nearestBill && nearestBill.dueInDays <= 2 && (
+              <div className="rounded-xl bg-accent/10 border border-accent/20 p-3 flex gap-2 items-start">
+                <Lightbulb className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{nearestBill.name}</span> is coming soon. Buddy is prioritizing this bill reserve.</p>
+              </div>
+            )}
+
+            <AnimatePresence>
+              {showBillMenu && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden space-y-3">
+                  <div className="rounded-2xl bg-secondary/50 p-3 space-y-2">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Add Bill Reserve</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <input value={newBillName} onChange={(e) => setNewBillName(e.target.value)} placeholder="Bill" className="rounded-xl bg-background px-3 py-2 text-xs outline-none border border-border/40" />
+                      <input value={newBillAmount} onChange={(e) => setNewBillAmount(e.target.value)} placeholder="RM" type="number" min="1" className="rounded-xl bg-background px-3 py-2 text-xs outline-none border border-border/40" />
+                      <input value={newBillDue} onChange={(e) => setNewBillDue(e.target.value)} placeholder="Days" type="number" min="0" className="rounded-xl bg-background px-3 py-2 text-xs outline-none border border-border/40" />
+                    </div>
+                    <button onClick={addBill} className="w-full rounded-xl bg-primary text-primary-foreground py-2 text-xs font-bold flex items-center justify-center gap-1.5">
+                      <Plus className="h-3.5 w-3.5" /> Add Bill
+                    </button>
+                  </div>
+
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {bills.map((bill) => {
+                      const Icon = billIconMap[bill.icon];
+                      const progress = Math.min((bill.saved / bill.amount) * 100, 100);
+                      const selected = selectedBillId === bill.id;
+
+                      return (
+                        <div key={bill.id} className={`rounded-xl px-3 py-2 flex items-center gap-2 border ${selected ? "bg-accent/10 border-accent/30" : "bg-secondary/40 border-transparent"}`}>
+                          <button onClick={() => { setSelectedBillId(bill.id); setShowBillMenu(false); }} className="flex-1 text-left flex items-center gap-2 min-w-0">
+                            <div className="h-8 w-8 rounded-lg grid place-items-center bg-muted shrink-0"><Icon className="h-4 w-4 text-accent" /></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold truncate">{bill.name}</p>
+                              <div className="mt-1 h-1.5 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-accent" style={{ width: `${progress}%` }} /></div>
+                            </div>
+                          </button>
+                          <Switch checked={bill.enabled} onCheckedChange={() => toggleBill(bill.id)} />
+                          <button onClick={() => deleteBill(bill.id)} disabled={bills.length === 1} className="h-8 w-8 rounded-lg grid place-items-center bg-destructive/10 text-destructive disabled:opacity-30">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Card>
         </section>
       )}
 
-      {/* ── Invisible Saving Insights Dropdown ── */}
-      <section className="px-5 pb-4">
-        <Card className="rounded-2xl border-0 shadow-card overflow-hidden">
-          <button
-            onClick={() => setShowInsightsSection((v) => !v)}
-            className="w-full p-4 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-accent/15 grid place-items-center">
-                <TrendingUp className="h-5 w-5 text-accent" />
+      {activeTab === "activity" && (
+        <section className="px-5 pb-4 space-y-4">
+          <Card className="rounded-2xl border-0 shadow-card overflow-hidden">
+            <button onClick={() => setShowMoodSection((v) => !v)} className="w-full p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/15 grid place-items-center"><Brain className="h-5 w-5 text-primary" /></div>
+                <div className="text-left"><p className="text-sm font-bold">Mood & Spending Detection</p><p className="text-xs text-muted-foreground">AI detects behavior patterns</p></div>
               </div>
-              <div className="text-left">
-                <p className="text-sm font-bold">Invisible Saving Insights</p>
-                <p className="text-xs text-muted-foreground">See hidden savings statistics</p>
+              <ChevronRight className={`h-4 w-4 transition-transform ${showMoodSection ? "rotate-90" : ""}`} />
+            </button>
+            <AnimatePresence>
+              {showMoodSection && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden px-4 pb-4">
+                  <div className="space-y-3">
+                    {moodSignals.map((signal) => {
+                      const Icon = signal.icon;
+                      return (
+                        <div key={signal.label} className="flex gap-3 items-start rounded-xl bg-secondary/40 p-3">
+                          <div className="h-8 w-8 rounded-lg bg-primary/15 grid place-items-center shrink-0"><Icon className="h-4 w-4 text-primary" /></div>
+                          <div><p className="text-sm font-bold">{signal.label}</p><p className="text-xs text-muted-foreground mt-0.5">{signal.message}</p></div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Card>
+
+          <Card className="rounded-2xl border-0 shadow-card overflow-hidden">
+            <button onClick={() => setShowInsightsSection((v) => !v)} className="w-full p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-accent/15 grid place-items-center"><TrendingUp className="h-5 w-5 text-accent" /></div>
+                <div className="text-left"><p className="text-sm font-bold">Invisible Saving Insights</p><p className="text-xs text-muted-foreground">Hidden savings statistics</p></div>
               </div>
-            </div>
-            <ChevronRight className={`h-4 w-4 transition-transform ${showInsightsSection ? "rotate-90" : ""}`} />
-          </button>
-
-          <AnimatePresence>
-            {showInsightsSection && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden px-4 pb-4"
-              >
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl bg-accent/10 border border-accent/20 p-3">
-                    <TrendingUp className="h-4 w-4 text-accent mb-2" />
-                    <p className="text-lg font-extrabold">RM {totalYearEstimate.toFixed(2)}</p>
-                    <p className="text-[11px] text-muted-foreground">estimated yearly savings</p>
+              <ChevronRight className={`h-4 w-4 transition-transform ${showInsightsSection ? "rotate-90" : ""}`} />
+            </button>
+            <AnimatePresence>
+              {showInsightsSection && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden px-4 pb-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl bg-accent/10 border border-accent/20 p-3"><TrendingUp className="h-4 w-4 text-accent mb-2" /><p className="text-lg font-extrabold">RM {totalYearEstimate.toFixed(2)}</p><p className="text-[11px] text-muted-foreground">estimated yearly savings</p></div>
+                    <div className="rounded-2xl bg-primary/10 border border-primary/20 p-3"><Coins className="h-4 w-4 text-primary mb-2" /><p className="text-lg font-extrabold">RM {foodRoundUps.toFixed(2)}</p><p className="text-[11px] text-muted-foreground">food/drink round-ups</p></div>
                   </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Card>
 
-                  <div className="rounded-2xl bg-primary/10 border border-primary/20 p-3">
-                    <Coins className="h-4 w-4 text-primary mb-2" />
-                    <p className="text-lg font-extrabold">RM {foodRoundUps.toFixed(2)}</p>
-                    <p className="text-[11px] text-muted-foreground">saved from food/drink spends</p>
-                  </div>
-
-                  <div className="col-span-2 rounded-xl bg-secondary/50 p-3">
-                    <p className="text-xs text-muted-foreground">
-                      Your small transactions are doing hidden work. At this pace, tiny round-ups can become meaningful savings without changing your lifestyle.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Card>
-      </section>
-
-      {/* ── Round-up breakdown ── */}
-      <section className="px-5 pb-4">
-        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">
-          This Cycle's Round-Ups
-        </p>
-        <Card className="p-4 rounded-2xl border-0 shadow-card">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={animKey}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-3"
-            >
+          <Card className="p-4 rounded-2xl border-0 shadow-card">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">This Cycle's Round-Ups</p>
+            <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
               {entries.map((e) => (
                 <div key={e.id} className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">{e.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      RM {Math.abs(e.amount).toFixed(2)} → RM {(Math.abs(e.amount) + e.roundUp).toFixed(2)}
-                    </p>
+                    <p className="text-xs text-muted-foreground">RM {Math.abs(e.amount).toFixed(2)} → RM {(Math.abs(e.amount) + e.roundUp).toFixed(2)}</p>
                   </div>
-                  <Badge className="text-xs bg-accent/15 text-accent border-0">
-                    + RM {e.roundUp.toFixed(2)}
-                  </Badge>
+                  <Badge className="text-xs bg-accent/15 text-accent border-0">+ RM {e.roundUp.toFixed(2)}</Badge>
                 </div>
               ))}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-accent" />
-              <span className="text-sm font-bold">Total this cycle</span>
             </div>
-            <span className="text-accent font-extrabold">RM {pendingTotal.toFixed(2)}</span>
-          </div>
-        </Card>
-      </section>
+            <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between">
+              <span className="text-sm font-bold">Total this cycle</span>
+              <span className="text-accent font-extrabold">RM {pendingTotal.toFixed(2)}</span>
+            </div>
+          </Card>
+        </section>
+      )}
 
-      {/* ── Collect button ── */}
       <section className="px-5 pb-10">
-        {enabled && !collected && pendingTotal > 0 && selectedGoal && (
+        {enabled && !collected && pendingTotal > 0 && collectDestination && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={collectNow}
-              className="w-full rounded-2xl bg-primary-gradient text-primary-foreground font-bold py-4 text-sm shadow-glow flex items-center justify-center gap-2"
-            >
-              <Coins className="h-4 w-4" />
-              Collect RM {pendingTotal.toFixed(2)} into {selectedGoal.name}
+            <motion.button whileTap={{ scale: 0.97 }} onClick={collectNow} className="w-full rounded-2xl bg-primary-gradient text-primary-foreground font-bold py-4 text-sm shadow-glow flex items-center justify-center gap-2">
+              <Coins className="h-4 w-4" /> Collect RM {pendingTotal.toFixed(2)} into {collectDestination}
             </motion.button>
-            <p className="text-center text-xs text-muted-foreground mt-2">
-              Or auto-collects at {freqLabel[freq].toLowerCase()}
-            </p>
+            <p className="text-center text-xs text-muted-foreground mt-2">Or auto-collects at {freqLabel[freq].toLowerCase()}</p>
           </motion.div>
         )}
 
-        {collected && selectedGoal && (
+        {collected && collectDestination && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
             <Card className="p-5 rounded-2xl border-0 shadow-card text-center bg-success/10 border border-success/20">
               <CheckCircle2 className="h-8 w-8 text-success mx-auto mb-2" />
-              <p className="text-sm font-bold">
-                RM {pendingTotal.toFixed(2)} added to {selectedGoal.name}!
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Next auto-collection at {freqLabel[freq].toLowerCase()}
-              </p>
+              <p className="text-sm font-bold">RM {pendingTotal.toFixed(2)} added to {collectDestination}!</p>
+              <p className="text-xs text-muted-foreground mt-1">Next auto-collection at {freqLabel[freq].toLowerCase()}</p>
             </Card>
           </motion.div>
         )}
 
         {!enabled && (
           <Card className="p-4 rounded-2xl border-0 shadow-card text-center opacity-60">
-            <p className="text-sm text-muted-foreground">Round-Up Savings is turned off</p>
+            <p className="text-sm text-muted-foreground">Round-Up Savings is turned off. Tap settings to enable it.</p>
           </Card>
         )}
       </section>

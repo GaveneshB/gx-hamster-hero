@@ -6,7 +6,7 @@ import { Hamster } from "@/components/Hamster";
 import { Card } from "@/components/ui/card";
 import { Mic, Send, ChevronRight, Calendar } from "lucide-react";
 import { user, buddyFeatures } from "@/lib/data";
-import { calculateSpendingRisk, getHamsterMood } from "@/lib/utils";
+import { getHamsterMood } from "@/lib/utils";
 import { WeeklyReportContent } from "@/components/WeeklyReportContent";
 
 export const Route = createFileRoute("/coach")({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/coach")({
 
 type Msg = { role: "buddy" | "me"; text: string };
 
-const suggestions = [
+const SUGGESTIONS = [
   "Can I afford a RM89 hoodie?",
   "How much can I spend today?",
   "Should I use BNPL?",
@@ -44,7 +44,6 @@ const reply = (q: string): string => {
   return `Got it! Let me crunch your numbers… ✨ Based on your patterns, here's what I'd do: cut subscriptions you don't use (-RM30/mo) and turn on round-up saving. Tiny moves, big wins.`;
 };
 
-// Tabs defined outside component — never reallocated on render
 const TABS = [
   { id: "coach" as const, label: "AI Coach", icon: Mic },
   { id: "report" as const, label: "Weekly Report", icon: Calendar },
@@ -57,12 +56,15 @@ function Coach() {
   ]);
   const [input, setInput] = useState("");
   const [listening, setListening] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const hamsterMood = getHamsterMood(user.resilienceScore);
 
+  // Scroll the page (not a nested container) to show new messages
   useEffect(() => {
     if (activeTab === "coach") {
-      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 50);
     }
   }, [msgs, activeTab]);
 
@@ -75,54 +77,54 @@ function Coach() {
 
   return (
     <AppShell>
-      <div className="flex flex-col min-h-screen">
-        {/* Header */}
-        <div className="px-5 pt-8 pb-3 shrink-0">
-          <PageHeader
-            title="GX Buddy"
-            subtitle={activeTab === "coach" ? "Your pocket money coach" : "Weekly recap from Buddy"}
-            back={false}
-          />
+      {/* Single flat column — AppShell is the ONLY scroller, nothing inside has overflow-y-auto */}
+      <div className="flex flex-col px-5 pt-8 pb-32">
 
-          {/* ── Segmented pill toggle ── */}
-          <div
-            className="flex p-1 mt-3 rounded-2xl glass border border-white/10"
-            role="tablist"
-            aria-label="Buddy sections"
-          >
-            {TABS.map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  role="tab"
-                  type="button"
-                  aria-selected={isActive}
-                  onClick={() => setActiveTab(tab.id)}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-colors duration-150"
-                  style={{
-                    background: isActive ? "var(--color-primary)" : "transparent",
-                    color: isActive ? "var(--color-primary-foreground)" : "rgba(255,255,255,0.45)",
-                  }}
-                >
-                  <tab.icon className="h-3.5 w-3.5 shrink-0" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+        {/* Header + toggle */}
+        <PageHeader
+          title="GX Buddy"
+          subtitle={activeTab === "coach" ? "Your pocket money coach" : "Weekly recap from Buddy"}
+          back={false}
+        />
+
+        {/* Segmented pill toggle */}
+        <div
+          className="flex p-1 mt-3 mb-5 rounded-2xl glass border border-white/10"
+          role="tablist"
+          aria-label="Buddy sections"
+        >
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                type="button"
+                aria-selected={isActive}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-colors duration-150"
+                style={{
+                  background: isActive ? "var(--color-primary)" : "transparent",
+                  color: isActive ? "var(--color-primary-foreground)" : "rgba(255,255,255,0.45)",
+                }}
+              >
+                <tab.icon className="h-3.5 w-3.5 shrink-0" />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── AI COACH TAB ── */}
         {activeTab === "coach" && (
-          <div className="flex flex-col flex-1 px-5 min-h-0" style={{ height: "calc(100vh - 220px)" }}>
+          <div className="flex flex-col gap-4">
             {/* Hamster Mascot */}
-            <div className="flex flex-col items-center py-2 shrink-0">
+            <div className="flex flex-col items-center py-2">
               <motion.div
                 animate={listening ? { scale: [1, 1.06, 1] } : {}}
                 transition={{ duration: 0.8, repeat: Infinity }}
               >
-                <Hamster mood={listening ? "happy" : hamsterMood} size={130} />
+                <Hamster mood={listening ? "happy" : hamsterMood} size={120} />
               </motion.div>
               <div className="flex gap-1.5 mt-1">
                 {[0, 1, 2].map(i => (
@@ -135,14 +137,15 @@ function Coach() {
               </div>
             </div>
 
-            {/* Chat Messages */}
-            <div ref={scrollRef} className="space-y-2 flex-1 overflow-y-auto no-scrollbar py-1">
+            {/* Chat messages — NO overflow container, they just stack naturally */}
+            <div className="space-y-2">
               <AnimatePresence>
                 {msgs.map((m, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
                     className={`flex ${m.role === "me" ? "justify-end" : "justify-start"}`}
                   >
                     <Card className={`max-w-[80%] p-3 rounded-2xl border-0 shadow-card text-sm ${
@@ -155,23 +158,27 @@ function Coach() {
                   </motion.div>
                 ))}
               </AnimatePresence>
+              {/* Anchor to scroll to after new message */}
+              <div ref={bottomRef} />
             </div>
 
             {/* Quick Suggestions */}
-            <div className="mt-2 flex gap-2 overflow-x-auto no-scrollbar pb-1 shrink-0">
-              {suggestions.map(s => (
+            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+              {SUGGESTIONS.map(s => (
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="shrink-0 px-3 py-1.5 rounded-full bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors"
+                  className="shrink-0 px-3 py-1.5 rounded-full bg-secondary text-xs font-medium"
                 >
                   {s}
                 </button>
               ))}
             </div>
 
-            {/* Chat Input */}
-            <div className="mt-2 mb-4 shrink-0">
+            {/* Chat Input — sticky at bottom of screen */}
+            <div
+              className="sticky bottom-24 z-20"
+            >
               <div className="glass rounded-full p-2 flex items-center gap-2 shadow-glow">
                 <input
                   value={input}
@@ -194,7 +201,7 @@ function Coach() {
                 </button>
                 <button
                   onClick={() => send(input)}
-                  className="h-9 w-9 rounded-full bg-primary-gradient text-primary-foreground grid place-items-center hover:shadow-glow transition-all"
+                  className="h-9 w-9 rounded-full bg-primary-gradient text-primary-foreground grid place-items-center"
                   aria-label="send"
                 >
                   <Send className="h-4 w-4" />
@@ -204,26 +211,21 @@ function Coach() {
           </div>
         )}
 
-        {/* ── WEEKLY REPORT TAB ── */}
+        {/* ── WEEKLY REPORT TAB — flat, no overflow wrapper ── */}
         {activeTab === "report" && (
-          <div className="flex-1 px-5 overflow-y-auto no-scrollbar pb-10 pt-2">
-            <WeeklyReportContent />
-          </div>
+          <WeeklyReportContent />
         )}
 
-        {/* ── BUDDY TOOLS — always visible below ── */}
-        <section className="px-5 py-6 pb-32 shrink-0">
-          <div className="mb-4 pb-2 border-b border-white/10">
-            <h2 className="text-base font-bold flex items-center gap-2">
-              Buddy Tools <ChevronRight className="h-5 w-5 text-primary" />
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">Explore features</p>
-          </div>
-
+        {/* ── BUDDY TOOLS — always below, part of the same flat scroll ── */}
+        <div className="mt-8 pb-4 border-t border-white/10 pt-6">
+          <h2 className="text-base font-bold flex items-center gap-2 mb-1">
+            Buddy Tools <ChevronRight className="h-5 w-5 text-primary" />
+          </h2>
+          <p className="text-xs text-muted-foreground mb-4">Explore features</p>
           <div className="grid grid-cols-2 gap-3">
             {buddyFeatures.map(feature => (
               <Link key={feature.id} to={feature.route as any} className="group text-left">
-                <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col gap-3 transition-all hover:shadow-glow group-active:scale-95">
+                <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col gap-3 group-active:scale-95 transition-transform">
                   <div className={`${feature.icon.length > 2 ? "text-[11px] font-bold text-primary bg-primary/10 w-fit px-2.5 py-1 rounded-full border border-primary/20" : "text-3xl"}`}>
                     {feature.icon}
                   </div>
@@ -235,7 +237,8 @@ function Coach() {
               </Link>
             ))}
           </div>
-        </section>
+        </div>
+
       </div>
     </AppShell>
   );

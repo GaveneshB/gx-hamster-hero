@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { user, transactions } from "@/lib/data";
 import { Card } from "@/components/ui/card";
-import { calculateSpendingRisk, getHamsterMood } from "@/lib/utils";
+import { getHamsterMood } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import {
   Shield, Mic, Eye, Plus, ScanLine, Send, HelpCircle, ChevronRight, Bell, Calendar,
@@ -23,49 +23,34 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+// Defined outside component so it never re-allocates on render
+const BUDDY_TABS = [
+  {
+    id: "coach" as const,
+    to: "/coach",
+    label: "AI Coach",
+    icon: Mic,
+    message: (safeToSpend: number) =>
+      `"Spend up to RM${safeToSpend} today and still hit your weekend goal 🐹"`,
+  },
+  {
+    id: "report" as const,
+    to: "/weekly-report",
+    label: "Weekly Report",
+    icon: Calendar,
+    message: () => `"Your weekly insights are ready — tap to see your full report 📊"`,
+  },
+] as const;
+
 function Home() {
-  const [buddySlide, setBuddySlide] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"coach" | "report">("coach");
 
   const buf = user.emergencyBuffer;
   const safeToSpend = user.safeToSpend;
   const hamsterMood = getHamsterMood(user.resilienceScore);
 
-  const buddyCards = [
-    {
-      to: "/coach",
-      label: "Ask Buddy",
-      icon: Mic,
-      message: `"Spend up to RM${safeToSpend} today and still hit your weekend goal 🐹"`,
-    },
-    {
-      to: "/weekly-report",
-      label: "Weekly Report",
-      icon: Calendar,
-      message: `"Check your weekly spending insights and progress 📊"`,
-    },
-  ];
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    const deltaX = touchStartX.current - e.changedTouches[0].clientX;
-    const deltaY = Math.abs(touchStartY.current - e.changedTouches[0].clientY);
-    if (Math.abs(deltaX) > 30 && Math.abs(deltaX) > deltaY * 2) {
-      if (deltaX > 0) {
-        setBuddySlide((p) => (p + 1) % buddyCards.length);
-      } else {
-        setBuddySlide((p) => (p - 1 + buddyCards.length) % buddyCards.length);
-      }
-    }
-    touchStartX.current = null;
-    touchStartY.current = null;
-  };
+  const currentTab = BUDDY_TABS.find((t) => t.id === activeTab)!;
+  const Icon = currentTab.icon;
 
   return (
     <AppShell>
@@ -118,66 +103,52 @@ function Home() {
         </Card>
       </section>
 
-      {/* AI WHISPER — Buddy carousel with clickable dots + swipe */}
+      {/* BUDDY SECTION — Segmented toggle + card */}
       <section className="px-5 mt-5">
-        {/* Slide track — pure CSS transform, GPU accelerated, no JS animation loop */}
+        {/* Segmented control pill bar */}
         <div
-          className="overflow-hidden rounded-3xl glass-strong shadow-card"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          className="flex p-1 rounded-2xl glass border border-white/10 mb-3"
+          role="tablist"
+          aria-label="Buddy section"
         >
-          <div
-            className="flex"
-            style={{
-              transform: `translateX(-${buddySlide * 100}%)`,
-              transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
-              willChange: "transform",
-            }}
-          >
-            {buddyCards.map((card) => {
-              const Icon = card.icon;
-              return (
-                <div key={card.to} className="min-w-full flex-shrink-0 p-1">
-                  <Link to={card.to} className="block">
-                    <div className="rounded-2xl p-3 flex items-center gap-3">
-                      <div className="relative shrink-0">
-                        <span aria-hidden className="absolute inset-0 rounded-full bg-primary/40 animate-pulse-ring" />
-                        <Hamster mood={hamsterMood} size={56} float={false} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{card.label}</p>
-                        <p className="text-sm font-semibold leading-snug text-foreground">{card.message}</p>
-                      </div>
-                      <Icon className="h-5 w-5 text-primary shrink-0" />
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
+          {BUDDY_TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                aria-selected={isActive}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-colors duration-150"
+                style={{
+                  background: isActive ? "var(--color-primary)" : "transparent",
+                  color: isActive ? "var(--color-primary-foreground)" : "rgba(255,255,255,0.5)",
+                }}
+              >
+                <tab.icon className="h-3.5 w-3.5 shrink-0" />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Pagination dots — clickable to switch slides */}
-        <div className="flex items-center justify-center gap-2 mt-3">
-          {buddyCards.map((card, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setBuddySlide(idx)}
-              aria-label={`Go to ${card.label}`}
-              style={{
-                width: idx === buddySlide ? 28 : 10,
-                height: 10,
-                borderRadius: 999,
-                background: idx === buddySlide ? "var(--color-primary)" : "rgba(255,255,255,0.3)",
-                border: "none",
-                padding: 0,
-                cursor: "pointer",
-                transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease",
-              }}
-            />
-          ))}
-        </div>
+        {/* Content card — instant swap, zero animation = zero lag */}
+        <Link to={currentTab.to} className="block">
+          <div className="rounded-3xl glass-strong shadow-card p-3 flex items-center gap-3">
+            <div className="relative shrink-0">
+              <span aria-hidden className="absolute inset-0 rounded-full bg-primary/40 animate-pulse-ring" />
+              <Hamster mood={hamsterMood} size={56} float={false} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{currentTab.label}</p>
+              <p className="text-sm font-semibold leading-snug text-foreground">
+                {currentTab.message(safeToSpend)}
+              </p>
+            </div>
+            <Icon className="h-5 w-5 text-primary shrink-0" />
+          </div>
+        </Link>
       </section>
 
       {/* Everyday account row — GXBank style */}
@@ -201,7 +172,7 @@ function Home() {
               <div aria-hidden className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-mint/30 blur-2xl" />
               <div className="relative">
                 <p className="text-sm font-bold">Smart Auto-Save</p>
-                <p className="text-[11px] text-muted-foreground mt-1">Earn 2.50% p.a.<br/>Auto-save round-ups</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Earn 2.50% p.a.<br />Auto-save round-ups</p>
               </div>
               <span className="relative inline-flex items-center justify-center px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold w-fit">Activate</span>
             </Card>

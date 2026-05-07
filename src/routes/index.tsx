@@ -2,14 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
-import { user, missions, transactions } from "@/lib/data";
+import { user, transactions } from "@/lib/data";
 import { Card } from "@/components/ui/card";
 import { calculateSpendingRisk, getHamsterMood } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import {
-  Shield, TrendingUp, AlertTriangle, PiggyBank, Sparkles, Mic,
-  Eye, Trophy, Users, Heart, Bell, Zap, Plus, ScanLine, Send,
-  HelpCircle, ChevronRight,
+  Shield, Mic, Eye, Plus, ScanLine, Send, HelpCircle, ChevronRight, Bell,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -23,20 +21,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
-
-const quickActions = [
-  { to: "/coach", label: "Ask Buddy", Icon: Sparkles },
-  { to: "/debt-radar", label: "Debt Radar", Icon: AlertTriangle },
-  { to: "/auto-save", label: "Auto Save", Icon: PiggyBank },
-  { to: "/future-you", label: "Future You", Icon: TrendingUp },
-  { to: "/spending-warnings", label: "Warnings", Icon: Bell },
-  { to: "/bnpl", label: "BNPL", Icon: Eye },
-  { to: "/emergency", label: "Buffer", Icon: Shield },
-  { to: "/personality", label: "Persona", Icon: Heart },
-  { to: "/weekly-report", label: "Report", Icon: Zap },
-  { to: "/group-challenges", label: "Friends", Icon: Users },
-  { to: "/mascot-room", label: "Pet Room", Icon: Trophy },
-];
 
 function Home() {
   const buf = user.emergencyBuffer;
@@ -163,44 +147,7 @@ function Home() {
         </Card>
       </section>
 
-      {/* Buddy Tools */}
-      <section className="px-5 mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold">Buddy Tools</h2>
-          <span className="text-xs text-primary font-semibold">{user.tier} · Lvl {user.level}</span>
-        </div>
-        <div className="grid grid-cols-4 gap-3">
-          {quickActions.map(({ to, label, Icon }) => (
-            <Link key={to} to={to} className="group">
-              <div className="aspect-square rounded-2xl glass border-white/10 grid place-items-center shadow-card transition-transform group-active:scale-95">
-                <Icon className="h-5 w-5 text-primary" />
-              </div>
-              <p className="text-[11px] font-semibold text-center mt-1.5 text-foreground/90">{label}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
 
-      {/* Missions */}
-      <section className="px-5 mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold">Active Missions</h2>
-          <Link to="/missions" className="text-xs text-primary font-semibold">View all →</Link>
-        </div>
-        <div className="space-y-3">
-          {missions.slice(0, 2).map(m => (
-            <Card key={m.id} className="p-4 rounded-2xl glass border-white/10 shadow-card flex items-center gap-3">
-              <div className="text-3xl">{m.emoji}</div>
-              <div className="flex-1">
-                <p className="text-sm font-bold">{m.title}</p>
-                <Progress value={m.progress} className="h-2 mt-2" />
-                <p className="text-[11px] text-muted-foreground mt-1">{m.desc}</p>
-              </div>
-              <span className="text-xs font-bold text-primary">+{m.xp}xp</span>
-            </Card>
-          ))}
-        </div>
-      </section>
 
       {/* Transactions */}
       <section className="px-5 mt-6">

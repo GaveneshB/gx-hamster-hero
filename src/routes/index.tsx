@@ -139,59 +139,32 @@ function Home() {
         </Card>
       </section>
 
-      {/* HAMSTER RESILIENCE DASHBOARD */}
-      <section className="px-5 mt-5">
-        <div className="rounded-[2rem] glass-strong shadow-card p-4 relative overflow-hidden border border-[#771FFF]/30">
-          <div aria-hidden className="absolute top-0 right-0 w-32 h-32 bg-[#771FFF]/20 blur-3xl rounded-full pointer-events-none" />
-          
-          <div className="flex items-center gap-5 mb-4 relative z-10">
-            {/* Hamster Circle Progress */}
-            <div className="relative shrink-0 w-[72px] h-[72px]">
-              <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
-                <circle 
-                  cx="50" cy="50" r="46" fill="none" stroke="#771FFF" strokeWidth="6" strokeLinecap="round"
-                  strokeDasharray="289" strokeDashoffset={289 - (289 * user.resilienceScore) / 100} 
-                  className="transition-all duration-1000" 
-                />
-              </svg>
-              <div className="absolute inset-0 m-1.5 rounded-full bg-[#0C0121] flex items-center justify-center overflow-hidden">
-                <Hamster mood={hamsterMood} size={50} float={true} />
+      {/* ENLARGED GX BUDDY CARD */}
+      <section className="px-5 mt-6">
+        <Link to="/coach" className="block active:scale-[0.98] transition-transform">
+          <Card className="p-5 rounded-[2rem] glass-strong shadow-card flex items-center justify-between border border-[#771FFF]/40 relative overflow-hidden group">
+            <div aria-hidden className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-[#771FFF]/20 to-transparent pointer-events-none" />
+            
+            <div className="flex items-center gap-5 relative z-10">
+              <div className="h-16 w-16 rounded-full bg-[#0C0121] flex items-center justify-center shrink-0 border-2 border-[#771FFF]/50 overflow-hidden shadow-[0_0_20px_rgba(119,31,255,0.3)]">
+                <Hamster mood={hamsterMood} size={55} float={false} />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-base font-black text-white tracking-wide">GX Buddy</p>
+                  <span className="px-2 py-0.5 bg-[#4EE6E6]/10 rounded md text-[10px] font-black text-[#4EE6E6] border border-[#4EE6E6]/30 tracking-wider">
+                    SCORE: {user.resilienceScore}
+                  </span>
+                </div>
+                <p className="text-[11px] text-white/70 leading-relaxed pr-2">
+                  Your AI sidekick to build financial resilience. Try our buddy tools to outsmart impulse spending and hit your goals!
+                </p>
               </div>
             </div>
-
-            {/* Score & Safe to Spend */}
-            <div className="flex-1">
-              <div className="flex justify-between items-start mb-1">
-                <div>
-                  <p className="text-[10px] text-white/60 uppercase tracking-widest font-bold">Buddy Score</p>
-                  <p className="text-2xl font-black text-white">{user.resilienceScore}<span className="text-sm text-white/40">/100</span></p>
-                </div>
-                <div className="px-2 py-0.5 bg-[#4EE6E6]/20 rounded-md border border-[#4EE6E6]/30">
-                  <p className="text-[10px] text-[#4EE6E6] font-bold uppercase tracking-wider">{user.resilienceScore >= 80 ? 'Excellent' : 'Good'}</p>
-                </div>
-              </div>
-              
-              <div className="mt-2 bg-black/40 rounded-xl p-2 border border-white/5 flex items-center justify-between">
-                <p className="text-[11px] text-white/70 font-semibold px-2">Safe to spend today</p>
-                <div className="bg-[#771FFF]/20 px-2 py-1 rounded-lg">
-                  <p className="text-sm font-black text-white">RM {safeToSpend.toFixed(0)}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action / How to increase */}
-          <Link to="/emergency" className="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between group active:scale-95 transition-transform">
-            <div className="flex items-start gap-2">
-              <span className="text-sm">💡</span>
-              <p className="text-xs text-white/80 leading-snug">
-                <span className="font-bold text-white">To reach 85:</span> Top up your Emergency Buffer by RM50.
-              </p>
-            </div>
-            <ChevronRight className="h-4 w-4 text-white/50 group-hover:text-white transition-colors" />
-          </Link>
-        </div>
+            
+            <ChevronRight className="h-6 w-6 text-white/30 relative z-10 group-hover:text-white transition-colors shrink-0" />
+          </Card>
+        </Link>
       </section>
 
       {/* Everyday account row — GXBank style */}
@@ -213,7 +186,12 @@ function Home() {
           <div className="h-full">
             <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px] relative overflow-hidden">
               <div className="relative">
+                <div className="flex items-center gap-1.5">
                 <p className="text-[15px] font-bold">Pockets</p>
+                <span className="px-1.5 py-[2px] bg-[#F8326D] rounded text-[8px] font-black text-white uppercase tracking-widest animate-pulse shadow-[0_0_10px_rgba(248,50,109,0.5)] whitespace-nowrap">
+                  NEW SQUAD POCKET
+                </span>
+              </div>
                 <p className="text-[11px] text-white/70 mt-1">Earn up to 3.55% p.a.</p>
                 <span className="inline-block mt-1.5 px-1.5 py-0.5 bg-[#4EE6E6] text-[#0C0121] text-[10px] font-bold rounded">Up to 3.55% p.a.</span>
               </div>
@@ -224,50 +202,53 @@ function Home() {
       </section>
 
       {/* For you today */}
-      <section className="px-5 mt-6">
+      <section className="px-5 mt-6 mb-32">
         <h2 className="text-base font-bold mb-3">For you today</h2>
-        <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden">
-          <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-mint/30 blur-3xl" />
-          <div className="relative flex items-center gap-4">
-            <div className="relative h-24 w-24 grid place-items-center shrink-0">
-              <span aria-hidden className="absolute h-24 w-24 rounded-full border border-mint/40 animate-pulse-ring" />
-              <span aria-hidden className="absolute h-16 w-16 rounded-full border border-mint/60 animate-pulse-ring" style={{ animationDelay: "0.6s" }} />
-              <div className="h-12 w-12 rounded-full bg-mint-gradient grid place-items-center shadow-glow">
-                <Shield className="h-6 w-6 text-accent-foreground" />
+        <div className="space-y-3">
+          {/* Pre-Spending Warning Card */}
+          <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden">
+            <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#771FFF]/20 blur-3xl" />
+            <div className="relative flex items-center gap-4">
+              <div className="relative h-24 w-24 grid place-items-center shrink-0">
+                <span aria-hidden className="absolute h-24 w-24 rounded-full border border-[#771FFF]/40 animate-pulse-ring" />
+                <span aria-hidden className="absolute h-16 w-16 rounded-full border border-[#771FFF]/60 animate-pulse-ring" style={{ animationDelay: "0.6s" }} />
+                <div className="h-12 w-12 rounded-full bg-[#771FFF] grid place-items-center shadow-[0_0_20px_rgba(119,31,255,0.5)]">
+                  <ShieldAlert className="h-6 w-6 text-white" />
+                </div>
               </div>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-bold">Emergency Buffer</p>
-              <p className="text-[11px] text-muted-foreground">RM{buf.current.toFixed(2)} of RM{buf.target} — Buddy stashing round-ups</p>
-              <Progress value={(buf.current / buf.target) * 100} className="h-1.5 mt-2" />
-              <Link to="/emergency" className="inline-flex mt-3 px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold">Top up now</Link>
-            </div>
-          </div>
-        </Card>
-      </section>
-
-      {/* Transactions */}
-      <section className="px-5 mt-6">
-        <h2 className="text-base font-bold mb-3">Recent Activity</h2>
-        <Card className="rounded-2xl glass border-white/10 shadow-card divide-y divide-white/5 overflow-hidden">
-          {transactions.slice(0, 5).map(t => (
-            <div key={t.id} className="flex items-center gap-3 p-3">
-              <div className={`h-10 w-10 rounded-xl grid place-items-center text-xs font-bold ${
-                t.risk === "save" ? "bg-mint/20 text-mint" :
-                t.risk === "high" ? "bg-destructive/20 text-destructive" :
-                t.risk === "med" ? "bg-warning/20 text-warning" :
-                "bg-white/10 text-foreground"
-              }`}>{t.category[0]}</div>
               <div className="flex-1">
-                <p className="text-sm font-semibold">{t.name}</p>
-                <p className="text-[11px] text-muted-foreground">{t.category} · {t.time}</p>
+                <p className="text-sm font-bold flex items-center gap-2">
+                  Pre-Spending Warning
+                  <span className="bg-[#4EE6E6]/20 text-[#4EE6E6] text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-[#4EE6E6]/20">Active</span>
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
+                  Warns you on <span className="font-bold text-white">Scan QR</span> & <span className="font-bold text-white">Send Money</span> — only if the payment is risky. Safe transactions go straight through.
+                </p>
+                <Link to="/spending-warnings" className="inline-flex mt-3 px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold">Try it out</Link>
               </div>
-              <p className={`text-sm font-bold ${t.amount > 0 ? "text-success" : "text-foreground"}`}>
-                {t.amount > 0 ? "+" : ""}RM {Math.abs(t.amount).toFixed(2)}
-              </p>
             </div>
-          ))}
-        </Card>
+          </Card>
+
+          {/* Emergency Buffer Card */}
+          <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden">
+            <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-mint/30 blur-3xl" />
+            <div className="relative flex items-center gap-4">
+              <div className="relative h-24 w-24 grid place-items-center shrink-0">
+                <span aria-hidden className="absolute h-24 w-24 rounded-full border border-mint/40 animate-pulse-ring" />
+                <span aria-hidden className="absolute h-16 w-16 rounded-full border border-mint/60 animate-pulse-ring" style={{ animationDelay: "0.6s" }} />
+                <div className="h-12 w-12 rounded-full bg-mint-gradient grid place-items-center shadow-glow">
+                  <Shield className="h-6 w-6 text-accent-foreground" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold">Emergency Buffer</p>
+                <p className="text-[11px] text-muted-foreground">RM{buf.current.toFixed(2)} of RM{buf.target} — Buddy stashing round-ups</p>
+                <Progress value={(buf.current / buf.target) * 100} className="h-1.5 mt-2" />
+                <Link to="/emergency" className="inline-flex mt-3 px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold">Top up now</Link>
+              </div>
+            </div>
+          </Card>
+        </div>
       </section>
       {/* ===== PAYMENT GUARDIAN MODALS ===== */}
       <AnimatePresence>

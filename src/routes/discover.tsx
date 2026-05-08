@@ -45,21 +45,6 @@ function Discover() {
         {/* GX BUDDY AS A BIG FUNCTION */}
         <h3 className="text-base font-bold mb-3">Your Financial Arsenal</h3>
         <div className="grid gap-3 mb-8">
-          {/* Big Buddy Card */}
-          <Link to="/spending-warnings">
-            <Card className="p-5 rounded-3xl glass-strong border border-[#771FFF]/30 shadow-card relative overflow-hidden flex items-center gap-4 hover:bg-white/5 transition-colors">
-              <div aria-hidden className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#771FFF]/20 to-transparent" />
-              <div className="h-14 w-14 rounded-full bg-[#771FFF]/20 flex items-center justify-center shrink-0 border border-[#771FFF]/50">
-                <ShieldAlert className="h-7 w-7 text-[#c1a3ff]" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-bold text-white mb-0.5">Pre-Spending Warning</h4>
-                <p className="text-[11px] text-white/70 leading-snug pr-2">Let AI analyze your risk score before you make that impulsive purchase.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-white/40 absolute right-4" />
-            </Card>
-          </Link>
-
           {/* Squad Pocket Card */}
           <Link to="/group-challenges">
             <Card className="p-5 rounded-3xl glass-strong border border-[#F8326D]/30 shadow-card relative overflow-hidden flex items-center gap-4 hover:bg-white/5 transition-colors">

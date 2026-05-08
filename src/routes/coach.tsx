@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Calendar, Activity } from "lucide-react";
+import { ChevronRight, Calendar, Mic, Sparkles } from "lucide-react";
 import { user, buddyFeatures } from "@/lib/data";
 import { getHamsterMood } from "@/lib/utils";
 import { WeeklyReportContent } from "@/components/WeeklyReportContent";
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/coach")({
 });
 
 const TABS = [
-  { id: "coach" as const, label: "Vibe Check", icon: Activity },
+  { id: "coach" as const, label: "AI Coach", icon: Mic },
   { id: "report" as const, label: "Weekly Report", icon: Calendar },
 ];
 
@@ -36,7 +36,7 @@ function Coach() {
         {/* Header + toggle */}
         <PageHeader
           title="GX Buddy"
-          subtitle={activeTab === "coach" ? "Your financial vital signs" : "Weekly recap from Buddy"}
+          subtitle={activeTab === "coach" ? "Your pocket money coach" : "Weekly recap from Buddy"}
           back={false}
         />
 
@@ -68,60 +68,65 @@ function Coach() {
           })}
         </div>
 
-        {/* ── VIBE CHECK TAB ── */}
+        {/* ── AI COACH TAB ── */}
         {activeTab === "coach" && (
           <div className="flex flex-col gap-6">
-            {/* Hamster Mascot & Score Circle */}
-            <div className="relative flex justify-center py-6">
-              <div className="relative w-48 h-48">
-                <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="#771FFF" strokeWidth="6" strokeLinecap="round" strokeDasharray="289" strokeDashoffset={289 - (289 * user.resilienceScore) / 100} className="transition-all duration-1000" />
-                </svg>
-                <div className="absolute inset-0 m-2 rounded-full bg-[#0C0121] flex items-center justify-center overflow-hidden border-4 border-[#771FFF]/10 shadow-[0_0_40px_rgba(119,31,255,0.2)]">
-                  <Hamster mood={hamsterMood} size={130} float={true} />
+            {/* Hamster Mascot & Score Badge */}
+            <div className="flex flex-col items-center py-2 relative">
+              <div className="relative">
+                <Hamster mood={hamsterMood} size={120} />
+                <div className="absolute -bottom-1 -right-2 bg-primary-gradient px-3 py-1 rounded-full border-2 border-[#0C0121] shadow-lg">
+                  <p className="text-[11px] font-black text-white">Score: {user.resilienceScore}</p>
                 </div>
               </div>
             </div>
 
-            {/* Score & Safe to Spend Details */}
-            <div className="grid grid-cols-2 gap-3">
-              <Card className="p-5 rounded-3xl glass-strong border border-white/10 text-center relative overflow-hidden">
-                <div aria-hidden className="absolute -top-6 -right-6 h-16 w-16 bg-[#4EE6E6]/20 blur-2xl rounded-full" />
-                <p className="text-[10px] text-white/60 uppercase tracking-widest font-bold mb-1 relative z-10">Buddy Score</p>
-                <p className="text-4xl font-black text-white relative z-10">{user.resilienceScore}</p>
-                <p className="text-[10px] text-[#4EE6E6] font-bold uppercase tracking-wider mt-1 relative z-10">{user.resilienceScore >= 80 ? 'Excellent' : 'Good'}</p>
-              </Card>
-              <Card className="p-5 rounded-3xl glass-strong border border-white/10 text-center relative overflow-hidden">
-                <div aria-hidden className="absolute -top-6 -right-6 h-16 w-16 bg-[#771FFF]/30 blur-2xl rounded-full" />
-                <p className="text-[10px] text-white/60 uppercase tracking-widest font-bold mb-1 relative z-10">Safe to Spend</p>
-                <p className="text-4xl font-black text-[#c1a3ff] relative z-10">RM{user.safeToSpend.toFixed(0)}</p>
-                <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mt-1 relative z-10">Today</p>
-              </Card>
-            </div>
+            {/* Coach's Advice (Vertical but Compact & Scrollable) */}
+            <div className="mt-1 px-1">
+              <p className="text-[11px] text-center text-white/50 uppercase tracking-widest font-bold mb-3">Today's Advice</p>
+              
+              <div className="space-y-3 max-h-[190px] overflow-y-auto pr-2 pb-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+                
+                {/* Advice Bubble 1 */}
+                <div className="flex justify-start">
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="w-full">
+                    <Card className="max-w-[92%] p-3 rounded-2xl rounded-tl-none bg-card border-white/5 shadow-card relative">
+                      <Sparkles className="absolute -top-2 -left-2 h-5 w-5 text-primary bg-[#0C0121] rounded-full p-0.5" />
+                      <p className="text-[12px] text-white/90 leading-relaxed">
+                        Hey {user.firstName}! 🐹 Your <span className="font-bold text-primary">Pre-Spending Warning</span> caught 2 impulse buys this week. Awesome job.
+                      </p>
+                    </Card>
+                  </motion.div>
+                </div>
 
-            {/* Missions to increase score */}
-            <div className="mt-4">
-              <h3 className="text-base font-bold mb-4 flex items-center gap-2">
-                Level up your score <span className="text-lg">🚀</span>
-              </h3>
-              <div className="space-y-3">
-                {[
-                  { title: "Top up Emergency Buffer", desc: "Add RM50 to reach your RM300 goal", pts: "+3 pts" },
-                  { title: "Turn on Smart Auto-Save", desc: "Stash your spare change automatically", pts: "+5 pts" },
-                  { title: "Join a Squad", desc: "Create or join a Squad Pocket goal", pts: "+10 pts" },
-                ].map((m, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 rounded-3xl glass border border-white/5 active:scale-95 transition-transform cursor-pointer">
-                    <div className="h-11 w-11 rounded-full bg-[#771FFF]/20 flex items-center justify-center shrink-0 border border-[#771FFF]/30">
-                      <span className="text-[11px] font-black text-[#c1a3ff]">{m.pts}</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-bold mb-0.5">{m.title}</p>
-                      <p className="text-[11px] text-white/50 leading-snug">{m.desc}</p>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-white/30" />
-                  </div>
-                ))}
+                {/* Advice Bubble 2 */}
+                <div className="flex justify-start">
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="w-full">
+                    <Card className="max-w-[92%] p-3 rounded-2xl rounded-tl-none bg-card border-white/5 shadow-card">
+                      <p className="text-[12px] text-white/90 leading-relaxed mb-2">
+                        <span className="font-bold text-mint">💡 Auto-Save Tip:</span> You spend RM40 on average for GrabFood. Turn on <span className="font-bold text-mint">Smart Auto-Save</span> to stash RM12 this week.
+                      </p>
+                      <Link to="/auto-save" className="inline-block text-[10px] text-black bg-mint px-3 py-1.5 rounded-lg font-bold active:scale-95 transition-transform">
+                        Turn on Auto-Save
+                      </Link>
+                    </Card>
+                  </motion.div>
+                </div>
+
+                {/* Advice Bubble 3 */}
+                <div className="flex justify-start">
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="w-full">
+                    <Card className="max-w-[92%] p-3 rounded-2xl rounded-tl-none bg-card border-white/5 shadow-card">
+                      <p className="text-[12px] text-white/90 leading-relaxed mb-2">
+                        <span className="font-bold text-[#F8326D]">🚨 Squad Alert:</span> Your <span className="font-bold text-[#F8326D]">Squad Pocket</span> is falling behind. Skip your next Tealive to catch up!
+                      </p>
+                      <Link to="/group-challenges" className="inline-block text-[10px] text-white bg-[#F8326D]/80 px-3 py-1.5 rounded-lg font-bold active:scale-95 transition-transform">
+                        Check Squad Pocket
+                      </Link>
+                    </Card>
+                  </motion.div>
+                </div>
+
               </div>
             </div>
           </div>

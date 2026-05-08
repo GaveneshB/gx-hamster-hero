@@ -54,7 +54,7 @@ export const buddyFeatures = [
   { id: 2, title: "Smart Auto-Save", desc: "Automated savings plan", icon: "💰", color: "success", route: "/auto-save" },
   { id: 3, title: "Buddy Shield Vault", desc: "Protect your salary before spending starts", icon: "🔐", color: "primary", route: "/buddy-shield-vault" },
   { id: 4, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
-  { id: 5, title: "Squad Savings", desc: "Pool funds & save together", icon: "🏆", color: "primary", route: "/group-challenges" },
+  { id: 5, title: "Squad Pocket", desc: "Pool funds & save together", icon: "🏆", color: "primary", route: "/group-challenges" },
 ];
 export const spendingByCategory = [
   { name: "Food", value: 480, color: "oklch(0.7 0.18 320)" },

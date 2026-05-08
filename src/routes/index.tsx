@@ -54,27 +54,9 @@ function calcRisk(amount: number, category: string) {
   return { level, score: Math.min(score, 100), reasons, safePerDay: ((MOCK.balance - amount) / MOCK.daysLeft).toFixed(0), safedays: Math.floor((MOCK.balance - amount) / MOCK.dailyBudget) };
 }
 
-// Defined outside component so it never re-allocates on render
-const BUDDY_TABS = [
-  {
-    id: "coach" as const,
-    to: "/coach",
-    label: "AI Coach",
-    icon: Mic,
-    message: (safeToSpend: number) =>
-      `"Spend up to RM${safeToSpend} today and still hit your weekend goal 🐹"`,
-  },
-  {
-    id: "report" as const,
-    to: "/weekly-report",
-    label: "Weekly Report",
-    icon: Calendar,
-    message: () => `"Your weekly insights are ready — tap to see your full report 📊"`,
-  },
-] as const;
+
 
 function Home() {
-  const [activeTab, setActiveTab] = useState<"coach" | "report">("coach");
   const [gStep, setGStep] = useState<"off" | "pick" | "confirm" | "warn" | "ok" | "delay">("off");
   const [pocketStep, setPocketStep] = useState<"off" | "type">("off");
   const [gMerchant, setGMerchant] = useState<typeof MERCHANTS[0] | null>(null);
@@ -98,9 +80,6 @@ function Home() {
   const buf = user.emergencyBuffer;
   const safeToSpend = user.safeToSpend;
   const hamsterMood = getHamsterMood(user.resilienceScore);
-
-  const currentTab = BUDDY_TABS.find((t) => t.id === activeTab)!;
-  const Icon = currentTab.icon;
 
   return (
     <AppShell>
@@ -160,52 +139,59 @@ function Home() {
         </Card>
       </section>
 
-      {/* BUDDY SECTION — Segmented toggle + card */}
+      {/* HAMSTER RESILIENCE DASHBOARD */}
       <section className="px-5 mt-5">
-        {/* Segmented control pill bar */}
-        <div
-          className="flex p-1 rounded-2xl glass border border-white/10 mb-3"
-          role="tablist"
-          aria-label="Buddy section"
-        >
-          {BUDDY_TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                role="tab"
-                aria-selected={isActive}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-colors duration-150"
-                style={{
-                  background: isActive ? "var(--color-primary)" : "transparent",
-                  color: isActive ? "var(--color-primary-foreground)" : "rgba(255,255,255,0.5)",
-                }}
-              >
-                <tab.icon className="h-3.5 w-3.5 shrink-0" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Content card — instant swap, zero animation = zero lag */}
-        <Link to={currentTab.to} className="block">
-          <div className="rounded-3xl glass-strong shadow-card p-3 flex items-center gap-3">
-            <div className="relative shrink-0">
-              <span aria-hidden className="absolute inset-0 rounded-full bg-primary/40 animate-pulse-ring" />
-              <Hamster mood={hamsterMood} size={56} float={false} />
+        <div className="rounded-[2rem] glass-strong shadow-card p-4 relative overflow-hidden border border-[#771FFF]/30">
+          <div aria-hidden className="absolute top-0 right-0 w-32 h-32 bg-[#771FFF]/20 blur-3xl rounded-full pointer-events-none" />
+          
+          <div className="flex items-center gap-5 mb-4 relative z-10">
+            {/* Hamster Circle Progress */}
+            <div className="relative shrink-0 w-[72px] h-[72px]">
+              <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
+                <circle 
+                  cx="50" cy="50" r="46" fill="none" stroke="#771FFF" strokeWidth="6" strokeLinecap="round"
+                  strokeDasharray="289" strokeDashoffset={289 - (289 * user.resilienceScore) / 100} 
+                  className="transition-all duration-1000" 
+                />
+              </svg>
+              <div className="absolute inset-0 m-1.5 rounded-full bg-[#0C0121] flex items-center justify-center overflow-hidden">
+                <Hamster mood={hamsterMood} size={50} float={true} />
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{currentTab.label}</p>
-              <p className="text-sm font-semibold leading-snug text-foreground">
-                {currentTab.message(safeToSpend)}
+
+            {/* Score & Safe to Spend */}
+            <div className="flex-1">
+              <div className="flex justify-between items-start mb-1">
+                <div>
+                  <p className="text-[10px] text-white/60 uppercase tracking-widest font-bold">Buddy Score</p>
+                  <p className="text-2xl font-black text-white">{user.resilienceScore}<span className="text-sm text-white/40">/100</span></p>
+                </div>
+                <div className="px-2 py-0.5 bg-[#4EE6E6]/20 rounded-md border border-[#4EE6E6]/30">
+                  <p className="text-[10px] text-[#4EE6E6] font-bold uppercase tracking-wider">{user.resilienceScore >= 80 ? 'Excellent' : 'Good'}</p>
+                </div>
+              </div>
+              
+              <div className="mt-2 bg-black/40 rounded-xl p-2 border border-white/5 flex items-center justify-between">
+                <p className="text-[11px] text-white/70 font-semibold px-2">Safe to spend today</p>
+                <div className="bg-[#771FFF]/20 px-2 py-1 rounded-lg">
+                  <p className="text-sm font-black text-white">RM {safeToSpend.toFixed(0)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action / How to increase */}
+          <Link to="/emergency" className="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between group active:scale-95 transition-transform">
+            <div className="flex items-start gap-2">
+              <span className="text-sm">💡</span>
+              <p className="text-xs text-white/80 leading-snug">
+                <span className="font-bold text-white">To reach 85:</span> Top up your Emergency Buffer by RM50.
               </p>
             </div>
-            <Icon className="h-5 w-5 text-primary shrink-0" />
-          </div>
-        </Link>
+            <ChevronRight className="h-4 w-4 text-white/50 group-hover:text-white transition-colors" />
+          </Link>
+        </div>
       </section>
 
       {/* Everyday account row — GXBank style */}

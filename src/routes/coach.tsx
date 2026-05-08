@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { Card } from "@/components/ui/card";
-import { Mic, Send, ChevronRight, Calendar } from "lucide-react";
+import { ChevronRight, Calendar, Activity } from "lucide-react";
 import { user, buddyFeatures } from "@/lib/data";
 import { getHamsterMood } from "@/lib/utils";
 import { WeeklyReportContent } from "@/components/WeeklyReportContent";
@@ -19,61 +19,14 @@ export const Route = createFileRoute("/coach")({
   component: Coach,
 });
 
-type Msg = { role: "buddy" | "me"; text: string };
-
-const SUGGESTIONS = [
-  "Can I afford a RM89 hoodie?",
-  "How much can I spend today?",
-  "Should I use BNPL?",
-  "Why is my risk high?",
-  "Save RM500 in 90 days?",
-];
-
-const reply = (q: string): string => {
-  const lower = q.toLowerCase();
-  if (lower.includes("afford"))
-    return `Hmm 🐹 you have RM${user.balance} but RM380 of bills hit before payday. You can afford it if you skip GrabFood twice this week. Want me to ring-fence the cash?`;
-  if (lower.includes("spend today"))
-    return `Today's safe-to-spend is RM${user.safeToSpend} ✨. After that you'll dip into your buffer. I'll nudge you if you cross it!`;
-  if (lower.includes("bnpl"))
-    return `You already have 2 BNPLs (RM340 due). Adding a third pushes your Debt Risk to 🔴 HIGH. I'd say: not yet, mate.`;
-  if (lower.includes("risk"))
-    return `Your Debt Radar shows risk because: BNPL load 28%, dining-out spike +40%, and buffer at 48%. Fix any one and risk drops 🟢`;
-  if (lower.includes("500"))
-    return `Easy peasy 🐹 RM500 in 90 days = RM5.55/day. I'll auto-save RM3 daily + round-ups. You'll hit it by April. Lock it in?`;
-  return `Got it! Let me crunch your numbers… ✨ Based on your patterns, here's what I'd do: cut subscriptions you don't use (-RM30/mo) and turn on round-up saving. Tiny moves, big wins.`;
-};
-
 const TABS = [
-  { id: "coach" as const, label: "AI Coach", icon: Mic },
+  { id: "coach" as const, label: "Vibe Check", icon: Activity },
   { id: "report" as const, label: "Weekly Report", icon: Calendar },
 ];
 
 function Coach() {
   const [activeTab, setActiveTab] = useState<"coach" | "report">("coach");
-  const [msgs, setMsgs] = useState<Msg[]>([
-    { role: "buddy", text: `Hey ${user.firstName}! 🐹💜 I'm Buddy — your money sidekick. What's on your mind?` },
-  ]);
-  const [input, setInput] = useState("");
-  const [listening, setListening] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const hamsterMood = getHamsterMood(user.resilienceScore);
-
-  // Scroll the page (not a nested container) to show new messages
-  useEffect(() => {
-    if (activeTab === "coach") {
-      setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-      }, 50);
-    }
-  }, [msgs, activeTab]);
-
-  const send = (text: string) => {
-    if (!text.trim()) return;
-    setMsgs(m => [...m, { role: "me", text }]);
-    setInput("");
-    setTimeout(() => setMsgs(m => [...m, { role: "buddy", text: reply(text) }]), 600);
-  };
 
   return (
     <AppShell>
@@ -83,7 +36,7 @@ function Coach() {
         {/* Header + toggle */}
         <PageHeader
           title="GX Buddy"
-          subtitle={activeTab === "coach" ? "Your pocket money coach" : "Weekly recap from Buddy"}
+          subtitle={activeTab === "coach" ? "Your financial vital signs" : "Weekly recap from Buddy"}
           back={false}
         />
 
@@ -115,97 +68,60 @@ function Coach() {
           })}
         </div>
 
-        {/* ── AI COACH TAB ── */}
+        {/* ── VIBE CHECK TAB ── */}
         {activeTab === "coach" && (
-          <div className="flex flex-col gap-4">
-            {/* Hamster Mascot */}
-            <div className="flex flex-col items-center py-2">
-              <motion.div
-                animate={listening ? { scale: [1, 1.06, 1] } : {}}
-                transition={{ duration: 0.8, repeat: Infinity }}
-              >
-                <Hamster mood={listening ? "happy" : hamsterMood} size={120} />
-              </motion.div>
-              <div className="flex gap-1.5 mt-1">
-                {[0, 1, 2].map(i => (
-                  <span
-                    key={i}
-                    className={`h-1.5 w-1.5 rounded-full bg-primary ${listening ? "animate-pulse" : "opacity-30"}`}
-                    style={{ animationDelay: `${i * 150}ms` }}
-                  />
-                ))}
+          <div className="flex flex-col gap-6">
+            {/* Hamster Mascot & Score Circle */}
+            <div className="relative flex justify-center py-6">
+              <div className="relative w-48 h-48">
+                <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="#771FFF" strokeWidth="6" strokeLinecap="round" strokeDasharray="289" strokeDashoffset={289 - (289 * user.resilienceScore) / 100} className="transition-all duration-1000" />
+                </svg>
+                <div className="absolute inset-0 m-2 rounded-full bg-[#0C0121] flex items-center justify-center overflow-hidden border-4 border-[#771FFF]/10 shadow-[0_0_40px_rgba(119,31,255,0.2)]">
+                  <Hamster mood={hamsterMood} size={130} float={true} />
+                </div>
               </div>
             </div>
 
-            {/* Chat messages — NO overflow container, they just stack naturally */}
-            <div className="space-y-2">
-              <AnimatePresence>
-                {msgs.map((m, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className={`flex ${m.role === "me" ? "justify-end" : "justify-start"}`}
-                  >
-                    <Card className={`max-w-[80%] p-3 rounded-2xl border-0 shadow-card text-sm ${
-                      m.role === "me"
-                        ? "bg-primary-gradient text-primary-foreground rounded-br-sm"
-                        : "bg-card rounded-bl-sm"
-                    }`}>
-                      {m.text}
-                    </Card>
-                  </motion.div>
+            {/* Score & Safe to Spend Details */}
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="p-5 rounded-3xl glass-strong border border-white/10 text-center relative overflow-hidden">
+                <div aria-hidden className="absolute -top-6 -right-6 h-16 w-16 bg-[#4EE6E6]/20 blur-2xl rounded-full" />
+                <p className="text-[10px] text-white/60 uppercase tracking-widest font-bold mb-1 relative z-10">Buddy Score</p>
+                <p className="text-4xl font-black text-white relative z-10">{user.resilienceScore}</p>
+                <p className="text-[10px] text-[#4EE6E6] font-bold uppercase tracking-wider mt-1 relative z-10">{user.resilienceScore >= 80 ? 'Excellent' : 'Good'}</p>
+              </Card>
+              <Card className="p-5 rounded-3xl glass-strong border border-white/10 text-center relative overflow-hidden">
+                <div aria-hidden className="absolute -top-6 -right-6 h-16 w-16 bg-[#771FFF]/30 blur-2xl rounded-full" />
+                <p className="text-[10px] text-white/60 uppercase tracking-widest font-bold mb-1 relative z-10">Safe to Spend</p>
+                <p className="text-4xl font-black text-[#c1a3ff] relative z-10">RM{user.safeToSpend.toFixed(0)}</p>
+                <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mt-1 relative z-10">Today</p>
+              </Card>
+            </div>
+
+            {/* Missions to increase score */}
+            <div className="mt-4">
+              <h3 className="text-base font-bold mb-4 flex items-center gap-2">
+                Level up your score <span className="text-lg">🚀</span>
+              </h3>
+              <div className="space-y-3">
+                {[
+                  { title: "Top up Emergency Buffer", desc: "Add RM50 to reach your RM300 goal", pts: "+3 pts" },
+                  { title: "Turn on Smart Auto-Save", desc: "Stash your spare change automatically", pts: "+5 pts" },
+                  { title: "Join a Squad", desc: "Create or join a Squad Pocket goal", pts: "+10 pts" },
+                ].map((m, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-3xl glass border border-white/5 active:scale-95 transition-transform cursor-pointer">
+                    <div className="h-11 w-11 rounded-full bg-[#771FFF]/20 flex items-center justify-center shrink-0 border border-[#771FFF]/30">
+                      <span className="text-[11px] font-black text-[#c1a3ff]">{m.pts}</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold mb-0.5">{m.title}</p>
+                      <p className="text-[11px] text-white/50 leading-snug">{m.desc}</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-white/30" />
+                  </div>
                 ))}
-              </AnimatePresence>
-              {/* Anchor to scroll to after new message */}
-              <div ref={bottomRef} />
-            </div>
-
-            {/* Quick Suggestions */}
-            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-              {SUGGESTIONS.map(s => (
-                <button
-                  key={s}
-                  onClick={() => send(s)}
-                  className="shrink-0 px-3 py-1.5 rounded-full bg-secondary text-xs font-medium"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-
-            {/* Chat Input — sticky at bottom of screen */}
-            <div
-              className="sticky bottom-24 z-20"
-            >
-              <div className="glass rounded-full p-2 flex items-center gap-2 shadow-glow">
-                <input
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && send(input)}
-                  placeholder="Ask Buddy…"
-                  className="flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
-                />
-                <button
-                  onMouseDown={() => setListening(true)}
-                  onMouseUp={() => setListening(false)}
-                  onTouchStart={() => setListening(true)}
-                  onTouchEnd={() => setListening(false)}
-                  className={`h-9 w-9 rounded-full grid place-items-center transition-colors ${
-                    listening ? "bg-destructive text-destructive-foreground" : "bg-mint text-accent-foreground"
-                  }`}
-                  aria-label="hold to talk"
-                >
-                  <Mic className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => send(input)}
-                  className="h-9 w-9 rounded-full bg-primary-gradient text-primary-foreground grid place-items-center"
-                  aria-label="send"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
               </div>
             </div>
           </div>

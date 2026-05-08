@@ -28,7 +28,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/group-challenges")({
   head: () => ({
     meta: [
-      { title: "Squad Savings — GX Buddy" },
+      { title: "Squad Pocket — GX Buddy" },
       { name: "description", content: "Create a pool, invite friends, save together." },
     ],
   }),
@@ -249,7 +249,7 @@ function SquadSavingsManager() {
           >
             <ChevronLeft className="h-4 w-4" /> Cancel
           </button>
-          <h1 className="text-2xl font-extrabold tracking-tight">New Squad Savings</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">New Squad Pocket</h1>
           <p className="text-sm text-muted-foreground mt-1">What are we saving for?</p>
         </div>
         <div className="px-5 space-y-5">
@@ -939,7 +939,7 @@ function SquadSavingsManager() {
   // DEFAULT VIEW: LIST
   return (
     <AppShell>
-      <PageHeader title="Squad Savings" subtitle="Pool funds, achieve goals faster 🎯" />
+      <PageHeader title="Squad Pocket" subtitle="Pool funds, achieve goals faster 🎯" />
 
       <section className="px-5 mt-2 space-y-4 pb-10">
         <motion.button

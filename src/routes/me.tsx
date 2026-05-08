@@ -12,7 +12,7 @@ export const Route = createFileRoute("/me")({
   head: () => ({
     meta: [
       { title: "Profile — GX Buddy" },
-      { name: "description", content: "Your profile, resilience score, achievements and personalization." },
+      { name: "description", content: "Your profile, buddy score, achievements and personalization." },
     ],
   }),
   component: Me,
@@ -43,10 +43,10 @@ function Me() {
         </Card>
       </section>
 
-      {/* Resilience Score Section */}
+      {/* Buddy Score Section */}
       <section className="px-5 mt-6">
         <h3 className="text-base font-bold mb-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-primary" /> GX Score
+          <TrendingUp className="h-4 w-4 text-primary" /> Buddy Score
         </h3>
         <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card">
           <div className="flex items-end justify-between mb-3">

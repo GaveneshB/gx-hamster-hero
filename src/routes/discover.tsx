@@ -53,14 +53,14 @@ function Discover() {
                 <ShieldAlert className="h-7 w-7 text-[#c1a3ff]" />
               </div>
               <div className="flex-1">
-                <h4 className="text-sm font-bold text-white mb-0.5">Pre-Spending Guardian</h4>
+                <h4 className="text-sm font-bold text-white mb-0.5">Pre-Spending Warning</h4>
                 <p className="text-[11px] text-white/70 leading-snug pr-2">Let AI analyze your risk score before you make that impulsive purchase.</p>
               </div>
               <ChevronRight className="h-5 w-5 text-white/40 absolute right-4" />
             </Card>
           </Link>
 
-          {/* Squad Savings Card */}
+          {/* Squad Pocket Card */}
           <Link to="/group-challenges">
             <Card className="p-5 rounded-3xl glass-strong border border-[#F8326D]/30 shadow-card relative overflow-hidden flex items-center gap-4 hover:bg-white/5 transition-colors">
               <div aria-hidden className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#F8326D]/20 to-transparent" />
@@ -68,7 +68,7 @@ function Discover() {
                 <Users className="h-7 w-7 text-[#ffb3c6]" />
               </div>
               <div className="flex-1">
-                <h4 className="text-sm font-bold text-white mb-0.5">Squad Challenges</h4>
+                <h4 className="text-sm font-bold text-white mb-0.5">Squad Pocket</h4>
                 <p className="text-[11px] text-white/70 leading-snug pr-2">Pool funds with friends for that Bali trip. Social accountability works.</p>
               </div>
               <ChevronRight className="h-5 w-5 text-white/40 absolute right-4" />

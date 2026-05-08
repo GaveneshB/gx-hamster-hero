@@ -76,6 +76,7 @@ const BUDDY_TABS = [
 function Home() {
   const [activeTab, setActiveTab] = useState<"coach" | "report">("coach");
   const [gStep, setGStep] = useState<"off" | "pick" | "confirm" | "warn" | "ok" | "delay">("off");
+  const [pocketStep, setPocketStep] = useState<"off" | "type">("off");
   const [gMerchant, setGMerchant] = useState<typeof MERCHANTS[0] | null>(null);
   const [gAmt, setGAmt] = useState("");
   const [gRisk, setGRisk] = useState<ReturnType<typeof calcRisk> | null>(null);
@@ -137,9 +138,9 @@ function Home() {
         <Card className="relative mt-5 p-4 rounded-3xl glass-strong border-white/10 shadow-card">
           <div className="grid grid-cols-3 gap-2">
             {[
-              { Icon: Plus, label: "Add Money", to: "/auto-save", onClick: undefined },
-              { Icon: ScanLine, label: "Scan & Pay", to: null, onClick: () => setGStep("pick") },
-              { Icon: Send, label: "Send Money", to: "/coach", onClick: undefined },
+              { Icon: Plus, label: "Add money", to: "/auto-save", onClick: undefined },
+              { Icon: ScanLine, label: "Scan QR", to: null, onClick: () => setGStep("pick") },
+              { Icon: Send, label: "Send money", to: "/coach", onClick: undefined },
             ].map(({ Icon, label, to, onClick }) => (
               onClick
                 ? <button key={label} onClick={onClick} className="flex flex-col items-center gap-2">
@@ -223,16 +224,16 @@ function Home() {
               <p className="text-xs text-muted-foreground mt-3">View transactions</p>
             </Card>
           </Link>
-          <Link to="/auto-save">
+          <div className="h-full">
             <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px] relative overflow-hidden">
-              <div aria-hidden className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-mint/30 blur-2xl" />
               <div className="relative">
-                <p className="text-sm font-bold">Smart Auto-Save</p>
-                <p className="text-[11px] text-muted-foreground mt-1">Earn 2.50% p.a.<br />Auto-save round-ups</p>
+                <p className="text-[15px] font-bold">Pockets</p>
+                <p className="text-[11px] text-white/70 mt-1">Earn up to 3.55% p.a.</p>
+                <span className="inline-block mt-1.5 px-1.5 py-0.5 bg-[#4EE6E6] text-[#0C0121] text-[10px] font-bold rounded">Up to 3.55% p.a.</span>
               </div>
-              <span className="relative inline-flex items-center justify-center px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold w-fit">Activate</span>
+              <button onClick={() => setPocketStep("type")} className="relative z-10 mt-3 w-fit px-4 py-1 rounded-full border border-white/80 text-xs font-semibold hover:bg-white/10 transition-colors">Create</button>
             </Card>
-          </Link>
+          </div>
         </div>
       </section>
 
@@ -284,6 +285,38 @@ function Home() {
       </section>
       {/* ===== PAYMENT GUARDIAN MODALS ===== */}
       <AnimatePresence>
+        {/* POCKET SELECTION MODAL */}
+        {pocketStep === "type" && (
+          <div className="fixed inset-0 z-[100] flex items-end">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPocketStep("off")} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
+              <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-5" />
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-black">Create a Pocket</h2>
+                <button onClick={() => setPocketStep("off")} className="p-2 rounded-full bg-secondary"><X className="h-4 w-4" /></button>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">How would you like to save?</p>
+              <div className="grid gap-3">
+                <button onClick={() => { setPocketStep("off"); toast("Solo pocket created!"); }} className="flex items-center gap-4 p-4 rounded-2xl glass text-left hover:bg-white/10 active:scale-95 transition-all">
+                  <div className="h-12 w-12 rounded-full bg-secondary grid place-items-center text-xl">👤</div>
+                  <div>
+                    <p className="font-bold text-sm">Solo Pocket</p>
+                    <p className="text-xs text-muted-foreground">Save for your own personal goals</p>
+                  </div>
+                </button>
+                <Link to="/group-challenges" onClick={() => setPocketStep("off")} className="flex items-center gap-4 p-4 rounded-2xl bg-primary/20 border border-primary/30 text-left hover:bg-primary/30 active:scale-95 transition-all relative overflow-hidden">
+                  <div aria-hidden className="absolute -right-4 -top-4 h-16 w-16 bg-primary/30 blur-2xl rounded-full" />
+                  <div className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center text-xl text-white shadow-glow">👥</div>
+                  <div>
+                    <p className="font-bold text-sm text-primary-foreground">Squad Pocket <span className="ml-1 text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-sm">NEW</span></p>
+                    <p className="text-xs text-primary/80">Save together with friends & earn badges</p>
+                  </div>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
         {/* MERCHANT PICKER */}
         {gStep === "pick" && (
           <div className="fixed inset-0 z-[100] flex items-end">

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
@@ -7,8 +7,10 @@ import { user, transactions } from "@/lib/data";
 import { Card } from "@/components/ui/card";
 import { getHamsterMood } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 import {
   Shield, Mic, Eye, Plus, ScanLine, Send, HelpCircle, ChevronRight, Bell, Calendar,
+  X, ShieldAlert, ShieldX, ShieldCheck, AlertTriangle, BarChart3, Clock, CheckCircle2, Zap,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -22,6 +24,35 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
+
+// --- GUARDIAN DATA ---
+const MERCHANTS = [
+  { id: 1, name: "Tealive", icon: "🦹", category: "F&B", amount: 12 },
+  { id: 2, name: "Shopee", icon: "🛍️", category: "Shopping", amount: 89 },
+  { id: 3, name: "GrabFood", icon: "🍔", category: "Delivery", amount: 28 },
+  { id: 4, name: "RapidKL", icon: "🚌", category: "Transport", amount: 2 },
+  { id: 5, name: "Caring Pharmacy", icon: "💊", category: "Medical", amount: 25 },
+  { id: 6, name: "Steam Game", icon: "🎮", category: "Gaming", amount: 59 },
+];
+const NECESSITY = ["Transport", "Medical", "Groceries"];
+const IMPULSE = ["Shopping", "Gaming", "Entertainment", "Delivery"];
+const MOCK = { balance: 312, dailyBudget: 30, daysLeft: 10, spentToday: 52, allowanceDate: "19 May" };
+
+type RiskLevel = "safe" | "medium" | "high";
+function calcRisk(amount: number, category: string) {
+  let score = 0;
+  const reasons: string[] = [];
+  if (MOCK.spentToday >= MOCK.dailyBudget) { score += 35; reasons.push(`Already spent RM${MOCK.spentToday} today (budget: RM${MOCK.dailyBudget})`); }
+  else if (MOCK.spentToday + amount > MOCK.dailyBudget) { score += 20; reasons.push(`Will push today to RM${MOCK.spentToday + amount}`); }
+  if (IMPULSE.includes(category)) { score += 25; reasons.push(`${category} is non-essential`); }
+  const left = MOCK.balance - amount;
+  if (left < MOCK.dailyBudget * 3) { score += 30; reasons.push(`Only RM${left} left after payment`); }
+  else if (left < MOCK.dailyBudget * 5) { score += 15; reasons.push(`RM${left} remaining after payment`); }
+  if (amount > 50) { score += 10; reasons.push(`Large purchase (RM${amount})`); }
+  if (NECESSITY.includes(category)) score = Math.max(0, score - 40);
+  const level: RiskLevel = score >= 50 ? "high" : score >= 25 ? "medium" : "safe";
+  return { level, score: Math.min(score, 100), reasons, safePerDay: ((MOCK.balance - amount) / MOCK.daysLeft).toFixed(0), safedays: Math.floor((MOCK.balance - amount) / MOCK.dailyBudget) };
+}
 
 // Defined outside component so it never re-allocates on render
 const BUDDY_TABS = [
@@ -44,6 +75,24 @@ const BUDDY_TABS = [
 
 function Home() {
   const [activeTab, setActiveTab] = useState<"coach" | "report">("coach");
+  const [gStep, setGStep] = useState<"off" | "pick" | "confirm" | "warn" | "ok" | "delay">("off");
+  const [gMerchant, setGMerchant] = useState<typeof MERCHANTS[0] | null>(null);
+  const [gAmt, setGAmt] = useState("");
+  const [gRisk, setGRisk] = useState<ReturnType<typeof calcRisk> | null>(null);
+
+  const gPay = () => {
+    if (!gMerchant) return;
+    const amt = parseInt(gAmt) || gMerchant.amount;
+    const r = calcRisk(amt, gMerchant.category);
+    setGRisk(r);
+    if (r.level === "safe") { setGStep("ok"); }
+    else { setGStep("warn"); }
+  };
+  const gConfirm = () => { toast(`RM${gAmt || gMerchant?.amount} paid to ${gMerchant?.name}`); setGStep("ok"); };
+  const gDelay = () => setGStep("delay");
+  const gReset = () => { setGStep("off"); setGMerchant(null); setGAmt(""); setGRisk(null); };
+
+  const amt = parseInt(gAmt) || (gMerchant?.amount ?? 0);
 
   const buf = user.emergencyBuffer;
   const safeToSpend = user.safeToSpend;
@@ -88,16 +137,23 @@ function Home() {
         <Card className="relative mt-5 p-4 rounded-3xl glass-strong border-white/10 shadow-card">
           <div className="grid grid-cols-3 gap-2">
             {[
-              { Icon: Plus, label: "Add Money", to: "/auto-save" },
-              { Icon: ScanLine, label: "Scan QR", to: "/" },
-              { Icon: Send, label: "Send Money", to: "/coach" },
-            ].map(({ Icon, label, to }) => (
-              <Link key={label} to={to} className="flex flex-col items-center gap-2">
-                <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow">
-                  <Icon className="h-5 w-5 text-white" />
-                </motion.div>
-                <span className="text-xs font-semibold text-white/90">{label}</span>
-              </Link>
+              { Icon: Plus, label: "Add Money", to: "/auto-save", onClick: undefined },
+              { Icon: ScanLine, label: "Scan & Pay", to: null, onClick: () => setGStep("pick") },
+              { Icon: Send, label: "Send Money", to: "/coach", onClick: undefined },
+            ].map(({ Icon, label, to, onClick }) => (
+              onClick
+                ? <button key={label} onClick={onClick} className="flex flex-col items-center gap-2">
+                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow">
+                      <Icon className="h-5 w-5 text-white" />
+                    </motion.div>
+                    <span className="text-xs font-semibold text-white/90">{label}</span>
+                  </button>
+                : <Link key={label} to={to!} className="flex flex-col items-center gap-2">
+                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow">
+                      <Icon className="h-5 w-5 text-white" />
+                    </motion.div>
+                    <span className="text-xs font-semibold text-white/90">{label}</span>
+                  </Link>
             ))}
           </div>
         </Card>
@@ -226,6 +282,146 @@ function Home() {
           ))}
         </Card>
       </section>
+      {/* ===== PAYMENT GUARDIAN MODALS ===== */}
+      <AnimatePresence>
+        {/* MERCHANT PICKER */}
+        {gStep === "pick" && (
+          <div className="fixed inset-0 z-[100] flex items-end">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={gReset} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
+              <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-5" />
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-black">Scan & Pay</h2>
+                <button onClick={gReset} className="p-2 rounded-full bg-secondary"><X className="h-4 w-4" /></button>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">Select a merchant to simulate payment</p>
+              <div className="grid grid-cols-3 gap-3">
+                {MERCHANTS.map(m => (
+                  <button key={m.id} onClick={() => { setGMerchant(m); setGAmt(m.amount.toString()); setGStep("confirm"); }}
+                    className="p-3 rounded-2xl glass text-center hover:bg-white/10 active:scale-95 transition-all">
+                    <p className="text-2xl mb-1">{m.icon}</p>
+                    <p className="font-bold text-xs">{m.name}</p>
+                    <p className="text-[10px] text-muted-foreground">RM{m.amount}</p>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* CONFIRM */}
+        {gStep === "confirm" && gMerchant && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={gReset} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
+              <p className="text-5xl mb-2">{gMerchant.icon}</p>
+              <h3 className="text-xl font-black">{gMerchant.name}</h3>
+              <p className="text-xs text-muted-foreground mb-5">{gMerchant.category}</p>
+              <div className="bg-secondary/50 rounded-2xl p-4 flex items-center gap-2 mb-5">
+                <span className="text-lg font-bold text-muted-foreground">RM</span>
+                <input type="number" value={gAmt} onChange={e => setGAmt(e.target.value)}
+                  className="bg-transparent outline-none text-3xl font-black w-full [&::-webkit-inner-spin-button]:appearance-none [appearance:textfield]" />
+              </div>
+              <div className="space-y-3">
+                <button onClick={gPay} className="w-full py-4 rounded-2xl bg-primary-gradient text-primary-foreground font-black shadow-glow active:scale-95">Pay via GXSecure 🔒</button>
+                <button onClick={gReset} className="w-full py-3 rounded-2xl bg-secondary font-bold">Cancel</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* WARNING */}
+        {gStep === "warn" && gRisk && gMerchant && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: "spring", damping: 22 }}
+              className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 z-10 border border-white/10 overflow-y-auto max-h-[90vh]">
+              <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-3 ${gRisk.level === "high" ? "bg-destructive/20" : "bg-warning/20"}`}>
+                {gRisk.level === "high" ? <ShieldX className="h-7 w-7 text-destructive" /> : <ShieldAlert className="h-7 w-7 text-warning" />}
+              </div>
+              <h3 className="text-lg font-black text-center mb-1">{gRisk.level === "high" ? "⚠️ Risky Purchase!" : "🤔 Heads Up"}</h3>
+              <p className="text-xs text-muted-foreground text-center mb-4">Paying RM{amt} to {gMerchant.name}</p>
+              {/* Risk bar */}
+              <div className="mb-3">
+                <div className="flex justify-between text-xs font-bold mb-1">
+                  <span className="text-muted-foreground">Risk Score</span>
+                  <span className={gRisk.level === "high" ? "text-destructive" : "text-warning"}>{gRisk.score}/100</span>
+                </div>
+                <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${gRisk.score}%` }} transition={{ duration: 0.8 }}
+                    className={`h-full rounded-full ${gRisk.level === "high" ? "bg-destructive" : "bg-warning"}`} />
+                </div>
+              </div>
+              {/* Reasons */}
+              <div className="bg-secondary/50 rounded-2xl p-3 mb-3 space-y-1.5">
+                {gRisk.reasons.map((r, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
+                    <p className="text-xs text-muted-foreground">{r}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Impact */}
+              <div className="bg-primary/10 border border-primary/20 rounded-2xl p-3 mb-3 space-y-2">
+                <p className="text-xs font-bold text-primary flex items-center gap-1"><BarChart3 className="h-3.5 w-3.5" /> What happens if you pay?</p>
+                <div className="flex items-start gap-2">
+                  <span className="text-base">💸</span>
+                  <p className="text-xs text-muted-foreground">You'll have <span className="font-bold text-foreground">RM{MOCK.balance - amt}</span> left in your account for the next <span className="font-bold text-foreground">{MOCK.daysLeft} days</span> until your allowance on <span className="font-bold text-foreground">{MOCK.allowanceDate}</span>.</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-base">📅</span>
+                  <p className="text-xs text-muted-foreground">That works out to roughly <span className="font-bold text-foreground">RM{gRisk.safePerDay} per day</span> — which is {parseInt(gRisk.safePerDay) < 20 ? <span className="text-destructive font-bold">very tight</span> : "manageable"} for food, transport, and daily needs.</p>
+                </div>
+                {gRisk.safedays < MOCK.daysLeft && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-base">⚠️</span>
+                    <p className="text-xs text-muted-foreground">At your usual spending rate, your money may <span className="font-bold text-destructive">run out in {gRisk.safedays} days</span> — before your next allowance arrives.</p>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2.5">
+                <button onClick={gDelay} className="w-full py-3.5 rounded-2xl bg-primary-gradient text-primary-foreground font-bold flex items-center justify-center gap-2 active:scale-95 shadow-glow"><Clock className="h-4 w-4" /> Delay Purchase</button>
+                <button onClick={gConfirm} className="w-full py-3.5 rounded-2xl bg-secondary font-bold active:scale-95">Continue Anyway</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* SUCCESS */}
+        {gStep === "ok" && gMerchant && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }} className="mx-auto w-14 h-14 bg-success/20 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 className="h-7 w-7 text-success" />
+              </motion.div>
+              <h3 className="text-xl font-black mb-1">Payment Sent! 💸</h3>
+              <p className="text-3xl font-black text-primary mt-3 mb-1">RM{amt}</p>
+              <p className="text-sm text-muted-foreground mb-4">to {gMerchant.name}</p>
+              <div className="bg-secondary/50 rounded-xl p-3 mb-5"><p className="text-xs text-muted-foreground">Remaining balance</p><p className="font-black text-lg">RM{MOCK.balance - amt}</p></div>
+              <button onClick={gReset} className="w-full py-3.5 rounded-2xl bg-primary-gradient text-primary-foreground font-bold active:scale-95">Done</button>
+            </motion.div>
+          </div>
+        )}
+
+        {/* DELAYED */}
+        {gStep === "delay" && gMerchant && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }} className="text-5xl mb-3">🦸</motion.div>
+              <h3 className="text-xl font-black mb-2">Smart Move! 💪</h3>
+              <p className="text-sm text-muted-foreground mb-4">You chose to delay this purchase. Your future self thanks you!</p>
+              <div className="bg-success/10 border border-success/20 rounded-2xl p-4 mb-5 text-left">
+                <p className="text-xs font-bold text-success mb-1 flex items-center gap-1"><Zap className="h-3.5 w-3.5" /> Money Saved</p>
+                <p className="font-black text-2xl text-success">RM{amt}</p>
+                <p className="text-xs text-muted-foreground mt-1">stays in your account until {MOCK.allowanceDate}</p>
+              </div>
+              <button onClick={gReset} className="w-full py-3.5 rounded-2xl bg-primary-gradient text-primary-foreground font-bold active:scale-95">Back to Home</button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </AppShell>
   );
 }

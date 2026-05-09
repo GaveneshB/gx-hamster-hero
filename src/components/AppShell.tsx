@@ -6,6 +6,7 @@ type NavItem = { to: string; label: string; Icon: typeof Home; center?: boolean 
 const items: NavItem[] = [
   { to: "/", label: "Home", Icon: Home },
   { to: "/discover", label: "Discover", Icon: LayoutGrid },
+  { to: "/missions", label: "Rewards", Icon: Gift },
   { to: "/me", label: "Me", Icon: User },
 ];
 

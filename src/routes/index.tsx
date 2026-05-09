@@ -174,17 +174,17 @@ function Home() {
           <span className="text-xs text-muted-foreground">●●●</span>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/me">
-            <Card className="p-4 rounded-2xl glass border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px]">
+          <Link to="/coach" search={{ tab: "report" }}>
+            <Card className="p-4 rounded-2xl glass border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px] cursor-pointer hover:bg-white/5 transition-colors">
               <div>
                 <p className="text-xs text-muted-foreground">Main account</p>
                 <p className="text-lg font-extrabold mt-1">RM{user.balance.toLocaleString()}</p>
               </div>
-              <p className="text-xs text-muted-foreground mt-3">View transactions</p>
+              <p className="text-xs text-primary font-semibold mt-3">View GX Buddy weekly report →</p>
             </Card>
           </Link>
-          <div className="h-full">
-            <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+          <Link to="/group-challenges" className="h-full block">
+            <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px] relative overflow-hidden cursor-pointer hover:bg-white/5 transition-colors">
               <div className="relative">
                 <div className="flex items-center gap-1.5">
                 <p className="text-[15px] font-bold">Pockets</p>
@@ -195,9 +195,9 @@ function Home() {
                 <p className="text-[11px] text-white/70 mt-1">Earn up to 3.55% p.a.</p>
                 <span className="inline-block mt-1.5 px-1.5 py-0.5 bg-[#4EE6E6] text-[#0C0121] text-[10px] font-bold rounded">Up to 3.55% p.a.</span>
               </div>
-              <button onClick={() => setPocketStep("type")} className="relative z-10 mt-3 w-fit px-4 py-1 rounded-full border border-white/80 text-xs font-semibold hover:bg-white/10 transition-colors">Create</button>
+              <button onClick={(e) => { e.preventDefault(); setPocketStep("type"); }} className="relative z-10 mt-3 w-fit px-4 py-1 rounded-full border border-white/80 text-xs font-semibold hover:bg-white/10 transition-colors">Create</button>
             </Card>
-          </div>
+          </Link>
         </div>
       </section>
 
@@ -206,28 +206,29 @@ function Home() {
         <h2 className="text-base font-bold mb-3">For you today</h2>
         <div className="space-y-3">
           {/* Pre-Spending Warning Card */}
-          <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden">
-            <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#771FFF]/20 blur-3xl" />
-            <div className="relative flex items-center gap-4">
-              <div className="relative h-24 w-24 grid place-items-center shrink-0">
-                <span aria-hidden className="absolute h-24 w-24 rounded-full border border-[#771FFF]/40 animate-pulse-ring" />
-                <span aria-hidden className="absolute h-16 w-16 rounded-full border border-[#771FFF]/60 animate-pulse-ring" style={{ animationDelay: "0.6s" }} />
-                <div className="h-12 w-12 rounded-full bg-[#771FFF] grid place-items-center shadow-[0_0_20px_rgba(119,31,255,0.5)]">
-                  <ShieldAlert className="h-6 w-6 text-white" />
+          <button onClick={() => setGStep("pick")} className="w-full text-left">
+            <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden cursor-pointer">
+              <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#771FFF]/20 blur-3xl" />
+              <div className="relative flex items-center gap-4">
+                <div className="relative h-24 w-24 grid place-items-center shrink-0">
+                  <span aria-hidden className="absolute h-24 w-24 rounded-full border border-[#771FFF]/40 animate-pulse-ring" />
+                  <span aria-hidden className="absolute h-16 w-16 rounded-full border border-[#771FFF]/60 animate-pulse-ring" style={{ animationDelay: "0.6s" }} />
+                  <div className="h-12 w-12 rounded-full bg-[#771FFF] grid place-items-center shadow-[0_0_20px_rgba(119,31,255,0.5)]">
+                    <ShieldAlert className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold flex items-center gap-2">
+                    Pre-Spending Warning
+                    <span className="bg-[#4EE6E6]/20 text-[#4EE6E6] text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-[#4EE6E6]/20">Active</span>
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
+                    Warns you on <span className="font-bold text-white">Scan QR</span> & <span className="font-bold text-white">Send Money</span> — only if the payment is risky. Safe transactions go straight through.
+                  </p>
                 </div>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold flex items-center gap-2">
-                  Pre-Spending Warning
-                  <span className="bg-[#4EE6E6]/20 text-[#4EE6E6] text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-[#4EE6E6]/20">Active</span>
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
-                  Warns you on <span className="font-bold text-white">Scan QR</span> & <span className="font-bold text-white">Send Money</span> — only if the payment is risky. Safe transactions go straight through.
-                </p>
-                <Link to="/spending-warnings" className="inline-flex mt-3 px-3 py-1.5 rounded-full border border-white/30 text-xs font-semibold">Try it out</Link>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </button>
 
           {/* Emergency Buffer Card */}
           <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden">

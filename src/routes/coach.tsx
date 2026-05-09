@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { AppShell, PageHeader } from "@/components/AppShell";
@@ -10,6 +10,9 @@ import { getHamsterMood } from "@/lib/utils";
 import { WeeklyReportContent } from "@/components/WeeklyReportContent";
 
 export const Route = createFileRoute("/coach")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: (search.tab as "coach" | "report") ?? "coach",
+  }),
   head: () => ({
     meta: [
       { title: "AI Coach — GX Buddy" },
@@ -25,7 +28,8 @@ const TABS = [
 ];
 
 function Coach() {
-  const [activeTab, setActiveTab] = useState<"coach" | "report">("coach");
+  const { tab } = useSearch({ from: "/coach" });
+  const [activeTab, setActiveTab] = useState<"coach" | "report">(tab ?? "coach");
   const hamsterMood = getHamsterMood(user.resilienceScore);
 
   return (
@@ -73,12 +77,19 @@ function Coach() {
           <div className="flex flex-col gap-6">
             {/* Hamster Mascot & Score Badge */}
             <div className="flex flex-col items-center py-2 relative">
-              <div className="relative">
-                <Hamster mood={hamsterMood} size={120} />
-                <div className="absolute -bottom-1 -right-2 bg-primary-gradient px-3 py-1 rounded-full border-2 border-[#0C0121] shadow-lg">
-                  <p className="text-[11px] font-black text-white">Score: {user.resilienceScore}</p>
+              <Link to="/buddy-profile" className="relative group active:scale-95 transition-transform">
+                <div aria-hidden className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative">
+                  <Hamster mood={hamsterMood} size={120} />
+                  <div className="absolute -bottom-1 -right-2 bg-primary-gradient px-3 py-1 rounded-full border-2 border-[#0C0121] shadow-lg">
+                    <p className="text-[11px] font-black text-white">Score: {user.resilienceScore}</p>
+                  </div>
                 </div>
-              </div>
+              </Link>
+              
+              <Link to="/buddy-profile" className="mt-4 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary flex items-center gap-2 hover:bg-primary/20 transition-colors active:scale-95">
+                GX Buddy Profile <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
             {/* Coach's Advice (Vertical but Compact & Scrollable) */}

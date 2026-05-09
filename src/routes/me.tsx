@@ -4,7 +4,7 @@ import { Hamster } from "@/components/Hamster";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { user, badges } from "@/lib/data";
-import { Settings, Bell, Lock, LogOut, HelpCircle, Shield, TrendingUp, Zap } from "lucide-react";
+import { Settings, Bell, Lock, LogOut, HelpCircle, Shield, TrendingUp, Zap, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { getHamsterMood } from "@/lib/utils";
 
@@ -26,41 +26,40 @@ function Me() {
 
       {/* User Card with Score */}
       <section className="px-5">
-        <Card className="p-5 rounded-3xl border-0 bg-hero text-primary-foreground shadow-glow relative overflow-hidden">
+        <Card className="p-6 rounded-[2.5rem] border-0 bg-hero text-primary-foreground shadow-glow relative overflow-hidden">
           <div aria-hidden className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_top,white,transparent_60%)]" />
-          <div className="relative flex items-end gap-4">
-            <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.2, repeat: Infinity }}>
-              <Hamster mood={hamsterMood} size={100} float={false} />
-            </motion.div>
+          <div className="relative flex items-center gap-5">
+            <Link to="/buddy-profile" className="relative group active:scale-95 transition-transform shrink-0">
+              <Hamster mood={hamsterMood} size={80} float={true} />
+            </Link>
             <div className="flex-1">
-              <h2 className="text-xl font-extrabold">{user.name}</h2>
-              <p className="text-xs opacity-80 mt-1">{user.tier} · Level {user.level} · {user.memberSince}</p>
-              <div className="mt-2 flex items-center gap-2">
-                <span className="px-2 py-1 rounded-full bg-white/20 text-xs font-bold">🔥 {user.streak}d</span>
-              </div>
+              <h2 className="text-2xl font-black">{user.name}</h2>
+              <p className="text-xs opacity-80 font-bold uppercase tracking-wider">{user.tier} · Level {user.level}</p>
+              
+              <Link to="/buddy-profile" className="mt-3 w-fit px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-white/30 transition-all active:scale-95 shadow-lg">
+                GX Buddy Profile <ChevronRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
         </Card>
       </section>
 
-      {/* Buddy Score Section */}
-      <section className="px-5 mt-6">
-        <h3 className="text-base font-bold mb-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-primary" /> Buddy Score
-        </h3>
-        <Card className="p-4 rounded-2xl glass-strong border-white/10 shadow-card">
-          <div className="flex items-end justify-between mb-3">
-            <div>
-              <p className="text-3xl font-extrabold text-foreground">{user.resilienceScore}/100</p>
-              <p className="text-[11px] text-muted-foreground mt-1">Financial strength score</p>
+      {/* Buddy Score Quick View */}
+      <section className="px-5 mt-4">
+        <div className="flex items-center justify-between p-4 rounded-[1.5rem] glass-strong border border-white/10 shadow-card">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+              <TrendingUp className="h-5 w-5 text-primary" />
             </div>
-            <span className="px-3 py-1 rounded-full bg-success/20 text-success text-xs font-bold">
-              {user.resilienceScore >= 70 ? "Excellent" : user.resilienceScore >= 50 ? "Good" : "Improving"}
-            </span>
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-black text-muted-foreground">Buddy Score</p>
+              <p className="text-xl font-black">{user.resilienceScore}/100</p>
+            </div>
           </div>
-          <Progress value={user.resilienceScore} className="h-2" />
-          <p className="text-[10px] text-muted-foreground mt-2">{100 - user.resilienceScore} more points to level up 🐹</p>
-        </Card>
+          <Link to="/buddy-profile" className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+            View Stats
+          </Link>
+        </div>
       </section>
 
       {/* Financial Snapshot */}

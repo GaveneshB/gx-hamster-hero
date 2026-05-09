@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import {
   ShieldCheck, Zap, TrendingDown, Users, Coins, ChevronRight,
-  Clock, CheckCircle2, Trophy, Star, Flame, Sparkles, Brain
+  Clock, CheckCircle2, Trophy, Star, Flame, Sparkles
 } from "lucide-react";
 
 export const Route = createFileRoute("/missions")({
@@ -45,7 +45,7 @@ const featureMissions = [
     id: 1, icon: <TrendingDown className="h-5 w-5 text-amber-400" />, iconColor: "#F59E0B",
     title: "30-Day Safe Zone Challenge",
     desc: "Keep your Debt Risk Radar in Safe Zone for 30 consecutive days.",
-    reward: "RM5 cashback + Debt Defender Badge", daysLeft: 18, progress: 40, xp: 200, route: "/debt-radar",
+    reward: "Debt Defender Badge", daysLeft: 18, progress: 40, xp: 200, route: "/debt-radar",
   },
   {
     id: 2, icon: <Coins className="h-5 w-5 text-[#4EE6E6]" />, iconColor: "#4EE6E6",
@@ -63,7 +63,7 @@ const featureMissions = [
     id: 4, icon: <Users className="h-5 w-5 text-[#F8326D]" />, iconColor: "#F8326D",
     title: "Complete a Squad Pocket Goal",
     desc: "Finish saving for any shared goal with your squad.",
-    reward: "Squad Leader Badge + RM3 cashback", daysLeft: 30, progress: 15, xp: 220, route: "/group-challenges",
+    reward: "Squad Leader Badge", daysLeft: 30, progress: 15, xp: 220, route: "/group-challenges",
   },
   {
     id: 5, icon: <Zap className="h-5 w-5 text-green-400" />, iconColor: "#4ADE80",
@@ -73,12 +73,7 @@ const featureMissions = [
   },
 ];
 
-const aiInsights = [
-  { icon: "🛡️", text: "You avoided 4 impulse purchases this week" },
-  { icon: "📈", text: "Risk score improved by 12% this month" },
-  { icon: "💰", text: "Auto-Save collected RM35 from round-ups" },
-  { icon: "🔥", text: "You're on a 12-day saving streak — best ever!" },
-];
+
 
 function RewardsPage() {
   const [showAllBadges, setShowAllBadges] = useState(false);
@@ -139,24 +134,7 @@ function RewardsPage() {
           </div>
         </div>
 
-        {/* ── AI INSIGHTS STRIP ── */}
-        <section className="px-5 mb-5">
-          <div className="flex items-center gap-2 mb-2">
-            <Brain className="h-3.5 w-3.5 text-primary" />
-            <p className="text-[10px] font-black text-primary uppercase tracking-widest">AI Insights</p>
-          </div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
-            {aiInsights.map((ins, i) => (
-              <motion.div key={i}
-                initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                className="shrink-0 flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl px-3 py-2 backdrop-blur-sm"
-              >
-                <span className="text-base">{ins.icon}</span>
-                <p className="text-[10px] text-white/80 font-semibold max-w-[140px] leading-tight">{ins.text}</p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+
 
         {/* ── XP PROGRESS CARD ── */}
         <section className="px-5 mb-5">
@@ -278,13 +256,23 @@ function RewardsPage() {
               </AnimatePresence>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-              <p className="text-[11px] text-muted-foreground">{earnedCount} of {allBadges.length} earned</p>
-              <div className="flex gap-0.5">
-                {allBadges.map(b => (
-                  <div key={b.id} className={`h-1.5 rounded-full transition-all`}
-                    style={b.earned ? { width: 16, background: rarityConfig[b.rarity].color } : { width: 6, background: "rgba(255,255,255,0.15)" }} />
-                ))}
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] font-bold text-[#F8326D]">🎁 Grand Prize Mission</p>
+                <p className="text-[10px] text-white/60">{earnedCount}/{allBadges.length} Badges</p>
+              </div>
+              <div className="bg-[#F8326D]/10 border border-[#F8326D]/20 rounded-2xl p-3">
+                <p className="text-[11px] text-white leading-snug">
+                  Collect all 9 badges to unlock a <span className="text-[#F8326D] font-bold">RM10 Cashback Grand Prize</span>!
+                </p>
+                <div className="mt-2 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                  <motion.div 
+                    className="h-full bg-[#F8326D]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(earnedCount / allBadges.length) * 100}%` }}
+                    transition={{ duration: 1 }}
+                  />
+                </div>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { Hamster } from "@/components/Hamster";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Calendar, Mic, Sparkles, Info, X, TrendingDown, Coins, ShieldCheck } from "lucide-react";
+import { ChevronRight, Calendar, Sparkles, Info, X, TrendingDown, Coins, ShieldCheck } from "lucide-react";
 import { user } from "@/lib/data";
 import { getHamsterMood } from "@/lib/utils";
 import { WeeklyReportContent } from "@/components/WeeklyReportContent";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/coach")({
 });
 
 const TABS = [
-  { id: "coach" as const, label: "AI Coach", icon: Mic },
+  { id: "coach" as const, label: "AI Coach", icon: Sparkles },
   { id: "report" as const, label: "Weekly Report", icon: Calendar },
 ];
 
@@ -173,7 +173,7 @@ function Coach() {
                     <Card className="max-w-[92%] p-3 rounded-2xl rounded-tl-none bg-card border-white/5 shadow-card relative">
                       <Sparkles className="absolute -top-2 -left-2 h-5 w-5 text-primary bg-[#0C0121] rounded-full p-0.5" />
                       <p className="text-[12px] text-white/90 leading-relaxed">
-                        Hey {user.firstName}! 🐹 Your <span className="font-bold text-primary">Pre-Spending Warning</span> caught 2 impulse buys this week. Awesome job.
+                        Hey {user.firstName}! 🐹 You spent RM12 on coffee today — I've <span className="font-bold text-[#4EE6E6]">auto-saved RM3</span> from the round-up. Small steps add up! ☕
                       </p>
                     </Card>
                   </motion.div>

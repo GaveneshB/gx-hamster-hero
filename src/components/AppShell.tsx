@@ -39,6 +39,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               }
+              // Me tab — non-clickable, blurred
+              if (to === "/me") {
+                return (
+                  <div key={to} className="flex-1 grid place-items-center py-2 opacity-30 grayscale pointer-events-none">
+                    <Icon className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-[10px] mt-1 text-muted-foreground">{label}</span>
+                  </div>
+                );
+              }
               return (
                 <Link key={to} to={to} className="flex-1 grid place-items-center py-2">
                   <Icon className={`h-5 w-5 ${active ? "text-primary" : "text-muted-foreground"}`} />

@@ -64,7 +64,7 @@ function Discover() {
               <p className="text-white/80 text-[11px] leading-relaxed mb-4">
                 Spending too fast? Buddy continuously monitors your burn rate and predicts if you'll run out of cash before the month ends, showing exactly how much to cut back today.
               </p>
-              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-warning text-black font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(255,200,50,0.3)]">
+              <Link to="/debt-radar" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-warning text-black font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(255,200,50,0.3)]">
                 Try Debt Risk Radar <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -86,7 +86,7 @@ function Discover() {
               <p className="text-white/80 text-[11px] leading-relaxed mb-4">
                 Buying iced lattes every day? Buddy rounds up your RM12 coffee to RM15 and silently auto-saves the difference.
               </p>
-              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#4ade80] text-black font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(74,222,128,0.3)]">
+              <Link to="/auto-save" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#4ade80] text-black font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(74,222,128,0.3)]">
                 Try Smart Auto-Save <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -108,7 +108,7 @@ function Discover() {
               <p className="text-white/80 text-[11px] leading-relaxed mb-4">
                 Before you accidentally spend your rent money, Buddy auto-locks a percentage of your salary the second it lands.
               </p>
-              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary text-white font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(119,31,255,0.3)]">
+              <Link to="/buddy-shield-vault" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary text-white font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(119,31,255,0.3)]">
                 Try Salary Shield <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -130,7 +130,7 @@ function Discover() {
               <p className="text-white/80 text-[11px] leading-relaxed mb-4">
                 Create a pocket with 3 friends. Set a goal, track everyone's progress, and build social accountability to make it happen.
               </p>
-              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#F8326D] text-white font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(248,50,109,0.3)]">
+              <Link to="/group-challenges" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#F8326D] text-white font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(248,50,109,0.3)]">
                 Try Squad Pocket <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -152,7 +152,7 @@ function Discover() {
               <p className="text-white/80 text-[11px] leading-relaxed mb-4">
                 Don't panic! Buddy keeps a dedicated reserve of cash actively protected so you don't go into debt when life happens.
               </p>
-              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-mint text-[#0C0121] font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(78,230,230,0.3)]">
+              <Link to="/emergency" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-mint text-[#0C0121] font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(78,230,230,0.3)]">
                 Try Emergency Buffer <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>

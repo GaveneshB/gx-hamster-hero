@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import {
   Shield, Mic, Eye, Plus, ScanLine, Send, HelpCircle, ChevronRight, Bell, Calendar,
-  X, ShieldAlert, ShieldX, ShieldCheck, AlertTriangle, BarChart3, Clock, CheckCircle2, Zap,
+  X, ShieldAlert, ShieldX, ShieldCheck, AlertTriangle, BarChart3, Clock, CheckCircle2, Zap, Users, TrendingDown, Coins,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -122,17 +122,17 @@ function Home() {
               { Icon: Send, label: "Send money", to: "/coach", onClick: undefined },
             ].map(({ Icon, label, to, onClick }) => (
               onClick
-                ? <button key={label} onClick={onClick} className="flex flex-col items-center gap-2">
-                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow">
+                ? <button key={label} onClick={onClick} className="flex flex-col items-center gap-2 group cursor-pointer">
+                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow group-hover:scale-110 transition-transform duration-300">
                       <Icon className="h-5 w-5 text-white" />
                     </motion.div>
-                    <span className="text-xs font-semibold text-white/90">{label}</span>
+                    <span className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">{label}</span>
                   </button>
-                : <Link key={label} to={to!} className="flex flex-col items-center gap-2">
-                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow">
+                : <Link key={label} to={to!} className="flex flex-col items-center gap-2 group cursor-pointer">
+                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow group-hover:scale-110 transition-transform duration-300">
                       <Icon className="h-5 w-5 text-white" />
                     </motion.div>
-                    <span className="text-xs font-semibold text-white/90">{label}</span>
+                    <span className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">{label}</span>
                   </Link>
             ))}
           </div>
@@ -147,7 +147,7 @@ function Home() {
             
             <div className="flex items-center gap-5 relative z-10">
               <div className="h-16 w-16 rounded-full bg-[#0C0121] flex items-center justify-center shrink-0 border-2 border-[#771FFF]/50 overflow-hidden shadow-[0_0_20px_rgba(119,31,255,0.3)]">
-                <Hamster mood={hamsterMood} size={55} float={false} />
+                <Hamster mood={hamsterMood} size={55} float={true} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
@@ -174,13 +174,16 @@ function Home() {
           <span className="text-xs text-muted-foreground">●●●</span>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/coach" search={{ tab: "report" }}>
+          <Link to="/main-account">
             <Card className="p-4 rounded-2xl glass border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px] cursor-pointer hover:bg-white/5 transition-colors">
               <div>
                 <p className="text-xs text-muted-foreground">Main account</p>
                 <p className="text-lg font-extrabold mt-1">RM{user.balance.toLocaleString()}</p>
               </div>
-              <p className="text-xs text-primary font-semibold mt-3">View GX Buddy weekly report →</p>
+              <div className="mt-3 flex items-center justify-between bg-primary/20 hover:bg-primary/30 transition-colors rounded-lg px-2 py-1.5 border border-primary/30">
+                <p className="text-[10px] text-[#c1a3ff] font-bold uppercase tracking-widest">View Breakdown</p>
+                <span className="text-[#c1a3ff] font-bold">→</span>
+              </div>
             </Card>
           </Link>
           <Link to="/group-challenges" className="h-full block">
@@ -202,7 +205,7 @@ function Home() {
       </section>
 
       {/* For you today */}
-      <section className="px-5 mt-6 mb-32">
+      <section className="px-5 mt-6">
         <h2 className="text-base font-bold mb-3">For you today</h2>
         <div className="space-y-3">
           {/* Pre-Spending Warning Card */}
@@ -225,10 +228,41 @@ function Home() {
                   <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
                     Warns you on <span className="font-bold text-white">Scan QR</span> & <span className="font-bold text-white">Send Money</span> — only if the payment is risky. Safe transactions go straight through.
                   </p>
+                  <div className="inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-full bg-white/10 text-xs font-semibold text-white group-hover:bg-white/20 transition-colors">
+                    Try it now <ChevronRight className="h-3 w-3" />
+                  </div>
                 </div>
               </div>
             </Card>
           </button>
+
+          {/* Squad Pocket Card */}
+          <Link to="/group-challenges" className="block text-left group">
+            <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden transition-all duration-300 group-hover:bg-white/5">
+              <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#F8326D]/20 blur-3xl" />
+              <div className="relative flex items-center gap-4">
+                <div className="relative h-24 w-24 grid place-items-center shrink-0">
+                  <span aria-hidden className="absolute h-24 w-24 rounded-full border border-[#F8326D]/40 animate-pulse-ring" />
+                  <span aria-hidden className="absolute h-16 w-16 rounded-full border border-[#F8326D]/60 animate-pulse-ring" style={{ animationDelay: "0.6s" }} />
+                  <div className="h-12 w-12 rounded-full bg-[#F8326D] grid place-items-center shadow-[0_0_20px_rgba(248,50,109,0.5)]">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold flex items-center gap-2">
+                    Squad Pockets
+                    <span className="bg-[#F8326D]/20 text-[#F8326D] text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-[#F8326D]/20">Save Together</span>
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
+                    Saving for a <span className="font-bold text-white">shared goal</span>? Create a group pocket to <span className="font-bold text-white">save together</span> and track everyone's progress automatically.
+                  </p>
+                  <div className="inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-full bg-white/10 text-xs font-semibold text-white group-hover:bg-white/20 transition-colors">
+                    Create Pocket <ChevronRight className="h-3 w-3" />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </Link>
 
           {/* Emergency Buffer Card */}
           <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden">
@@ -249,6 +283,50 @@ function Home() {
               </div>
             </div>
           </Card>
+        </div>
+      </section>
+
+      {/* Your Insights */}
+      <section className="mt-8 mb-32">
+        <h2 className="text-base font-bold mb-3 px-5">Your insights</h2>
+        <div className="flex overflow-x-auto snap-x hide-scrollbar px-5 pb-4 gap-6 no-scrollbar">
+          
+          {/* Insight 1: Salary Shield */}
+          <div className="flex items-center gap-3 shrink-0 snap-start">
+             <div className="h-10 w-10 rounded-full border-[2px] border-primary flex items-center justify-center shrink-0">
+               <ShieldCheck className="h-5 w-5 text-primary" />
+             </div>
+             <div>
+                <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Salary Protected</p>
+                <p className="text-base font-medium text-foreground tracking-tight">RM600.00</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Shield Vault</p>
+             </div>
+          </div>
+
+          {/* Insight 2: Smart Auto-Save */}
+          <div className="flex items-center gap-3 shrink-0 snap-start">
+             <div className="h-10 w-10 rounded-full border-[2px] border-[#4EE6E6] flex items-center justify-center shrink-0">
+               <Coins className="h-5 w-5 text-[#4EE6E6]" />
+             </div>
+             <div>
+                <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Smart Auto-Saved</p>
+                <p className="text-base font-medium text-foreground tracking-tight">RM35.00</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">From Round-ups</p>
+             </div>
+          </div>
+
+          {/* Insight 3: Squad Pocket */}
+          <div className="flex items-center gap-3 shrink-0 snap-start pr-5">
+             <div className="h-10 w-10 rounded-full border-[2px] border-[#F8326D] flex items-center justify-center shrink-0">
+               <Users className="h-5 w-5 text-[#F8326D]" />
+             </div>
+             <div>
+                <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Squad Pocket Saved</p>
+                <p className="text-base font-medium text-foreground tracking-tight">RM150.00</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Shared Goal</p>
+             </div>
+          </div>
+
         </div>
       </section>
       {/* ===== PAYMENT GUARDIAN MODALS ===== */}

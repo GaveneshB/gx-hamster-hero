@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
@@ -17,7 +17,7 @@ import { user } from "@/lib/data";
 export const Route = createFileRoute("/buddy-shield-vault")({
   head: () => ({
     meta: [
-      { title: "Buddy Shield Vault — GX Buddy" },
+      { title: "Salary Shield — GX Buddy" },
       { name: "description", content: "Protect salary before spending starts." },
     ],
   }),
@@ -103,6 +103,7 @@ const initialChallenges: ShieldChallenge[] = [
 ];
 
 function BuddyShieldVault() {
+  const router = useRouter();
   const [shieldEnabled, setShieldEnabled] = useState<boolean>(() => getStoredValue("gx_shield_enabled", true));
   const [mode, setMode] = useState<ShieldMode>(() => getStoredValue("gx_shield_mode", "balanced"));
   const [paydayCalm, setPaydayCalm] = useState<boolean>(() => getStoredValue("gx_payday_calm", true));
@@ -223,9 +224,15 @@ function BuddyShieldVault() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="px-5 pt-1 pb-3">
+      <div className="px-5 pt-4 pb-3">
+        <button 
+          onClick={() => router.history.back()} 
+          className="text-sm text-primary font-medium flex items-center mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          ← Back
+        </button>
         <div className="flex items-center justify-between gap-3">
-          <div><h1 className="text-2xl font-extrabold tracking-tight">Buddy Shield Vault</h1><p className="text-sm text-muted-foreground">Protect salary before spending starts.</p></div>
+          <div><h1 className="text-2xl font-extrabold tracking-tight">Salary Shield</h1><p className="text-sm text-muted-foreground">Protect salary before spending starts.</p></div>
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => setShowSettings(true)} className="h-11 w-11 rounded-2xl bg-secondary grid place-items-center shadow-card shrink-0"><Settings className="h-5 w-5" /></motion.button>
         </div>
       </div>
@@ -237,7 +244,7 @@ function BuddyShieldVault() {
           <div aria-hidden className="absolute -bottom-10 -left-8 h-28 w-28 rounded-full bg-accent/20 blur-2xl" />
           <div className="relative flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-widest">Shield Vault Balance</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-widest">Salary Shield Balance</p>
               <motion.p key={vaultBalance} initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-4xl font-extrabold mt-1 tracking-tight">RM {vaultBalance.toFixed(2)}</motion.p>
               <div className="mt-2 flex gap-2 flex-wrap">
                 <Badge className="bg-primary/20 text-primary border-0">{shieldLevel}</Badge>

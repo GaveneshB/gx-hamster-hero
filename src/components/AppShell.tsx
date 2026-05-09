@@ -1,4 +1,4 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import { Home, User, Sparkles, Gift, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -61,10 +61,16 @@ export function PageHeader({
   subtitle?: string;
   back?: boolean;
 }) {
+  const router = useRouter();
   return (
     <div className="px-5 pt-12 pb-4">
       {back && (
-        <Link to="/" className="text-sm text-primary font-medium">← Back</Link>
+        <button 
+          onClick={() => router.history.back()} 
+          className="text-sm text-primary font-medium flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          ← Back
+        </button>
       )}
       <h1 className="text-2xl font-extrabold tracking-tight mt-2">{title}</h1>
       {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}

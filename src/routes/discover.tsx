@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/card";
-import { Sparkles, Users, ShieldAlert, BookOpen, ChevronRight, Zap } from "lucide-react";
+import { Sparkles, Users, ShieldAlert, BookOpen, ChevronRight, Zap, Lock, Coins } from "lucide-react";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
@@ -42,46 +42,120 @@ function Discover() {
           </div>
         </div>
 
-        {/* GX BUDDY AS A BIG FUNCTION */}
-        <h3 className="text-base font-bold mb-3">Your Financial Arsenal</h3>
-        <div className="grid gap-3 mb-8">
-          {/* Squad Pocket Card */}
-          <Link to="/group-challenges">
-            <Card className="p-5 rounded-3xl glass-strong border border-[#F8326D]/30 shadow-card relative overflow-hidden flex items-center gap-4 hover:bg-white/5 transition-colors">
-              <div aria-hidden className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#F8326D]/20 to-transparent" />
-              <div className="h-14 w-14 rounded-full bg-[#F8326D]/20 flex items-center justify-center shrink-0 border border-[#F8326D]/50">
-                <Users className="h-7 w-7 text-[#ffb3c6]" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-bold text-white mb-0.5">Squad Pocket</h4>
-                <p className="text-[11px] text-white/70 leading-snug pr-2">Pool funds with friends for that Bali trip. Social accountability works.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-white/40 absolute right-4" />
-            </Card>
-          </Link>
-        </div>
-
-        {/* BITE-SIZED LEARNING */}
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-bold">Quick Insights</h3>
-          <span className="text-xs text-[#771FFF] font-bold">View all</span>
+        {/* BUDDY IN ACTION - ALL 5 TOOLS */}
+        <div className="flex items-center justify-between mb-4 mt-2">
+          <h3 className="text-xl font-black">Buddy in Action</h3>
         </div>
         
-        <div className="flex gap-3 overflow-x-auto pb-4 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <Card className="min-w-[200px] p-4 rounded-2xl glass border-white/10 snap-start shrink-0">
-            <div className="h-8 w-8 rounded-full bg-mint/20 flex items-center justify-center mb-3">
-              <Zap className="h-4 w-4 text-mint" />
+        <div className="flex flex-col gap-4 pb-8">
+          {/* Tool 1: Debt Risk Radar */}
+          <Card className="p-0 rounded-[1.5rem] glass-strong border border-warning/20 relative overflow-hidden group">
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-warning/20 via-transparent to-transparent opacity-60" />
+            <div className="p-4 relative z-10 flex flex-col h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-xl bg-warning/20 flex items-center justify-center border border-warning/40 shadow-[0_0_15px_rgba(255,200,50,0.2)] shrink-0">
+                  <BookOpen className="h-5 w-5 text-warning" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white leading-tight">Debt Risk Radar</h3>
+                  <p className="text-[9px] text-warning font-bold uppercase tracking-widest mt-0.5">Scenario: Mid-Month Cash Crunch</p>
+                </div>
+              </div>
+              <p className="text-white/80 text-[11px] leading-relaxed mb-4">
+                Spending too fast? Buddy continuously monitors your burn rate and predicts if you'll run out of cash before the month ends, showing exactly how much to cut back today.
+              </p>
+              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-warning text-black font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(255,200,50,0.3)]">
+                Try Debt Risk Radar <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
-            <h4 className="text-xs font-bold mb-1">Surviving till PTPTN</h4>
-            <p className="text-[10px] text-white/60">How to calculate your true daily survival budget.</p>
+          </Card>
+
+          {/* Tool 2: Smart Auto-Save */}
+          <Card className="p-0 rounded-[1.5rem] glass-strong border border-[#4ade80]/20 relative overflow-hidden group">
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-[#4ade80]/20 via-transparent to-transparent opacity-60" />
+            <div className="p-4 relative z-10 flex flex-col h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-xl bg-[#4ade80]/20 flex items-center justify-center border border-[#4ade80]/40 shadow-[0_0_15px_rgba(74,222,128,0.2)] shrink-0">
+                  <Coins className="h-5 w-5 text-[#4ade80]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white leading-tight">Smart Auto-Save</h3>
+                  <p className="text-[9px] text-[#4ade80] font-bold uppercase tracking-widest mt-0.5">Scenario: Daily Coffee Habit</p>
+                </div>
+              </div>
+              <p className="text-white/80 text-[11px] leading-relaxed mb-4">
+                Buying iced lattes every day? Buddy rounds up your RM12 coffee to RM15 and silently auto-saves the difference.
+              </p>
+              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#4ade80] text-black font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(74,222,128,0.3)]">
+                Try Smart Auto-Save <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           </Card>
           
-          <Card className="min-w-[200px] p-4 rounded-2xl glass border-white/10 snap-start shrink-0">
-            <div className="h-8 w-8 rounded-full bg-warning/20 flex items-center justify-center mb-3">
-              <BookOpen className="h-4 w-4 text-warning" />
+          {/* Tool 3: Buddy Shield Vault */}
+          <Card className="p-0 rounded-[1.5rem] glass-strong border border-primary/20 relative overflow-hidden group">
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-transparent opacity-60" />
+            <div className="p-4 relative z-10 flex flex-col h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/30 flex items-center justify-center border border-primary/50 shadow-[0_0_15px_rgba(119,31,255,0.2)] shrink-0">
+                  <Lock className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white leading-tight">Salary Shield</h3>
+                  <p className="text-[9px] text-[#c1a3ff] font-bold uppercase tracking-widest mt-0.5">Scenario: Payday Temptation</p>
+                </div>
+              </div>
+              <p className="text-white/80 text-[11px] leading-relaxed mb-4">
+                Before you accidentally spend your rent money, Buddy auto-locks a percentage of your salary the second it lands.
+              </p>
+              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary text-white font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(119,31,255,0.3)]">
+                Try Salary Shield <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
-            <h4 className="text-xs font-bold mb-1">The BNPL Trap</h4>
-            <p className="text-[10px] text-white/60">Why paying in 3 months costs you more than you think.</p>
+          </Card>
+
+          {/* Tool 4: Squad Pocket */}
+          <Card className="p-0 rounded-[1.5rem] glass-strong border border-[#F8326D]/20 relative overflow-hidden group">
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-[#F8326D]/20 via-transparent to-transparent opacity-60" />
+            <div className="p-4 relative z-10 flex flex-col h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-xl bg-[#F8326D]/20 flex items-center justify-center border border-[#F8326D]/40 shadow-[0_0_15px_rgba(248,50,109,0.2)] shrink-0">
+                  <Users className="h-5 w-5 text-[#F8326D]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white leading-tight">Squad Pocket</h3>
+                  <p className="text-[9px] text-[#F8326D] font-bold uppercase tracking-widest mt-0.5">Scenario: Grad Trip to Bali</p>
+                </div>
+              </div>
+              <p className="text-white/80 text-[11px] leading-relaxed mb-4">
+                Create a pocket with 3 friends. Set a goal, track everyone's progress, and build social accountability to make it happen.
+              </p>
+              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#F8326D] text-white font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(248,50,109,0.3)]">
+                Try Squad Pocket <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </Card>
+
+          {/* Tool 5: Emergency Buffer */}
+          <Card className="p-0 rounded-[1.5rem] glass-strong border border-mint/20 relative overflow-hidden group">
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-mint/20 via-transparent to-transparent opacity-60" />
+            <div className="p-4 relative z-10 flex flex-col h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-xl bg-mint/20 flex items-center justify-center border border-mint/40 shadow-[0_0_15px_rgba(78,230,230,0.2)] shrink-0">
+                  <ShieldAlert className="h-5 w-5 text-mint" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white leading-tight">Emergency Buffer</h3>
+                  <p className="text-[9px] text-mint font-bold uppercase tracking-widest mt-0.5">Scenario: Unexpected Repair</p>
+                </div>
+              </div>
+              <p className="text-white/80 text-[11px] leading-relaxed mb-4">
+                Don't panic! Buddy keeps a dedicated reserve of cash actively protected so you don't go into debt when life happens.
+              </p>
+              <Link to="/coach" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-mint text-[#0C0121] font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(78,230,230,0.3)]">
+                Try Emergency Buffer <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           </Card>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
@@ -136,6 +136,7 @@ const initialBills: BillReserve[] = [
 ];
 
 function AutoSave() {
+  const router = useRouter();
   const suggestion = getBuddySuggestion(user.balance, user.income);
   const adaptiveSuggestion = getAdaptiveSettings(user.balance, user.income);
   const moodSignals = getMoodSignals();
@@ -334,7 +335,13 @@ function AutoSave() {
 
   return (
     <AppShell>
-      <div className="px-5 pt-1 pb-3">
+      <div className="px-5 pt-4 pb-3">
+        <button 
+          onClick={() => router.history.back()} 
+          className="text-sm text-primary font-medium flex items-center mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          ← Back
+        </button>
         <div className="flex items-center justify-between gap-3">
           <div><h1 className="text-2xl font-extrabold tracking-tight">Smart Auto-Save</h1><p className="text-sm text-muted-foreground">Every cent counts.</p></div>
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => setShowSettings(true)} className="h-11 w-11 rounded-2xl bg-secondary grid place-items-center shadow-card shrink-0"><Settings className="h-5 w-5" /></motion.button>

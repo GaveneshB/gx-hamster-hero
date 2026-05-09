@@ -52,7 +52,7 @@ export const ghostShield = {
 export const buddyFeatures = [
   { id: 1, title: "Debt Risk Radar", desc: "30-day risk prediction", icon: "🔮", color: "destructive", route: "/debt-radar" },
   { id: 2, title: "Smart Auto-Save", desc: "Automated savings plan", icon: "💰", color: "success", route: "/auto-save" },
-  { id: 3, title: "Buddy Shield Vault", desc: "Protect your salary before spending starts", icon: "🔐", color: "primary", route: "/buddy-shield-vault" },
+  { id: 3, title: "Salary Shield", desc: "Protect your salary before spending starts", icon: "🔐", color: "primary", route: "/buddy-shield-vault" },
   { id: 4, title: "Emergency Buffer", desc: "Safety cushion status", icon: "🎯", color: "success", route: "/emergency" },
   { id: 5, title: "Squad Pocket", desc: "Pool funds & save together", icon: "🏆", color: "primary", route: "/group-challenges" },
 ];

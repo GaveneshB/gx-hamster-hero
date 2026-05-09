@@ -41,7 +41,6 @@ function Coach() {
         <PageHeader
           title="GX Buddy"
           subtitle={activeTab === "coach" ? "Your pocket money coach" : "Weekly recap from Buddy"}
-          back={false}
         />
 
         {/* Segmented pill toggle */}

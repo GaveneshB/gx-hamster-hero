@@ -117,23 +117,36 @@ function Home() {
         <Card className="relative mt-5 p-4 rounded-3xl glass-strong border-white/10 shadow-card">
           <div className="grid grid-cols-3 gap-2">
             {[
-              { Icon: Plus, label: "Add money", to: "/auto-save", onClick: undefined },
-              { Icon: ScanLine, label: "Scan QR", to: null, onClick: () => setGStep("pick") },
-              { Icon: Send, label: "Send money", to: "/coach", onClick: undefined },
-            ].map(({ Icon, label, to, onClick }) => (
-              onClick
-                ? <button key={label} onClick={onClick} className="flex flex-col items-center gap-2 group cursor-pointer">
-                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-                      <Icon className="h-5 w-5 text-white" />
-                    </motion.div>
-                    <span className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">{label}</span>
-                  </button>
-                : <Link key={label} to={to!} className="flex flex-col items-center gap-2 group cursor-pointer">
-                    <motion.div whileTap={{ scale: 0.9 }} className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-                      <Icon className="h-5 w-5 text-white" />
-                    </motion.div>
-                    <span className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">{label}</span>
-                  </Link>
+              { Icon: Plus, label: "Add money", active: false },
+              { Icon: ScanLine, label: "Scan QR", active: true, onClick: () => setGStep("pick") },
+              { Icon: Send, label: "Send money", active: false },
+            ].map(({ Icon, label, active, onClick }) => (
+              active ? (
+                <button 
+                  key={label} 
+                  onClick={onClick} 
+                  className="flex flex-col items-center gap-2 group cursor-pointer"
+                >
+                  <motion.div 
+                    whileTap={{ scale: 0.9 }} 
+                    className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow group-hover:scale-110 transition-transform duration-300"
+                  >
+                    <Icon className="h-5 w-5 text-white" />
+                  </motion.div>
+                  <span className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors">
+                    {label}
+                  </span>
+                </button>
+              ) : (
+                <div key={label} className="flex flex-col items-center gap-2 opacity-50 grayscale">
+                  <div className="h-12 w-12 rounded-full bg-white/10 grid place-items-center">
+                    <Icon className="h-5 w-5 text-white/50" />
+                  </div>
+                  <span className="text-xs font-semibold text-white/50">
+                    {label}
+                  </span>
+                </div>
+              )
             ))}
           </div>
         </Card>
@@ -254,7 +267,7 @@ function Home() {
                     <span className="bg-[#F8326D]/20 text-[#F8326D] text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-[#F8326D]/20">Save Together</span>
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
-                    Saving for a <span className="font-bold text-white">shared goal</span>? Create a group pocket to <span className="font-bold text-white">save together</span> and track everyone's progress automatically.
+                    Saving for a <span className="font-bold text-white">shared goal</span>? Create a group pocket to <span className="font-bold text-white">save together</span> with your friendsand track everyone's progress automatically.
                   </p>
                   <div className="inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-full bg-white/10 text-xs font-semibold text-white group-hover:bg-white/20 transition-colors">
                     Create Pocket <ChevronRight className="h-3 w-3" />

@@ -128,7 +128,7 @@ function Discover() {
                 </div>
               </div>
               <p className="text-white/80 text-[11px] leading-relaxed mb-4">
-                Create a pocket with 3 friends. Set a goal, track everyone's progress, and build social accountability to make it happen.
+                Create a pocket with your friends. Set a goal, track everyone's progress, and build social accountability to make it happen.
               </p>
               <Link to="/group-challenges" className="mt-auto flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#F8326D] text-white font-extrabold text-[11px] hover:scale-[0.98] transition-transform shadow-[0_0_15px_rgba(248,50,109,0.3)]">
                 Try Squad Pocket <ChevronRight className="h-3.5 w-3.5" />

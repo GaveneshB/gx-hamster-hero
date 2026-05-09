@@ -51,8 +51,8 @@ const buddyTools = [
   },
   {
     id: "salary-shield",
-    title: "Salary Shield",
-    desc: "Protect your salary before spending starts",
+    title: "Buddy Shield Vault",
+    desc: "Protect your money before spending starts",
     route: "/buddy-shield-vault",
     icon: <ShieldCheck className="h-6 w-6 text-primary" />,
     iconBg: "bg-primary/20",

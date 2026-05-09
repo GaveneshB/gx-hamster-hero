@@ -284,15 +284,15 @@ function Home() {
         <h2 className="text-base font-bold mb-3 px-5">Your insights</h2>
         <div className="flex overflow-x-auto snap-x hide-scrollbar px-5 pb-4 gap-6 no-scrollbar">
           
-          {/* Insight 1: Salary Shield */}
+          {/* Insight 1: Buddy Shield Vault */}
           <div className="flex items-center gap-3 shrink-0 snap-start">
              <div className="h-10 w-10 rounded-full border-[2px] border-primary flex items-center justify-center shrink-0">
                <ShieldCheck className="h-5 w-5 text-primary" />
              </div>
              <div>
-                <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Salary Protected</p>
+                <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Buddy Shield Vault</p>
                 <p className="text-base font-medium text-foreground tracking-tight">RM600.00</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">Shield Vault</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Emergency Vault</p>
              </div>
           </div>
 

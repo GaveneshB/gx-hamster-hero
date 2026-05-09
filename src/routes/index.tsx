@@ -154,8 +154,8 @@ function Home() {
 
       {/* ENLARGED GX BUDDY CARD */}
       <section className="px-5 mt-6">
-        <Link to="/coach" className="block active:scale-[0.98] transition-transform">
-          <Card className="p-5 rounded-[2rem] glass-strong shadow-card flex items-center justify-between border border-[#771FFF]/40 relative overflow-hidden group">
+        <Link to="/coach" className="block active:scale-[0.98] transition-transform group">
+          <Card className="p-5 rounded-[2rem] glass-strong shadow-card flex items-center justify-between border border-[#771FFF]/40 relative overflow-hidden">
             <div aria-hidden className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-[#771FFF]/20 to-transparent pointer-events-none" />
             
             <div className="flex items-center gap-5 relative z-10">
@@ -165,13 +165,16 @@ function Home() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-base font-black text-white tracking-wide">GX Buddy</p>
-                  <span className="px-2 py-0.5 bg-[#4EE6E6]/10 rounded md text-[10px] font-black text-[#4EE6E6] border border-[#4EE6E6]/30 tracking-wider">
-                    SCORE: {user.resilienceScore}
+                  <span className="px-1.5 py-[2px] bg-[#F8326D] rounded text-[8px] font-black text-white uppercase tracking-widest whitespace-nowrap">
+                    NEW
                   </span>
                 </div>
                 <p className="text-[11px] text-white/70 leading-relaxed pr-2">
-                  Your AI sidekick to build financial resilience. Try our buddy tools to outsmart impulse spending and hit your goals!
+                  Your AI sidekick to build financial resilience. Try our buddy tools to outsmart impulse spending!
                 </p>
+                <div className="inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-full bg-white/10 text-xs font-semibold text-white group-hover:bg-white/20 transition-colors">
+                  Try it now <ChevronRight className="h-3 w-3" />
+                </div>
               </div>
             </div>
             
@@ -262,9 +265,8 @@ function Home() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-bold flex items-center gap-2">
+                  <p className="text-sm font-bold">
                     Squad Pockets
-                    <span className="bg-[#F8326D]/20 text-[#F8326D] text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-[#F8326D]/20">Save Together</span>
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
                     Saving for a <span className="font-bold text-white">shared goal</span>? Create a group pocket to <span className="font-bold text-white">save together</span> with your friends and track everyone's progress automatically.
@@ -280,14 +282,14 @@ function Home() {
       </section>
 
       {/* Your Insights */}
-      <section className="mt-8 mb-32">
-        <h2 className="text-base font-bold mb-3 px-5">Your insights</h2>
-        <div className="flex overflow-x-auto snap-x hide-scrollbar px-5 pb-4 gap-6 no-scrollbar">
+      <section className="mt-8 mb-32 px-5">
+        <h2 className="text-base font-bold mb-3">Your insights</h2>
+        <div className="flex overflow-x-auto snap-x hide-scrollbar pb-4 gap-8 no-scrollbar">
           
           {/* Insight 1: Salary Shield */}
-          <div className="flex items-center gap-3 shrink-0 snap-start">
-             <div className="h-10 w-10 rounded-full border-[2px] border-primary flex items-center justify-center shrink-0">
-               <ShieldCheck className="h-5 w-5 text-primary" />
+          <div className="flex items-center gap-4 shrink-0 snap-start">
+             <div className="h-12 w-12 rounded-full border-[2px] border-primary flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(124,58,237,0.2)]">
+               <ShieldCheck className="h-6 w-6 text-primary" />
              </div>
              <div>
                 <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Salary Protected</p>
@@ -297,9 +299,9 @@ function Home() {
           </div>
 
           {/* Insight 2: Smart Auto-Save */}
-          <div className="flex items-center gap-3 shrink-0 snap-start">
-             <div className="h-10 w-10 rounded-full border-[2px] border-[#4EE6E6] flex items-center justify-center shrink-0">
-               <Coins className="h-5 w-5 text-[#4EE6E6]" />
+          <div className="flex items-center gap-4 shrink-0 snap-start">
+             <div className="h-12 w-12 rounded-full border-[2px] border-[#4EE6E6] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(78,230,230,0.2)]">
+               <Coins className="h-6 w-6 text-[#4EE6E6]" />
              </div>
              <div>
                 <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Smart Auto-Saved</p>
@@ -309,9 +311,9 @@ function Home() {
           </div>
 
           {/* Insight 3: Squad Pocket */}
-          <div className="flex items-center gap-3 shrink-0 snap-start pr-5">
-             <div className="h-10 w-10 rounded-full border-[2px] border-[#F8326D] flex items-center justify-center shrink-0">
-               <Users className="h-5 w-5 text-[#F8326D]" />
+          <div className="flex items-center gap-4 shrink-0 snap-start pr-5">
+             <div className="h-12 w-12 rounded-full border-[2px] border-[#F8326D] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(248,50,109,0.2)]">
+               <Users className="h-6 w-6 text-[#F8326D]" />
              </div>
              <div>
                 <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Squad Pocket Saved</p>

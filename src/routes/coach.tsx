@@ -210,59 +210,48 @@ function Coach() {
         {/* WEEKLY REPORT TAB */}
         {activeTab === "report" && <WeeklyReportContent />}
 
-        {/* BUDDY TOOLS — Bright, Home-style cards */}
+        {/* BUDDY TOOLS — Compact horizontal list */}
         <div className="mt-8 pb-4 border-t border-white/10 pt-6">
-          <div className="mb-5">
+          <div className="mb-4">
             <h2 className="text-base font-bold">Buddy Tools</h2>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Tap ℹ to see each tool in action</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Explore your AI features</p>
           </div>
           <div className="space-y-3">
-            {buddyTools.map((tool) => {
-              const accent =
-                tool.id === "debt-radar" ? { color: "#F59E0B", shadow: "rgba(245,158,11,0.5)", bg: "bg-warning" } :
-                tool.id === "auto-save"  ? { color: "#4EE6E6", shadow: "rgba(78,230,230,0.5)",  bg: "bg-[#4EE6E6]" } :
-                                           { color: "#A855F7", shadow: "rgba(168,85,247,0.5)",   bg: "bg-primary" };
-              return (
-                <div key={tool.id} className="relative group">
-                  <Link to={tool.route as any} className="block">
-                    <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden group-active:scale-[0.98] transition-transform">
-                      {/* Glow blob in background */}
-                      <div aria-hidden className="absolute -bottom-10 -left-6 h-32 w-32 rounded-full opacity-20 blur-3xl" style={{ background: accent.color }} />
-
-                      <div className="relative flex items-center gap-4">
-                        {/* Bright Icon Circle with Pulse Rings */}
-                        <div className="relative h-16 w-16 grid place-items-center shrink-0">
-                          <span aria-hidden className="absolute h-16 w-16 rounded-full border opacity-30 animate-pulse-ring" style={{ borderColor: accent.color }} />
-                          <span aria-hidden className="absolute h-12 w-12 rounded-full border opacity-50 animate-pulse-ring" style={{ borderColor: accent.color, animationDelay: "0.6s" }} />
-                          <div className={`h-10 w-10 rounded-full ${accent.bg} grid place-items-center shadow-lg`} style={{ boxShadow: `0 0 15px ${accent.shadow}` }}>
-                            {/* Force icon to be white/dark for contrast */}
-                            <div className={tool.id === "auto-save" ? "text-[#0C0121]" : "text-white"}>
-                              {tool.icon}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold leading-tight text-white">{tool.title}</p>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">{tool.desc}</p>
-                        </div>
-
-                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-white transition-colors" />
+            {buddyTools.map((tool) => (
+              <div key={tool.id} className="relative group">
+                <Link to={tool.route as any} className="block">
+                  <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card group-active:scale-[0.98] transition-transform">
+                    <div className="flex items-center gap-4">
+                      {/* 3D Emoji Icon — Smaller */}
+                      <div className="text-3xl shrink-0">
+                        {tool.id === "debt-radar" ? "🔮" : 
+                         tool.id === "auto-save" ? "💰" : "🔐"}
                       </div>
-                    </Card>
-                  </Link>
 
-                  {/* Info button */}
-                  <button
-                    onClick={() => setActiveTool(tool)}
-                    className="absolute top-3 right-10 h-7 w-7 rounded-full flex items-center justify-center z-10 transition-colors backdrop-blur-sm bg-white/10 border border-white/20"
-                    aria-label={`Buddy in action: ${tool.title}`}
-                  >
-                    <Info className="h-3.5 w-3.5 text-white" />
-                  </button>
-                </div>
-              );
-            })}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white leading-tight">{tool.title}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                          {tool.id === "debt-radar" ? "30-day risk prediction" :
+                           tool.id === "auto-save" ? "Automated savings plan" :
+                           "Protect your salary before spending"}
+                        </p>
+                      </div>
+
+                      <ChevronRight className="h-4 w-4 text-muted-foreground/50 mr-6" />
+                    </div>
+                  </Card>
+                </Link>
+
+                {/* Info button - positioned slightly in from the right edge */}
+                <button
+                  onClick={() => setActiveTool(tool)}
+                  className="absolute top-1/2 -translate-y-1/2 right-4 h-7 w-7 rounded-full flex items-center justify-center z-10 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                  aria-label={`Buddy in action: ${tool.title}`}
+                >
+                  <Info className="h-3.5 w-3.5 text-white/60" />
+                </button>
+              </div>
+            ))}
           </div>
         </div>
 

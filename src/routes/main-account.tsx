@@ -3,7 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import {
   ChevronLeft, Plus, Send, MoreHorizontal, Copy, Info, TrendingUp,
   ArrowDownRight, Pocket, Zap, ArrowUpRight, Coins, ChevronRight, Brain,
-  ShieldCheck,
+  ShieldCheck, Wallet,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { user, transactions } from "@/lib/data";
@@ -69,9 +69,10 @@ function MainAccount() {
           <button onClick={() => router.history.back()} className="mb-5 -ml-2 p-2 hover:bg-white/5 rounded-full transition-colors">
             <ChevronLeft className="h-6 w-6" />
           </button>
-          <p className="text-xs font-semibold mb-0.5 text-foreground/70 uppercase tracking-widest">Main account</p>
+          {/* ── CHANGED: label now says "Total Wealth" ── */}
+          <p className="text-xs font-semibold mb-0.5 text-foreground/70 uppercase tracking-widest">Total Wealth</p>
           <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-4xl font-extrabold mb-1.5 tracking-tight">
-            RM{mainBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            RM{totalAssets.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </motion.h1>
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
             <span>8888-02078779-2</span>
@@ -136,13 +137,13 @@ function MainAccount() {
 
               <Card className="rounded-3xl bg-secondary/30 border-0 overflow-hidden p-1 shadow-none space-y-0.5">
 
-                {/* Main Account */}
+                {/* ── CHANGED: "Main Account" → "Spendable Balance" ── */}
                 <div className="p-3 bg-card rounded-2xl flex items-center gap-3 border border-border/50 shadow-card">
                   <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                    <Zap className="h-4 w-4 text-primary" />
+                    <Wallet className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-bold">Main Account</p>
+                    <p className="text-sm font-bold">Spendable Balance</p>
                     <p className="text-[10px] text-muted-foreground">Available to spend</p>
                   </div>
                   <p className="font-bold text-primary text-sm">RM {mainBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
@@ -195,7 +196,7 @@ function MainAccount() {
               </Card>
 
               <p className="text-[10px] text-muted-foreground text-center leading-relaxed px-4">
-                Main Account balance does <strong className="text-foreground/70">not</strong> include money in Buddy's vaults.
+                Spendable Balance does <strong className="text-foreground/70">not</strong> include money in Buddy's vaults.
               </p>
             </motion.div>
           )}

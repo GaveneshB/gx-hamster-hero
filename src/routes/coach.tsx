@@ -10,8 +10,8 @@ import { getHamsterMood } from "@/lib/utils";
 import { WeeklyReportContent } from "@/components/WeeklyReportContent";
 
 export const Route = createFileRoute("/coach")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    tab: (search.tab as "coach" | "report") ?? "coach",
+  validateSearch: (search: Record<string, unknown>): { tab?: "coach" | "report" } => ({
+    tab: (search.tab as "coach" | "report") || undefined,
   }),
   head: () => ({
     meta: [

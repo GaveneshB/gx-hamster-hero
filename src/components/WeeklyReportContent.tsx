@@ -167,7 +167,7 @@ export function downloadReport() {
       <li>Food spending (RM${spendingByCategory[0].value}) is your highest category — reducing GrabFood orders by 2× saves RM~49/week.</li>
       <li>You saved RM${totalSave} this week through auto-save round-ups. Keep it up to hit your RM500 goal!</li>
       <li>Your BNPL balance stands at RM${user.bnplTotal} across ${user.bnplActive} active plans — avoid adding new plans this week.</li>
-      <li>Resilience Score: ${user.resilienceScore}/100 — up from last month. Great momentum!</li>
+      <li>Buddy Score: ${user.resilienceScore}/100 — up from last month. Great momentum!</li>
     </ul>
   </div>
 

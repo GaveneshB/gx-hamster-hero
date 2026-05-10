@@ -1,12 +1,13 @@
-import { Link, useLocation } from "@tanstack/react-router";
-import { Home, User, Sparkles } from "lucide-react";
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { Home, User, Sparkles, Gift, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 
 type NavItem = { to: string; label: string; Icon: typeof Home; center?: boolean };
 const items: NavItem[] = [
   { to: "/", label: "Home", Icon: Home },
-  { to: "/coach", label: "Buddy", Icon: Sparkles, center: true },
-  { to: "/me", label: "Profile", Icon: User },
+  { to: "/discover", label: "Discover", Icon: LayoutGrid },
+  { to: "/missions", label: "Rewards", Icon: Gift },
+  { to: "/me", label: "Me", Icon: User },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -38,6 +39,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               }
+              // Me tab — non-clickable, blurred
+              if (to === "/me") {
+                return (
+                  <div key={to} className="flex-1 grid place-items-center py-2 opacity-30 grayscale pointer-events-none">
+                    <Icon className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-[10px] mt-1 text-muted-foreground">{label}</span>
+                  </div>
+                );
+              }
               return (
                 <Link key={to} to={to} className="flex-1 grid place-items-center py-2">
                   <Icon className={`h-5 w-5 ${active ? "text-primary" : "text-muted-foreground"}`} />
@@ -61,10 +71,16 @@ export function PageHeader({
   subtitle?: string;
   back?: boolean;
 }) {
+  const router = useRouter();
   return (
     <div className="px-5 pt-12 pb-4">
       {back && (
-        <Link to="/" className="text-sm text-primary font-medium">← Back</Link>
+        <button 
+          onClick={() => router.history.back()} 
+          className="text-sm text-primary font-medium flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          ← Back
+        </button>
       )}
       <h1 className="text-2xl font-extrabold tracking-tight mt-2">{title}</h1>
       {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}

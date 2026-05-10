@@ -1,4 +1,5 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -30,11 +31,18 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "GX Buddy — AI Money Companion in GXBank" },
-      { name: "description", content: "Meet GX Buddy: a purple hamster mascot inside GXBank that coaches young Malaysians to build savings, dodge debt and master BNPL." },
+      {
+        name: "description",
+        content:
+          "Meet GX Buddy: a purple hamster mascot inside GXBank that coaches young Malaysians to build savings, dodge debt and master BNPL.",
+      },
       { name: "author", content: "GXBank" },
       { name: "theme-color", content: "#7c3aed" },
       { property: "og:title", content: "GX Buddy — AI Money Companion" },
-      { property: "og:description", content: "AI coaching, debt prediction, micro-savings & a cute purple hamster." },
+      {
+        property: "og:description",
+        content: "AI coaching, debt prediction, micro-savings & a cute purple hamster.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -65,5 +73,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <Toaster />
+    </>
+  );
 }

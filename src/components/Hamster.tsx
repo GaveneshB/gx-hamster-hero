@@ -24,8 +24,8 @@ export function Hamster({
       alt={`GX Buddy hamster - ${mood}`}
       width={size}
       height={size}
-      style={{ width: size, height: size }}
-      className={`drop-shadow-[0_15px_40px_rgba(120,60,200,0.45)] select-none ${className}`}
+      style={{ width: size, height: size, willChange: "transform" }}
+      className={`select-none ${className}`}
       animate={float ? { y: [0, -10, 0] } : {}}
       transition={float ? { duration: 3.2, repeat: Infinity, ease: "easeInOut" } : {}}
       draggable={false}

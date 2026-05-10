@@ -166,8 +166,8 @@ function SquadSavingsManager() {
     toast.success("Squad Pool created! 🎉");
   };
 
-  const handleContributeSubmit = () => {
-    const amount = parseInt(contributeAmount);
+  const handleContributeSubmit = (amountStr: string) => {
+    const amount = parseInt(amountStr);
     if (!amount || amount <= 0) return;
 
     const currentPool = pools.find((p) => p.id === selectedPoolId);
@@ -195,7 +195,6 @@ function SquadSavingsManager() {
 
     toast.success(`Successfully added RM${amount} via GXSecure 🔒`);
     setShowContribute(false);
-    setContributeAmount("");
   };
 
   const handleEmergencyWithdraw = () => {
@@ -253,42 +252,7 @@ function SquadSavingsManager() {
           <p className="text-sm text-muted-foreground mt-1">What are we saving for?</p>
         </div>
         <div className="px-5 space-y-5">
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 mb-2 block">
-              Pool Name & Emoji
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. PS5 Fund 🎮"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="w-full bg-secondary text-foreground p-4 rounded-2xl outline-none focus:ring-2 focus:ring-primary font-bold"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 mb-2 block">
-              Target Amount (RM)
-            </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-muted-foreground">
-                RM
-              </span>
-              <input
-                type="number"
-                placeholder="2500"
-                value={newTarget}
-                onChange={(e) => setNewTarget(e.target.value)}
-                className="w-full bg-secondary text-foreground p-4 pl-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary font-black text-xl"
-              />
-            </div>
-          </div>
-          <button
-            disabled={!newName || !newTarget}
-            onClick={() => setView("invite")}
-            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold shadow-glow mt-8 disabled:opacity-50 transition-opacity"
-          >
-            Next: Invite Squad
-          </button>
+          <CreateForm onNext={(name, target) => { setNewName(name); setNewTarget(target); setView("invite"); }} />
         </div>
       </AppShell>
     );
@@ -434,8 +398,8 @@ function SquadSavingsManager() {
             transition={{ type: "spring", damping: 20 }}
             className="w-full h-56 rounded-[2rem] bg-gradient-to-br from-indigo-500 via-purple-600 to-[#FF3366] p-6 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between border border-white/20"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/20 rounded-full blur-2xl -ml-10 -mb-10" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-xl -mr-10 -mt-10" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/20 rounded-full blur-xl -ml-10 -mb-10" />
 
             <div className="relative flex justify-between items-start">
               <div className="font-bold tracking-widest opacity-90">GX SQUAD</div>
@@ -536,12 +500,12 @@ function SquadSavingsManager() {
           <Card className="p-6 rounded-3xl border-0 bg-primary-gradient text-primary-foreground shadow-glow relative overflow-hidden">
             <div
               aria-hidden
-              className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"
+              className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/10 blur-xl"
             />
             <div className="relative">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-widest backdrop-blur-md mb-2 inline-block">
+                  <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">
                     Squad Goal
                   </span>
                   <h2 className="text-3xl font-extrabold flex items-center gap-2">
@@ -802,37 +766,7 @@ function SquadSavingsManager() {
                   How much would you like to contribute to {activePool.name}?
                 </p>
 
-                <div className="bg-secondary/50 rounded-2xl p-4 flex items-center gap-3 mb-6">
-                  <div className="text-2xl font-bold text-muted-foreground">RM</div>
-                  <input
-                    type="number"
-                    autoFocus
-                    placeholder={`Max ${Math.max(0, activePool.target - activePool.current)}`}
-                    value={contributeAmount}
-                    onChange={(e) => setContributeAmount(e.target.value)}
-                    className="bg-transparent outline-none text-4xl font-black w-full [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 mb-8">
-                  {[20, 50, 100].map((amt) => (
-                    <button
-                      key={amt}
-                      onClick={() => setContributeAmount(amt.toString())}
-                      className="py-3 rounded-xl bg-white/10 text-white font-bold hover:bg-white/20 transition-colors"
-                    >
-                      +RM{amt}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleContributeSubmit}
-                  disabled={!contributeAmount}
-                  className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-black shadow-glow disabled:opacity-50"
-                >
-                  Confirm via GXSecure
-                </button>
+                <ContributeForm max={Math.max(0, activePool.target - activePool.current)} onSubmit={handleContributeSubmit} />
               </motion.div>
             </div>
           )}
@@ -996,5 +930,92 @@ function SquadSavingsManager() {
         })}
       </section>
     </AppShell>
+  );
+}
+
+// --- OPTIMIZED SUB-COMPONENTS FOR PERFORMANCE ---
+
+function CreateForm({ onNext }: { onNext: (name: string, target: string) => void }) {
+  const [name, setName] = useState("");
+  const [target, setTarget] = useState("");
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 mb-2 block">
+          Pool Name & Emoji
+        </label>
+        <input
+          type="text"
+          placeholder="e.g. PS5 Fund 🎮"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full bg-secondary text-foreground p-4 rounded-2xl outline-none focus:ring-2 focus:ring-primary font-bold"
+        />
+      </div>
+      <div>
+        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 mb-2 block">
+          Target Amount (RM)
+        </label>
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-muted-foreground">
+            RM
+          </span>
+          <input
+            type="number"
+            placeholder="2500"
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            className="w-full bg-secondary text-foreground p-4 pl-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary font-black text-xl"
+          />
+        </div>
+      </div>
+      <button
+        disabled={!name || !target}
+        onClick={() => onNext(name, target)}
+        className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold shadow-glow mt-8 disabled:opacity-50 transition-opacity"
+      >
+        Next: Invite Squad
+      </button>
+    </div>
+  );
+}
+
+function ContributeForm({ max, onSubmit }: { max: number; onSubmit: (amt: string) => void }) {
+  const [amount, setAmount] = useState("");
+
+  return (
+    <>
+      <div className="bg-secondary/50 rounded-2xl p-4 flex items-center gap-3 mb-6">
+        <div className="text-2xl font-bold text-muted-foreground">RM</div>
+        <input
+          type="number"
+          placeholder={`Max ${max}`}
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="bg-transparent outline-none text-4xl font-black w-full [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]"
+        />
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mb-8">
+        {[20, 50, 100].map((amt) => (
+          <button
+            key={amt}
+            onClick={() => setAmount(amt.toString())}
+            className="py-3 rounded-xl bg-white/10 text-white font-bold hover:bg-white/20 transition-colors"
+          >
+            +RM{amt}
+          </button>
+        ))}
+      </div>
+
+      <button
+        onClick={() => onSubmit(amount)}
+        disabled={!amount}
+        className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-black shadow-glow disabled:opacity-50"
+      >
+        Confirm via GXSecure
+      </button>
+    </>
   );
 }

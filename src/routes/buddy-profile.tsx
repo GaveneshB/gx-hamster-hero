@@ -33,7 +33,7 @@ function BuddyProfile() {
       <div className="px-5 pb-32">
         {/* Main Score Card */}
         <Card className="p-6 rounded-[2.5rem] bg-hero text-white border-0 shadow-card relative overflow-hidden mb-6">
-          <div aria-hidden className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
+          <div aria-hidden className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-xl" />
           
           <div className="flex flex-col items-center relative z-10 text-center">
             <div className="mb-4">

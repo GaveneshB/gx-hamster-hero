@@ -15,9 +15,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-app relative overflow-hidden text-foreground">
       {/* decorative blobs - static, no animation to keep mobile smooth */}
-      <div aria-hidden className="pointer-events-none absolute -top-40 -right-24 h-[28rem] w-[28rem] rounded-full bg-[oklch(0.55_0.27_320)]/40 blur-2xl" />
-      <div aria-hidden className="pointer-events-none absolute top-1/3 -left-32 h-96 w-96 rounded-full bg-primary/30 blur-2xl" />
-      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-accent/15 blur-2xl" />
+      <div aria-hidden className="pointer-events-none absolute -top-40 -right-24 h-[28rem] w-[28rem] rounded-full bg-[oklch(0.55_0.27_320)]/40 blur-xl" />
+      <div aria-hidden className="pointer-events-none absolute top-1/3 -left-32 h-96 w-96 rounded-full bg-primary/30 blur-xl" />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-accent/15 blur-xl" />
 
       <div className="mx-auto max-w-md min-h-screen flex flex-col relative">
         <main className="flex-1 pb-28">{children}</main>

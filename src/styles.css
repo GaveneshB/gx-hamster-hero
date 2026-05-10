@@ -98,9 +98,9 @@
   --gradient-app: radial-gradient(140% 90% at 70% -10%, oklch(0.45 0.25 310) 0%, oklch(0.22 0.12 295) 40%, oklch(0.1 0.04 290) 100%);
   --gradient-soft: linear-gradient(160deg, oklch(0.25 0.1 295), oklch(0.14 0.05 290));
   --gradient-fintech: radial-gradient(140% 120% at 80% -10%, oklch(0.55 0.25 310) 0%, oklch(0.2 0.1 295) 40%, oklch(0.12 0.04 290) 100%);
-  --shadow-glow: 0 20px 60px -20px oklch(0.6 0.25 295 / 0.55);
-  --shadow-card: 0 10px 40px -12px oklch(0.05 0.05 295 / 0.55);
-  --shadow-premium: 0 12px 48px -12px oklch(0 0 0 / 0.6);
+  --shadow-glow: 0 10px 25px -10px oklch(0.6 0.25 295 / 0.45);
+  --shadow-card: 0 5px 15px -5px oklch(0.05 0.05 295 / 0.4);
+  --shadow-premium: 0 8px 24px -10px oklch(0 0 0 / 0.5);
 }
 
 @layer base {
@@ -138,7 +138,7 @@
   .text-balance { text-wrap: balance; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { scrollbar-width: none; }
-  .ring-glow { box-shadow: 0 0 0 1px oklch(1 0 0 / 0.08), 0 10px 40px -10px oklch(0.6 0.25 295 / 0.5); }
+  .ring-glow { box-shadow: 0 0 0 1px oklch(1 0 0 / 0.08), 0 5px 15px -5px oklch(0.6 0.25 295 / 0.4); }
   
   .glass-premium {
     background: color-mix(in oklab, white 10%, transparent);

@@ -94,8 +94,8 @@ function RewardsPage() {
         {/* ── HERO HEADER ── */}
         <div className="relative overflow-hidden px-5 pt-10 pb-8">
           <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-[#771FFF]/40 via-[#771FFF]/10 to-transparent" />
-          <div aria-hidden className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#F8326D]/15 blur-2xl" />
-          <div aria-hidden className="absolute top-4 left-8 w-32 h-32 rounded-full bg-[#4EE6E6]/10 blur-2xl" />
+          <div aria-hidden className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#F8326D]/15 blur-xl" />
+          <div aria-hidden className="absolute top-4 left-8 w-32 h-32 rounded-full bg-[#4EE6E6]/10 blur-xl" />
 
           {/* Floating particles */}
           {[...Array(5)].map((_, i) => (
@@ -142,7 +142,7 @@ function RewardsPage() {
             className="p-4 rounded-3xl relative overflow-hidden"
             style={{ background: "linear-gradient(135deg, rgba(119,31,255,0.2) 0%, rgba(78,230,230,0.05) 100%)", border: "1px solid rgba(119,31,255,0.3)", boxShadow: "0 0 30px rgba(119,31,255,0.15)" }}
           >
-            <div aria-hidden className="absolute top-0 right-0 w-32 h-32 rounded-full bg-primary/10 blur-2xl" />
+            <div aria-hidden className="absolute top-0 right-0 w-32 h-32 rounded-full bg-primary/10 blur-xl" />
 
             <div className="relative flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">

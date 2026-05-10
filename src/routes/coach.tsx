@@ -151,7 +151,7 @@ function Coach() {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center py-2 relative">
               <Link to="/buddy-profile" className="relative group active:scale-95 transition-transform">
-                <div aria-hidden className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div aria-hidden className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative">
                   <Hamster mood={hamsterMood} size={120} />
                   <div className="absolute -bottom-1 -right-2 bg-primary-gradient px-3 py-1 rounded-full border-2 border-[#0C0121] shadow-lg">

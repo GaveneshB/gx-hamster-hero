@@ -54,7 +54,42 @@ function calcRisk(amount: number, category: string) {
   return { level, score: Math.min(score, 100), reasons, safePerDay: ((MOCK.balance - amount) / MOCK.daysLeft).toFixed(0), safedays: Math.floor((MOCK.balance - amount) / MOCK.dailyBudget) };
 }
 
-
+// --- TOTAL WEALTH HELPERS (mirrors main-account page logic) ---
+type RoundTo = 0.5 | 1;
+function calcRoundUp(amount: number, roundTo: RoundTo): number {
+  const abs = Math.abs(amount);
+  const ceiled = roundTo === 0.5 ? Math.ceil(abs * 2) / 2 : Math.ceil(abs);
+  const diff = parseFloat((ceiled - abs).toFixed(2));
+  return diff === 0 ? roundTo : diff;
+}
+function getStored<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try { const s = window.localStorage.getItem(key); return s ? (JSON.parse(s) as T) : fallback; } catch { return fallback; }
+}
+function calcTotalWealth(): number {
+  const mainBalance = user.balance;
+  const squadPocket = 150;
+  const roundTo       = getStored<RoundTo>("gx_roundTo", 1);
+  const autoEnabled   = getStored<boolean>("gx_enabled", true);
+  const autoCollected = getStored<boolean>("gx_collected", false);
+  const goals = getStored<{ id: number; saved: number }[]>("gx_goals2", [
+    { id: 1, saved: 31 }, { id: 2, saved: 10 }, { id: 3, saved: 5 },
+  ]);
+  const bills = getStored<{ id: number; saved: number }[]>("gx_bills2", [
+    { id: 1, saved: 35 }, { id: 2, saved: 10 }, { id: 3, saved: 18 },
+  ]);
+  const shieldVaultBalance  = getStored<number>("gx_vault_balance", 450);
+  const shieldBufferBalance = getStored<number>("gx_emergency_buffer_balance", 150);
+  const buddyShieldTotal    = shieldVaultBalance + shieldBufferBalance;
+  const spends = transactions.filter((t) => t.amount < 0);
+  const pendingTotal = autoEnabled && !autoCollected
+    ? parseFloat(spends.reduce((s, t) => s + calcRoundUp(t.amount, roundTo), 0).toFixed(2))
+    : 0;
+  const goalSaved     = goals.reduce((s, g) => s + g.saved, 0);
+  const billSaved     = bills.reduce((s, b) => s + b.saved, 0);
+  const autoSaveVault = goalSaved + billSaved + (autoCollected ? pendingTotal : 0);
+  return parseFloat((mainBalance + buddyShieldTotal + autoSaveVault + squadPocket).toFixed(2));
+}
 
 function Home() {
   const [gStep, setGStep] = useState<"off" | "pick" | "confirm" | "warn" | "ok" | "delay">("off");
@@ -81,6 +116,9 @@ function Home() {
   const safeToSpend = user.safeToSpend;
   const hamsterMood = getHamsterMood(user.resilienceScore);
 
+  // Total wealth (same calculation as main-account page header)
+  const totalWealth = calcTotalWealth();
+
   return (
     <AppShell>
       {/* HERO — GXBank style */}
@@ -95,7 +133,7 @@ function Home() {
               <Shield className="h-3.5 w-3.5 text-white/70" />
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <h1 className="text-[28px] font-extrabold tracking-tight text-white">RM{user.balance.toLocaleString()}</h1>
+              <h1 className="text-[28px] font-extrabold tracking-tight text-white">RM{totalWealth.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h1>
               <Eye className="h-4 w-4 text-white/70" />
             </div>
             <Link to="/me" className="flex items-center gap-1 mt-1 text-xs text-white/70">
@@ -122,13 +160,13 @@ function Home() {
               { Icon: Send, label: "Send money", active: false },
             ].map(({ Icon, label, active, onClick }) => (
               active ? (
-                <button 
-                  key={label} 
-                  onClick={onClick} 
+                <button
+                  key={label}
+                  onClick={onClick}
                   className="flex flex-col items-center gap-2 group cursor-pointer"
                 >
-                  <motion.div 
-                    whileTap={{ scale: 0.9 }} 
+                  <motion.div
+                    whileTap={{ scale: 0.9 }}
                     className="h-12 w-12 rounded-full bg-primary-gradient grid place-items-center shadow-glow group-hover:scale-110 transition-transform duration-300"
                   >
                     <Icon className="h-5 w-5 text-white" />
@@ -157,7 +195,7 @@ function Home() {
         <Link to="/coach" className="block active:scale-[0.98] transition-transform group">
           <Card className="p-5 rounded-[2rem] glass-strong shadow-card flex items-center justify-between border border-[#771FFF]/40 relative overflow-hidden">
             <div aria-hidden className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-[#771FFF]/20 to-transparent pointer-events-none" />
-            
+
             <div className="flex items-center gap-5 relative z-10">
               <div className="h-16 w-16 rounded-full bg-[#0C0121] flex items-center justify-center shrink-0 border-2 border-[#771FFF]/50 overflow-hidden shadow-[0_0_20px_rgba(119,31,255,0.3)]">
                 <Hamster mood={hamsterMood} size={55} float={true} />
@@ -177,7 +215,7 @@ function Home() {
                 </div>
               </div>
             </div>
-            
+
             <ChevronRight className="h-6 w-6 text-white/30 relative z-10 group-hover:text-white transition-colors shrink-0" />
           </Card>
         </Link>
@@ -193,8 +231,9 @@ function Home() {
           <Link to="/main-account">
             <Card className="p-4 rounded-2xl glass border-white/10 shadow-card h-full flex flex-col justify-between min-h-[140px] cursor-pointer hover:bg-white/5 transition-colors">
               <div>
+                {/* label unchanged — only value updated to totalWealth */}
                 <p className="text-xs text-muted-foreground">Main account</p>
-                <p className="text-lg font-extrabold mt-1">RM{user.balance.toLocaleString()}</p>
+                <p className="text-lg font-extrabold mt-1">RM{totalWealth.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
               </div>
               <div className="mt-3 flex items-center justify-between bg-primary/20 hover:bg-primary/30 transition-colors rounded-lg px-2 py-1.5 border border-primary/30">
                 <p className="text-[10px] text-[#c1a3ff] font-bold uppercase tracking-widest">View Breakdown</p>
@@ -285,7 +324,7 @@ function Home() {
       <section className="mt-8 mb-32 px-5">
         <h2 className="text-base font-bold mb-3">Your insights</h2>
         <div className="flex overflow-x-auto snap-x hide-scrollbar pb-4 gap-8 no-scrollbar">
-          
+
           {/* Insight 1: Buddy Shield Vault */}
           <div className="flex items-center gap-4 shrink-0 snap-start">
              <div className="h-12 w-12 rounded-full border-[2px] border-primary flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(124,58,237,0.2)]">
@@ -324,6 +363,7 @@ function Home() {
 
         </div>
       </section>
+
       {/* ===== PAYMENT GUARDIAN MODALS ===== */}
       <AnimatePresence>
         {/* POCKET SELECTION MODAL */}

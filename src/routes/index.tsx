@@ -85,8 +85,8 @@ function Home() {
     <AppShell>
       {/* HERO — GXBank style */}
       <section className="relative px-5 pt-12 pb-6 bg-hero rounded-b-[2.5rem] overflow-hidden">
-        <div aria-hidden className="absolute -top-20 -right-10 h-72 w-72 rounded-full bg-[oklch(0.7_0.25_330)]/40 blur-3xl" />
-        <div aria-hidden className="absolute top-10 -left-20 h-60 w-60 rounded-full bg-primary/40 blur-3xl" />
+        <div aria-hidden className="absolute -top-20 -right-10 h-72 w-72 rounded-full bg-[oklch(0.7_0.25_330)]/40 blur-2xl" />
+        <div aria-hidden className="absolute top-10 -left-20 h-60 w-60 rounded-full bg-primary/40 blur-2xl" />
 
         <div className="relative flex items-start justify-between">
           <div>
@@ -227,7 +227,7 @@ function Home() {
           {/* Pre-Spending Warning Card */}
           <button onClick={() => setGStep("pick")} className="w-full text-left">
             <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden cursor-pointer">
-              <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#771FFF]/20 blur-3xl" />
+              <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#771FFF]/20 blur-2xl" />
               <div className="relative flex items-center gap-4">
                 <div className="relative h-24 w-24 grid place-items-center shrink-0">
                   <span aria-hidden className="absolute h-24 w-24 rounded-full border border-[#771FFF]/40 animate-pulse-ring" />
@@ -255,7 +255,7 @@ function Home() {
           {/* Squad Pocket Card */}
           <Link to="/group-challenges" className="block text-left group">
             <Card className="p-4 rounded-3xl glass-strong border-white/10 shadow-card relative overflow-hidden transition-all duration-300 group-hover:bg-white/5">
-              <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#F8326D]/20 blur-3xl" />
+              <div aria-hidden className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full bg-[#F8326D]/20 blur-2xl" />
               <div className="relative flex items-center gap-4">
                 <div className="relative h-24 w-24 grid place-items-center shrink-0">
                   <span aria-hidden className="absolute h-24 w-24 rounded-full border border-[#F8326D]/40 animate-pulse-ring" />
@@ -329,7 +329,7 @@ function Home() {
         {/* POCKET SELECTION MODAL */}
         {pocketStep === "type" && (
           <div className="fixed inset-0 z-[100] flex items-end">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPocketStep("off")} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPocketStep("off")} className="absolute inset-0 bg-black/75" />
             <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
               <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-5" />
               <div className="flex justify-between items-center mb-4">
@@ -361,7 +361,7 @@ function Home() {
         {/* MERCHANT PICKER */}
         {gStep === "pick" && (
           <div className="fixed inset-0 z-[100] flex items-end">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={gReset} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={gReset} className="absolute inset-0 bg-black/75" />
             <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
               <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-5" />
               <div className="flex justify-between items-center mb-4">
@@ -386,7 +386,7 @@ function Home() {
         {/* CONFIRM */}
         {gStep === "confirm" && gMerchant && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={gReset} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={gReset} className="absolute inset-0 bg-black/75" />
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
               <p className="text-5xl mb-2">{gMerchant.icon}</p>
               <h3 className="text-xl font-black">{gMerchant.name}</h3>
@@ -407,7 +407,7 @@ function Home() {
         {/* WARNING */}
         {gStep === "warn" && gRisk && gMerchant && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/85" />
             <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: "spring", damping: 22 }}
               className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 z-10 border border-white/10 overflow-y-auto max-h-[90vh]">
               <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-3 ${gRisk.level === "high" ? "bg-destructive/20" : "bg-warning/20"}`}>
@@ -464,7 +464,7 @@ function Home() {
         {/* SUCCESS */}
         {gStep === "ok" && gMerchant && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/75" />
             <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }} className="mx-auto w-14 h-14 bg-success/20 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 className="h-7 w-7 text-success" />
@@ -481,7 +481,7 @@ function Home() {
         {/* DELAYED */}
         {gStep === "delay" && gMerchant && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/75" />
             <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }} className="text-5xl mb-3">🦸</motion.div>
               <h3 className="text-xl font-black mb-2">Smart Move! 💪</h3>

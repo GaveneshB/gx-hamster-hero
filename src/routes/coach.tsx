@@ -67,7 +67,7 @@ function InfoSheet({ tool, onClose }: { tool: BuddyTool; onClose: () => void }) 
   return (
     <motion.div className="fixed inset-0 z-50 flex items-end justify-center"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/75" onClick={onClose} />
       <motion.div
         className="relative w-full max-w-md bg-card rounded-t-3xl z-10"
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
@@ -151,7 +151,7 @@ function Coach() {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center py-2 relative">
               <Link to="/buddy-profile" className="relative group active:scale-95 transition-transform">
-                <div aria-hidden className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div aria-hidden className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative">
                   <Hamster mood={hamsterMood} size={120} />
                   <div className="absolute -bottom-1 -right-2 bg-primary-gradient px-3 py-1 rounded-full border-2 border-[#0C0121] shadow-lg">

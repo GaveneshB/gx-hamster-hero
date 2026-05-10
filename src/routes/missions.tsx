@@ -94,7 +94,7 @@ function RewardsPage() {
         {/* ── HERO HEADER ── */}
         <div className="relative overflow-hidden px-5 pt-10 pb-8">
           <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-[#771FFF]/40 via-[#771FFF]/10 to-transparent" />
-          <div aria-hidden className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#F8326D]/15 blur-3xl" />
+          <div aria-hidden className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#F8326D]/15 blur-2xl" />
           <div aria-hidden className="absolute top-4 left-8 w-32 h-32 rounded-full bg-[#4EE6E6]/10 blur-2xl" />
 
           {/* Floating particles */}

@@ -128,7 +128,6 @@ function SquadSavingsManager() {
 
   // Contribute Modal State
   const [showContribute, setShowContribute] = useState(false);
-  const [contributeAmount, setContributeAmount] = useState("");
   const [showEmergencyConfirm, setShowEmergencyConfirm] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
@@ -168,7 +167,7 @@ function SquadSavingsManager() {
 
   const handleContributeSubmit = (amountStr: string) => {
     const amount = parseInt(amountStr);
-    if (!amount || amount <= 0) return;
+    if (isNaN(amount) || amount <= 0) return;
 
     const currentPool = pools.find((p) => p.id === selectedPoolId);
     if (currentPool) {
@@ -450,8 +449,8 @@ function SquadSavingsManager() {
   }
 
   if (view === "detail") {
-    const pct = Math.min(100, Math.round((activePool.current / activePool.target) * 100));
-    const sortedFriends = [...activePool.friends].sort((a, b) => b.amount - a.amount);
+    const pct = Math.min(100, Math.round((activePool.current / (activePool.target || 1)) * 100));
+    const sortedFriends = activePool.friends; // friends are already sorted via calculateRoles
 
     return (
       <AppShell>

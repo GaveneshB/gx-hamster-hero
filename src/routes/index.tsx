@@ -370,7 +370,7 @@ function Home() {
         {pocketStep === "type" && (
           <div className="fixed inset-0 z-[100] flex items-end">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPocketStep("off")} className="absolute inset-0 bg-black/75" />
-            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
+            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
               <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-5" />
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-black">Create a Pocket</h2>
@@ -402,7 +402,7 @@ function Home() {
         {gStep === "pick" && (
           <div className="fixed inset-0 z-[100] flex items-end">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={gReset} className="absolute inset-0 bg-black/75" />
-            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
+            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full bg-app rounded-t-[2rem] p-6 z-10 border-t border-white/10">
               <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-5" />
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-black">Scan & Pay</h2>
@@ -448,7 +448,7 @@ function Home() {
         {gStep === "warn" && gRisk && gMerchant && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/85" />
-            <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: "spring", damping: 22 }}
+            <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}
               className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 z-10 border border-white/10 overflow-y-auto max-h-[90vh]">
               <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-3 ${gRisk.level === "high" ? "bg-destructive/20" : "bg-warning/20"}`}>
                 {gRisk.level === "high" ? <ShieldX className="h-7 w-7 text-destructive" /> : <ShieldAlert className="h-7 w-7 text-warning" />}
@@ -506,7 +506,7 @@ function Home() {
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/75" />
             <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }} className="mx-auto w-14 h-14 bg-success/20 rounded-full flex items-center justify-center mb-4">
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, duration: 0.4, ease: "backOut" }} className="mx-auto w-14 h-14 bg-success/20 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 className="h-7 w-7 text-success" />
               </motion.div>
               <h3 className="text-xl font-black mb-1">Payment Sent! 💸</h3>
@@ -523,7 +523,7 @@ function Home() {
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-5">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/75" />
             <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 text-center z-10 border border-white/10">
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }} className="text-5xl mb-3">🦸</motion.div>
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, duration: 0.4, ease: "backOut" }} className="text-5xl mb-3">🦸</motion.div>
               <h3 className="text-xl font-black mb-2">Smart Move! 💪</h3>
               <p className="text-sm text-muted-foreground mb-4">You chose to delay this purchase. Your future self thanks you!</p>
               <div className="bg-success/10 border border-success/20 rounded-2xl p-4 mb-5 text-left">

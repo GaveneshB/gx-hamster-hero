@@ -235,7 +235,7 @@ function SpendingGuardian() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={reset} className="absolute inset-0 bg-black/75" />
             <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative w-full max-w-md bg-app rounded-t-[2rem] p-6 shadow-2xl border-t border-white/10 z-10"
             >
               <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-5" />
@@ -299,7 +299,7 @@ function SpendingGuardian() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/85" />
             <motion.div
               initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
-              transition={{ type: "spring", damping: 22, stiffness: 300 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative w-full max-w-sm bg-app rounded-[2rem] p-6 shadow-2xl border border-white/10 z-10"
             >
               {/* Header */}

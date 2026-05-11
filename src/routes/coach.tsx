@@ -71,7 +71,7 @@ function InfoSheet({ tool, onClose }: { tool: BuddyTool; onClose: () => void }) 
       <motion.div
         className="relative w-full max-w-md bg-card rounded-t-3xl z-10"
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 28, stiffness: 300 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
         <div className="flex justify-center pt-3 pb-1">
           <div className="h-1 w-10 rounded-full bg-white/20" />

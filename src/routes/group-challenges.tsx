@@ -395,7 +395,7 @@ function SquadSavingsManager() {
           <motion.div
             initial={{ rotateY: -90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
-            transition={{ type: "spring", damping: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="w-full h-56 rounded-[2rem] bg-gradient-to-br from-indigo-500 via-purple-600 to-[#FF3366] p-6 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between border border-white/20"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-xl -mr-10 -mt-10" />
@@ -662,7 +662,7 @@ function SquadSavingsManager() {
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
                 >
                   <Card
                     className={`p-4 rounded-2xl border-0 shadow-card flex items-center gap-4 relative overflow-hidden ${f.you ? "bg-primary/5 ring-1 ring-primary/20" : "glass"}`}
@@ -750,7 +750,7 @@ function SquadSavingsManager() {
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
-                transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className="relative w-full max-w-md bg-app rounded-t-[2rem] p-6 pb-12 shadow-2xl border-t border-white/10"
               >
                 <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-6" />
